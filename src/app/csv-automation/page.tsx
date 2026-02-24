@@ -8,8 +8,8 @@ export default function CSVAutomationPage() {
             {/* Coming Soon Overlay */}
             <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
                 <div className="relative">
-                    <div className="bg-blue-900 text-white rounded-3xl px-16 py-10 rotate-[-10deg] flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(30,58,138,0.3)] border-4 border-white/20">
-                        <span className="text-white text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">출시 예정</span>
+                    <div className="bg-white/95 text-red-600 rounded-3xl px-16 py-10 rotate-[-10deg] flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(220,38,38,0.15)] border-[12px] border-red-600/80">
+                        <span className="text-red-600 text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">출시 예정</span>
                     </div>
                 </div>
             </div>
