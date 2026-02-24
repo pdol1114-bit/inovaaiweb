@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, ShieldCheck, Stethoscope, Activity } from "lucide-react";
 import Link from "next/link";
+import { QRBadge } from "@/components/ui/qr-badge";
 
 export default function SniffPage() {
     return (
@@ -20,13 +21,21 @@ export default function SniffPage() {
                     <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
                         Sniff by Hatch uses advanced visual recognition AI to monitor your pet's health. Simply take a photo and get instant insights into their well-being.
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0 mb-12" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
                         <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
                             <Link href="/auth?service=sniff">Get Started</Link>
                         </Button>
                         <Button size="lg" variant="outline" className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 px-8 h-12 text-base" asChild>
                             <Link href="/auth?service=sniff">Login</Link>
                         </Button>
+                    </div>
+
+                    <div className="flex flex-col items-center animate-fade-in opacity-0" style={{ animationDelay: "0.6s", animationFillMode: "forwards" }}>
+                        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Download the Sniff App</p>
+                        <div className="flex flex-wrap justify-center gap-6">
+                            <QRBadge type="ios" url="https://apps.apple.com/kr/app/sniff-by-hatch/id6756805438" />
+                            <QRBadge type="android" url="https://play.google.com/store/apps/details?id=com.kevinkang1114.sniff" />
+                        </div>
                     </div>
                 </div>
             </section>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, ShieldCheck, Stethoscope, Activity } from "lucide-react";
+import { QRBadge } from "@/components/ui/qr-badge";
 
 export default function Home() {
   return (
@@ -49,6 +50,14 @@ export default function Home() {
               <Link href="/sniff" className="inline-flex items-center text-blue-400 mt-4 hover:underline">
                 Learn more <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
+
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Download App</p>
+                <div className="flex gap-4">
+                  <QRBadge type="ios" url="https://apps.apple.com/kr/app/sniff-by-hatch/id6756805438" />
+                  <QRBadge type="android" url="https://play.google.com/store/apps/details?id=com.kevinkang1114.sniff" />
+                </div>
+              </div>
             </div>
 
             <div className="glass-panel p-6 rounded-2xl hover:border-emerald-500/50 transition-colors">
