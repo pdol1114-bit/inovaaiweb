@@ -73,7 +73,7 @@ export default function SniffPage() {
                                         <h4 className="font-bold text-gray-900">문진표 작성</h4>
                                         <p className="text-gray-600">
                                             문진표를 먼저 작성해 주시기 바랍니다. <br />
-                                            모르는 부분은 빈칸으로 놔두셔도 됩니다.
+                                            모르는 부분은 빈칸으로 두어두셔도 됩니다.
                                         </p>
                                     </div>
                                 </div>
