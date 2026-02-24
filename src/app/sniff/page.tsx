@@ -89,9 +89,24 @@ export default function SniffPage() {
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div className="order-2 md:order-1">
-                            <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
-                                <div className="absolute inset-0 bg-blue-600 flex items-center justify-center text-white text-4xl font-bold">
-                                    AI SCAN PREVIEW
+                            <div className="order-2 md:order-1">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-4">
+                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                            <img src="/images/KakaoTalk_Image_001.jpeg" alt="Sniff Splash" className="absolute inset-0 w-full h-full object-cover" />
+                                        </div>
+                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                            <img src="/images/KakaoTalk_Image_003.jpeg" alt="Sniff Survey" className="absolute inset-0 w-full h-full object-cover" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4 mt-8">
+                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                            <img src="/images/KakaoTalk_Image_002.jpeg" alt="Sniff Guide" className="absolute inset-0 w-full h-full object-cover" />
+                                        </div>
+                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                            <img src="/images/KakaoTalk_Image_005.jpeg" alt="Sniff Result" className="absolute inset-0 w-full h-full object-cover" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
