@@ -89,23 +89,21 @@ export default function SniffPage() {
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                         <div className="order-2 md:order-1">
-                            <div className="order-2 md:order-1">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-4">
-                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                            <img src="/images/KakaoTalk_Image_001.jpeg" alt="Sniff Splash" className="absolute inset-0 w-full h-full object-cover" />
-                                        </div>
-                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                            <img src="/images/KakaoTalk_Image_003.jpeg" alt="Sniff Survey" className="absolute inset-0 w-full h-full object-cover" />
-                                        </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-4">
+                                    <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                        <img src="/images/IMG_1.PNG" alt="Sniff Splash" className="absolute inset-0 w-full h-full object-cover" />
                                     </div>
-                                    <div className="space-y-4 mt-8">
-                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                            <img src="/images/KakaoTalk_Image_002.jpeg" alt="Sniff Guide" className="absolute inset-0 w-full h-full object-cover" />
-                                        </div>
-                                        <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                            <img src="/images/KakaoTalk_Image_005.jpeg" alt="Sniff Result" className="absolute inset-0 w-full h-full object-cover" />
-                                        </div>
+                                    <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                        <img src="/images/IMG_3.PNG" alt="Sniff Survey" className="absolute inset-0 w-full h-full object-cover" />
+                                    </div>
+                                </div>
+                                <div className="space-y-4 mt-8">
+                                    <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                        <img src="/images/IMG_2.PNG" alt="Sniff Guide" className="absolute inset-0 w-full h-full object-cover" />
+                                    </div>
+                                    <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+                                        <img src="/images/IMG_5.PNG" alt="Sniff Result" className="absolute inset-0 w-full h-full object-cover" />
                                     </div>
                                 </div>
                             </div>
