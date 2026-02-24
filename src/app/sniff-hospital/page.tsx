@@ -4,7 +4,14 @@ import Link from "next/link";
 
 export default function SniffHospitalPage() {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen relative">
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-md pointer-events-none">
+                <div className="bg-red-500 text-white text-3xl md:text-5xl font-black px-12 py-6 rounded-2xl rotate-[-10deg] border-8 border-white shadow-2xl flex flex-col items-center">
+                    <span>26년 말</span>
+                    <span>출시 예정</span>
+                </div>
+            </div>
             {/* Hero Section */}
             <section className="relative pt-32 pb-24 overflow-hidden bg-white">
                 <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-blue-50 rounded-full blur-[100px] opacity-60 z-0"></div>
