@@ -65,27 +65,27 @@ export default function SniffPage() {
                             </div>
                         </div>
                         <div className="order-1 md:order-2">
-                            <h2 className="text-3xl font-bold mb-6 text-gray-900">How it Works</h2>
+                            <h2 className="text-3xl font-bold mb-6 text-gray-900">작동 방식</h2>
                             <div className="space-y-6">
                                 <div className="flex items-start space-x-4">
                                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 font-bold">1</div>
                                     <div>
-                                        <h4 className="font-bold text-gray-900">Snap a Photo</h4>
-                                        <p className="text-gray-600">Take a clear picture of your pet's nose or eyes.</p>
+                                        <h4 className="font-bold text-gray-900">문진 작성</h4>
+                                        <p className="text-gray-600">반려동물의 증상과 기본 건강 상태를 간단히 입력합니다.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
                                     <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 shrink-0 font-bold">2</div>
                                     <div>
-                                        <h4 className="font-bold text-gray-900">AI Analysis</h4>
-                                        <p className="text-gray-600">Our deep learning model analyzes patterns and biomechanics.</p>
+                                        <h4 className="font-bold text-gray-900">사진 촬영</h4>
+                                        <p className="text-gray-600">상태를 확인하고 싶은 부위를 가이드에 맞춰 선명하게 촬영합니다.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
                                     <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0 font-bold">3</div>
                                     <div>
-                                        <h4 className="font-bold text-gray-900">Get Results</h4>
-                                        <p className="text-gray-600">Receive a detailed health status and recommendation within seconds.</p>
+                                        <h4 className="font-bold text-gray-900">AI 분석 및 결과</h4>
+                                        <p className="text-gray-600">딥러닝 모델이 이미지를 분석하여 즉각적인 건강 상태 리포트를 제공합니다.</p>
                                     </div>
                                 </div>
                             </div>
