@@ -78,7 +78,10 @@ export default function SniffPage() {
                                     <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-700 shrink-0 font-bold">2</div>
                                     <div>
                                         <h4 className="font-bold text-gray-900">사진 촬영</h4>
-                                        <p className="text-gray-600">반려동물의 사진을 찍어 주세요.</p>
+                                        <p className="text-gray-600">
+                                            반려견(묘)의 눈, 치아, 피부 등을 잘 보이게 찍어 주세요. <br />
+                                            자세가 이상하다고 생각하는 경우에도 전신 사진을 찍어 주세요.
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
