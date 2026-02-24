@@ -6,43 +6,51 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-background to-background z-0" />
+      <section className="relative min-h-[90vh] flex items-center pt-20 overflow-hidden bg-white">
+        {/* Background Decorative Elements */}
+        <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-blue-100 rounded-full blur-[100px] opacity-60 z-0"></div>
+        <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-96 h-96 bg-cyan-50 rounded-full blur-[100px] opacity-60 z-0"></div>
+
         <div className="container relative z-10 mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-400 animate-fade-in">
+          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600 mb-6 animate-fade-in shadow-sm">
+            <span className="flex h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
+            Leading the AI Era
+          </div>
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-gray-900 animate-fade-in">
             Innovating the Future with <br className="hidden md:block" />
             Artificial Intelligence
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
             Inova AI is at the forefront of technological transformation, delivering advanced solutions in pet health, pharmaceutical automation, and industrial FEM-AI integration.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
-            <Link href="/sniff">
-              <Button size="lg" variant="premium" className="w-full sm:w-auto">
-                Discover Our Projects <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50">
+              Get Started
+            </Button>
+            <Button size="lg" variant="outline" className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 px-8 h-12 text-base">
+              Explore Solutions
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 bg-secondary/20">
+      <section className="py-24 bg-gray-50/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Our Core Businesses</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">Our Core Businesses</h2>
+            <p className="text-gray-600 max-w-xl mx-auto">
               We leverage AI to solve complex challenges across multiple industries.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-panel p-6 rounded-2xl hover:border-blue-500/50 transition-colors">
-              <div className="h-12 w-12 rounded-lg bg-blue-500/20 flex items-center justify-center mb-4">
-                <Activity className="h-6 w-6 text-blue-400" />
+            <div className="group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <Activity className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Pet Health AI</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl font-bold mb-2 text-gray-900">Pet Health AI</h3>
+              <p className="text-gray-600">
                 <img src="/logos/sniff-yellow.png" alt="Sniff by Hatch" className="h-5 w-auto mb-2" />
                 A revolutionary AI platform for early detection of health issues in pets via visual analysis.
               </p>
