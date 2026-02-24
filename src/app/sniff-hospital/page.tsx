@@ -8,9 +8,9 @@ export default function SniffHospitalPage() {
             {/* Coming Soon Overlay */}
             <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
                 <div className="relative">
-                    <div className="border-[12px] border-red-600/80 rounded-3xl px-16 py-10 rotate-[-15deg] flex flex-col items-center gap-2 shadow-[0_0_50px_rgba(220,38,38,0.2)] bg-white/5">
-                        <span className="text-red-600/90 text-4xl md:text-6xl font-black tracking-tighter uppercase whitespace-nowrap">26년 말</span>
-                        <span className="text-red-600/90 text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">출시 예정</span>
+                    <div className="bg-blue-900 text-white rounded-3xl px-16 py-10 rotate-[-10deg] flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(30,58,138,0.3)] border-4 border-white/20">
+                        <span className="text-white/90 text-4xl md:text-6xl font-black tracking-tighter uppercase whitespace-nowrap">26년 말</span>
+                        <span className="text-white text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">출시 예정</span>
                     </div>
                 </div>
             </div>
