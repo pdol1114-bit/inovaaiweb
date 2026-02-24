@@ -6,10 +6,12 @@ export default function SniffHospitalPage() {
     return (
         <div className="flex flex-col min-h-screen relative">
             {/* Coming Soon Overlay */}
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-md pointer-events-none">
-                <div className="bg-red-500 text-white text-3xl md:text-5xl font-black px-12 py-6 rounded-2xl rotate-[-10deg] border-8 border-white shadow-2xl flex flex-col items-center">
-                    <span>26년 말</span>
-                    <span>출시 예정</span>
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 backdrop-blur-2xl pointer-events-none">
+                <div className="relative">
+                    <div className="border-[12px] border-red-600/80 rounded-3xl px-16 py-10 rotate-[-15deg] flex flex-col items-center gap-2 shadow-[0_0_50px_rgba(220,38,38,0.2)]">
+                        <span className="text-red-600/90 text-4xl md:text-6xl font-black tracking-tighter uppercase whitespace-nowrap">26년 말</span>
+                        <span className="text-red-600/90 text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">출시 예정</span>
+                    </div>
                 </div>
             </div>
             {/* Hero Section */}
