@@ -43,7 +43,6 @@ export function Footer() {
                         <ul className="space-y-2 text-sm text-gray-600">
                             <li>Seoul, South Korea</li>
                             <li>support@inovaai.ai</li>
-                            <li>+82 02-1234-5678</li>
                         </ul>
                     </div>
                 </div>
