@@ -10,9 +10,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
     { href: "/sniff", label: "Sniff by Hatch" },
-    { href: "/sniff-hospital", label: "Sniff by Hatch for Hospital", isComingSoon: true, launchText: "26년 말 출시 예정" },
-    { href: "/csv-automation", label: "CSV 자동화", isComingSoon: true, launchText: "출시 예정" },
-    { href: "/fem-ai", label: "FEM & AI", isComingSoon: true, launchText: "출시 예정" },
+    { href: "/sniff-hospital", label: "Sniff by Hatch for Hospital" },
+    { href: "/csv-automation", label: "CSV 자동화" },
+    { href: "/fem-ai", label: "FEM & AI" },
     { href: "/automation", label: "업무자동화" },
 ];
 
@@ -47,34 +47,19 @@ export function Navbar() {
                 {/* Desktop Nav */}
                 <div className="hidden md:flex items-center space-x-1">
                     {links.map((link) => (
-                        <div key={link.href} className="relative group/nav">
-                            <Link
-                                href={link.isComingSoon ? "#" : link.href}
-                                className={cn(
-                                    "px-3 py-2 text-sm font-medium transition-all rounded-lg block",
-                                    pathname === link.href
-                                        ? "text-blue-600 bg-blue-50"
-                                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50",
-                                    link.isComingSoon && "blur-[1.5px] pointer-events-none opacity-60"
-                                )}
-                            >
-                                {link.label}
-                            </Link>
-                            {link.isComingSoon && (
-                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                    <span className="bg-red-500/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded rotate-[-12deg] border border-white shadow-sm whitespace-nowrap">
-                                        {link.launchText}
-                                    </span>
-                                </div>
+                        <Link
+                            key={link.href}
+                            href={link.href}
+                            className={cn(
+                                "px-3 py-2 text-sm font-medium transition-all rounded-lg",
+                                pathname === link.href
+                                    ? "text-blue-600 bg-blue-50"
+                                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                             )}
-                        </div>
+                        >
+                            {link.label}
+                        </Link>
                     ))}
-                </div>
-
-                {/* Desktop Actions - Removed global buttons */}
-                <div className="hidden md:flex items-center">
-                    {/* Placeholder space for balance or future right-side items */}
-                    <div className="w-10"></div>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -97,28 +82,19 @@ export function Navbar() {
                     >
                         <div className="container mx-auto px-4 py-6 flex flex-col space-y-2">
                             {links.map((link) => (
-                                <div key={link.href} className="relative">
-                                    <Link
-                                        href={link.isComingSoon ? "#" : link.href}
-                                        className={cn(
-                                            "px-4 py-3 text-base font-medium rounded-xl transition-colors block",
-                                            pathname === link.href
-                                                ? "text-blue-600 bg-blue-50"
-                                                : "text-gray-600 hover:text-blue-600 hover:bg-blue-50",
-                                            link.isComingSoon && "blur-[2px] pointer-events-none opacity-60"
-                                        )}
-                                        onClick={() => !link.isComingSoon && setIsOpen(false)}
-                                    >
-                                        {link.label}
-                                    </Link>
-                                    {link.isComingSoon && (
-                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                            <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-lg rotate-[-5deg] border-2 border-white shadow-lg shadow-red-200/50">
-                                                {link.launchText}
-                                            </span>
-                                        </div>
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={cn(
+                                        "px-4 py-3 text-base font-medium rounded-xl transition-colors",
+                                        pathname === link.href
+                                            ? "text-blue-600 bg-blue-50"
+                                            : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                                     )}
-                                </div>
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    {link.label}
+                                </Link>
                             ))}
                         </div>
                     </motion.div>
