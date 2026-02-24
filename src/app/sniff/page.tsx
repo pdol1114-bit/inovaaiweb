@@ -40,51 +40,7 @@ export default function SniffPage() {
                 </div>
             </section>
 
-            {/* Features Grid */}
-            <section className="py-20 bg-secondary/20">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold mb-4">Why Sniff by Hatch?</h2>
-                        <p className="text-muted-foreground max-w-xl mx-auto">
-                            We bridge the gap between home care and veterinary visits using state-of-the-art AI technology.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="glass-panel p-6 rounded-2xl hover:border-cyan-500/50 transition-colors">
-                            <div className="h-12 w-12 rounded-lg bg-cyan-500/20 flex items-center justify-center mb-4">
-                                <Brain className="h-6 w-6 text-cyan-400" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">Vision + LLM AI</h3>
-                            <p className="text-muted-foreground">
-                                Our AI analyzes visual cues from photos (skin, teeth, wounds) and combines them with symptom history for accurate assessments.
-                            </p>
-                        </div>
-
-                        <div className="glass-panel p-6 rounded-2xl hover:border-emerald-500/50 transition-colors">
-                            <div className="h-12 w-12 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-4">
-                                <Stethoscope className="h-6 w-6 text-emerald-400" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">Vet-Verified</h3>
-                            <p className="text-muted-foreground">
-                                Developed with leading veterinarians to ensure medical relevance. Critical cases are flagged for immediate professional care.
-                            </p>
-                        </div>
-
-                        <div className="glass-panel p-6 rounded-2xl hover:border-purple-500/50 transition-colors">
-                            <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center mb-4">
-                                <Activity className="h-6 w-6 text-purple-400" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-2">Proactive Monitoring</h3>
-                            <p className="text-muted-foreground">
-                                Track your pet's health timeline. Detect subtle changes early before they become serious issues.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Trust/Safety Section */}
+            {/* Trust/Safety Section (How it Works) */}
             <section className="py-24 bg-gray-50">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -133,6 +89,50 @@ export default function SniffPage() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Features Grid (Why Sniff by Hatch?) */}
+            <section className="py-20 bg-secondary/20">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold mb-4">Why Sniff by Hatch?</h2>
+                        <p className="text-muted-foreground max-w-xl mx-auto">
+                            We bridge the gap between home care and veterinary visits using state-of-the-art AI technology.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="glass-panel p-6 rounded-2xl hover:border-cyan-500/50 transition-colors">
+                            <div className="h-12 w-12 rounded-lg bg-cyan-500/20 flex items-center justify-center mb-4">
+                                <Brain className="h-6 w-6 text-cyan-400" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Vision + LLM AI</h3>
+                            <p className="text-muted-foreground">
+                                Our AI analyzes visual cues from photos (skin, teeth, wounds) and combines them with symptom history for accurate assessments.
+                            </p>
+                        </div>
+
+                        <div className="glass-panel p-6 rounded-2xl hover:border-emerald-500/50 transition-colors">
+                            <div className="h-12 w-12 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-4">
+                                <Stethoscope className="h-6 w-6 text-emerald-400" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Vet-Verified</h3>
+                            <p className="text-muted-foreground">
+                                Developed with leading veterinarians to ensure medical relevance. Critical cases are flagged for immediate professional care.
+                            </p>
+                        </div>
+
+                        <div className="glass-panel p-6 rounded-2xl hover:border-purple-500/50 transition-colors">
+                            <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center mb-4">
+                                <Activity className="h-6 w-6 text-purple-400" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-2">Proactive Monitoring</h3>
+                            <p className="text-muted-foreground">
+                                Track your pet's health timeline. Detect subtle changes early before they become serious issues.
+                            </p>
                         </div>
                     </div>
                 </div>
