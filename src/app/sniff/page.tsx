@@ -70,8 +70,8 @@ export default function SniffPage() {
                                 <div className="flex items-start space-x-4">
                                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 font-bold">1</div>
                                     <div>
-                                        <h4 className="font-bold text-gray-900">문진 작성</h4>
-                                        <p className="text-gray-600">반려동물의 증상과 기본 건강 상태를 간단히 입력합니다.</p>
+                                        <h4 className="font-bold text-gray-900">문진표 작성 및 사진 촬영</h4>
+                                        <p className="text-gray-600">문진표를 먼저 작성하시고 안내에 따라 사진을 촬영해 주세요.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start space-x-4">
