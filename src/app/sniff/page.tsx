@@ -82,8 +82,8 @@ export default function SniffPage() {
                                     <div>
                                         <h4 className="font-bold text-gray-900">사진 촬영</h4>
                                         <p className="text-gray-600">
-                                            반려견(묘)의 눈, 치아, 피부 등을 잘 보이게 찍어 주세요. <br />
-                                            자세가 이상하다고 생각하는 경우에도 전신 사진을 찍어 주세요.
+                                            반려견(묘)의 눈, 치아, 피부 등을 잘보이게 촬영해주세요. <br />
+                                            자세가 이상하다고 생각하는 경우에도 전신 사진을 촬영해 주세요.
                                         </p>
                                     </div>
                                 </div>
