@@ -56,7 +56,7 @@ export function Footer() {
                         © {new Date().getFullYear()} INOVA.AI. All rights reserved.
                     </p>
                     <div className="flex space-x-6 text-xs text-gray-400">
-                        <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
+                        <Link href="https://inovaai.ai/privacy" className="hover:text-gray-600">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
                     </div>
                 </div>
