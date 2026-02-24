@@ -6,19 +6,19 @@ export default function FemAiPage() {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
-            <section className="relative py-20 md:py-32 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-background to-background z-0" />
+            <section className="relative pt-32 pb-24 overflow-hidden bg-white">
+                <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-blue-50 rounded-full blur-[100px] opacity-60 z-0"></div>
                 <div className="container relative z-10 mx-auto px-4 text-center">
-                    <div className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-sm text-purple-400 mb-6 animate-fade-in">
-                        <span className="flex h-2 w-2 rounded-full bg-purple-400 mr-2"></span>
-                        FEM & AI Integration
+                    <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600 mb-6 animate-fade-in shadow-sm">
+                        <span className="flex h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
+                        Industrial Innovation
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-400 animate-fade-in">
+                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-gray-900 animate-fade-in">
                         Engineering Precision <br className="hidden md:block" />
                         Empowered by AI
                     </h1>
-                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
-                        Combining Finite Element Method (FEM) with neural networks to revolutionize structural analysis and industrial simulation.
+                    <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
+                        Accelerating engineering simulations by combining traditional Finite Element Method with deep learning acceleration.
                     </p>
                 </div>
             </section>

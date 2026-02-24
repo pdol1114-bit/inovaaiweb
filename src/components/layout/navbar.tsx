@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
     { href: "/", label: "Overview" },
@@ -17,22 +18,14 @@ const links = [
 export function Navbar() {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false); // Added isScrolled state
+    const [isScrolled, setIsScrolled] = useState(false);
 
-    // Effect to handle scroll for dynamic navbar styling
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 0) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
-            }
+            setIsScrolled(window.scrollY > 10);
         };
-
         window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     return (
@@ -42,11 +35,11 @@ export function Navbar() {
         )}>
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-2">
+                <Link href="/" className="flex items-center space-x-2 group">
                     <img
                         src="/logos/inova-blue.png"
                         alt="INOVA.AI"
-                        className="h-8 w-auto"
+                        className="h-8 w-auto transition-transform group-hover:scale-105"
                     />
                     <span className="font-bold text-xl tracking-tight text-gray-900">
                         INOVA.AI
@@ -60,8 +53,10 @@ export function Navbar() {
                             key={link.href}
                             href={link.href}
                             className={cn(
-                                "px-4 py-2 text-sm font-medium transition-colors rounded-lg",
-                                pathname === link.href ? "text-blue-600 bg-blue-50" : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                                "px-4 py-2 text-sm font-medium transition-all rounded-lg",
+                                pathname === link.href
+                                    ? "text-blue-600 bg-blue-50"
+                                    : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                             )}
                         >
                             {link.label}
@@ -74,48 +69,59 @@ export function Navbar() {
                     <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600 hover:bg-blue-50" asChild>
                         <Link href="/auth">Login</Link>
                     </Button>
-                    <Button size="sm" className="bg-primary text-white hover:bg-primary/90 shadow-md shadow-blue-200/50" asChild>
-                        <Link href="/pricing">Get Started <Rocket className="ml-2 h-4 w-4" /></Link>
+                    <Button size="sm" className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-blue-200/50 px-6" asChild>
+                        <Link href="/pricing" className="flex items-center">
+                            Get Started <Rocket className="ml-2 h-4 w-4" />
+                        </Link>
                     </Button>
                 </div>
 
                 {/* Mobile Menu Button */}
                 <button
-                    className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                    className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
             </div>
 
-            {/* Mobile Menu */}
-            {isOpen && (
-                <div className="md:hidden bg-background border-b border-white/10 p-4 animate-fade-in">
-                    <nav className="flex flex-col space-y-4">
-                        {links.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                onClick={() => setIsOpen(false)}
-                                className={cn(
-                                    "text-base font-medium transition-colors hover:text-cyan-400",
-                                    pathname === link.href ? "text-cyan-400" : "text-muted-foreground"
-                                )}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        <div className="pt-4 flex flex-col space-y-2">
-                            <Link href="/pricing" onClick={() => setIsOpen(false)}>
-                                <Button className="w-full" variant="outline">Log in</Button>
-                            </Link>
-                            <Link href="/pricing" onClick={() => setIsOpen(false)}>
-                                <Button className="w-full" variant="premium">Get Started</Button>
-                            </Link>
+            {/* Mobile Nav */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="md:hidden bg-white border-b border-gray-100 overflow-hidden"
+                    >
+                        <div className="container mx-auto px-4 py-6 flex flex-col space-y-2">
+                            {links.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={cn(
+                                        "px-4 py-3 text-base font-medium rounded-xl transition-colors",
+                                        pathname === link.href
+                                            ? "text-blue-600 bg-blue-50"
+                                            : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                                    )}
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                            <div className="pt-4 flex flex-col space-y-3">
+                                <Button variant="outline" className="w-full border-gray-200 text-gray-700 h-12" asChild onClick={() => setIsOpen(false)}>
+                                    <Link href="/auth">Login</Link>
+                                </Button>
+                                <Button className="w-full bg-primary text-white h-12 shadow-lg shadow-blue-200/50" asChild onClick={() => setIsOpen(false)}>
+                                    <Link href="/pricing">Get Started</Link>
+                                </Button>
+                            </div>
                         </div>
-                    </nav>
-                </div>
-            )}
-        </header>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </nav>
     );
 }
