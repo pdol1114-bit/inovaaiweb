@@ -6,15 +6,12 @@ export function Footer() {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                     <div className="col-span-1 md:col-span-1">
-                        <Link href="/" className="flex items-center space-x-2 mb-4">
+                        <Link href="/" className="flex items-center mb-4">
                             <img
                                 src="/logos/inova-blue.png"
                                 alt="INOVA.AI"
                                 className="h-6 w-auto"
                             />
-                            <span className="font-bold text-lg tracking-tight text-gray-900">
-                                INOVA.AI
-                            </span>
                         </Link>
                         <p className="text-gray-500 text-sm leading-relaxed">
                             Leading the AI Era with innovative solutions in pet health, pharmaceutical automation, and industrial simulation.
