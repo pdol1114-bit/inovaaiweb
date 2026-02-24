@@ -41,7 +41,10 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4">Contact Info</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
-                            <li>Seoul, South Korea</li>
+                            <li>주식회사 이노바에이아이</li>
+                            <li>대표자: 성지세, 강유석</li>
+                            <li>사업자번호: 479-81-03783</li>
+                            <li>충청북도 음성군 맹동면 대하2길 4 2층 204호</li>
                             <li>support@inovaai.ai</li>
                         </ul>
                     </div>
