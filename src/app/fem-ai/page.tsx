@@ -6,9 +6,9 @@ export default function FemAiPage() {
     return (
         <div className="flex flex-col min-h-screen relative">
             {/* Coming Soon Overlay */}
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 backdrop-blur-2xl pointer-events-none">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/40 backdrop-blur-md pointer-events-none">
                 <div className="relative">
-                    <div className="border-[12px] border-red-600/80 rounded-3xl px-16 py-10 rotate-[-15deg] flex flex-col items-center gap-2 shadow-[0_0_50px_rgba(220,38,38,0.2)]">
+                    <div className="border-[12px] border-red-600/80 rounded-3xl px-16 py-10 rotate-[-15deg] flex flex-col items-center gap-2 shadow-[0_0_50px_rgba(220,38,38,0.2)] bg-white/10">
                         <span className="text-red-600/90 text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">출시 예정</span>
                     </div>
                 </div>
