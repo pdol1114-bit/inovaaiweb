@@ -3,16 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Rocket } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
-    { href: "/", label: "Overview" },
     { href: "/sniff", label: "Sniff by Hatch" },
-    { href: "/automation", label: "Workflow Automation" },
+    { href: "/sniff-hospital", label: "Sniff by Hatch for Hospital" },
+    { href: "/csv-automation", label: "CSV 자동화" },
     { href: "/fem-ai", label: "FEM & AI" },
+    { href: "/automation", label: "업무자동화" },
 ];
 
 export function Navbar() {
@@ -39,11 +40,8 @@ export function Navbar() {
                     <img
                         src="/logos/inova-blue.png"
                         alt="INOVA.AI"
-                        className="h-8 w-auto transition-transform group-hover:scale-105"
+                        className="h-10 w-auto transition-transform group-hover:scale-105"
                     />
-                    <span className="font-bold text-xl tracking-tight text-gray-900">
-                        INOVA.AI
-                    </span>
                 </Link>
 
                 {/* Desktop Nav */}
@@ -53,7 +51,7 @@ export function Navbar() {
                             key={link.href}
                             href={link.href}
                             className={cn(
-                                "px-4 py-2 text-sm font-medium transition-all rounded-lg",
+                                "px-3 py-2 text-sm font-medium transition-all rounded-lg",
                                 pathname === link.href
                                     ? "text-blue-600 bg-blue-50"
                                     : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
@@ -64,16 +62,10 @@ export function Navbar() {
                     ))}
                 </div>
 
-                {/* Desktop Actions */}
-                <div className="hidden md:flex items-center space-x-3">
-                    <Button variant="ghost" size="sm" className="text-gray-600 hover:text-blue-600 hover:bg-blue-50" asChild>
-                        <Link href="/auth">Login</Link>
-                    </Button>
-                    <Button size="sm" className="bg-primary text-white hover:bg-primary/90 shadow-lg shadow-blue-200/50 px-6" asChild>
-                        <Link href="/pricing" className="flex items-center">
-                            Get Started <Rocket className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
+                {/* Desktop Actions - Removed global buttons */}
+                <div className="hidden md:flex items-center">
+                    {/* Placeholder space for balance or future right-side items */}
+                    <div className="w-10"></div>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -110,14 +102,6 @@ export function Navbar() {
                                     {link.label}
                                 </Link>
                             ))}
-                            <div className="pt-4 flex flex-col space-y-3">
-                                <Button variant="outline" className="w-full border-gray-200 text-gray-700 h-12" asChild onClick={() => setIsOpen(false)}>
-                                    <Link href="/auth">Login</Link>
-                                </Button>
-                                <Button className="w-full bg-primary text-white h-12 shadow-lg shadow-blue-200/50" asChild onClick={() => setIsOpen(false)}>
-                                    <Link href="/pricing">Get Started</Link>
-                                </Button>
-                            </div>
                         </div>
                     </motion.div>
                 )}

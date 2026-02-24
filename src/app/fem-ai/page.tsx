@@ -20,6 +20,14 @@ export default function FemAiPage() {
                     <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
                         Accelerating engineering simulations by combining traditional Finite Element Method with deep learning acceleration.
                     </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
+                        <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
+                            <Link href="/auth?service=fem-ai">무료 시뮬레이션 시작하기</Link>
+                        </Button>
+                        <Button size="lg" variant="outline" className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 px-8 h-12 text-base" asChild>
+                            <Link href="/auth?service=fem-ai">로그인</Link>
+                        </Button>
+                    </div>
                 </div>
             </section>
 
