@@ -22,7 +22,7 @@ export default function WorkflowAutomationPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
                         <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
-                            <Link href="mailto:contact@inovaai.ai">도입 문의하기</Link>
+                            <Link href="mailto:support@inovaai.ai">도입 문의하기</Link>
                         </Button>
                     </div>
                 </div>
