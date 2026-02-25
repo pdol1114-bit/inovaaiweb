@@ -1,0 +1,16 @@
+{
+    "Navbar": {
+        "sniff": "Sniff by Hatch",
+        "sniffHospital": "Sniff by Hatch for Hospital",
+        "csvAutomation": "CSV 자동화",
+        "femAi": "FEM & AI",
+        "automation": "업무자동화"
+    },
+    "Home": {
+        "heroBadge": "AI 시대를 선도하다",
+        "heroTitle": "인공지능으로 <br/> 혁신하는 미래",
+        "heroDescription": "이노바에이아이는 기술 혁신의 최전선에서 반려동물 건강, 제약 자동화, 산업용 FEM-AI 통합 등 고도화된 솔루션을 제공합니다.",
+        "coreBusinesses": "핵심 사업 분야",
+        "coreDescription": "우리는 AI를 활용하여 다양한 산업의 복잡한 문제를 해결합니다."
+    }
+}

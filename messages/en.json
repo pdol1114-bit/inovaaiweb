@@ -1,0 +1,16 @@
+{
+    "Navbar": {
+        "sniff": "Sniff by Hatch",
+        "sniffHospital": "Sniff by Hatch for Hospital",
+        "csvAutomation": "CSV Automation",
+        "femAi": "FEM & AI",
+        "automation": "Workflow Automation"
+    },
+    "Home": {
+        "heroBadge": "Leading the AI Era",
+        "heroTitle": "Innovating the Future with <br/> Artificial Intelligence",
+        "heroDescription": "Inova AI is at the forefront of technological transformation, delivering advanced solutions in pet health, pharmaceutical automation, and industrial FEM-AI integration.",
+        "coreBusinesses": "Our Core Businesses",
+        "coreDescription": "We leverage AI to solve complex challenges across multiple industries."
+    }
+}

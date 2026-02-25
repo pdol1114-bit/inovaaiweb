@@ -1,22 +1,24 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, Link } from "@/i18n/routing";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 const links = [
-    { href: "/sniff", label: "Sniff by Hatch" },
-    { href: "/sniff-hospital", label: "Sniff by Hatch for Hospital" },
-    { href: "/csv-automation", label: "CSV 자동화" },
-    { href: "/fem-ai", label: "FEM & AI" },
-    { href: "/automation", label: "업무자동화" },
+    { href: "/sniff", labelKey: "sniff" },
+    { href: "/sniff-hospital", labelKey: "sniffHospital" },
+    { href: "/csv-automation", labelKey: "csvAutomation" },
+    { href: "/fem-ai", labelKey: "femAi" },
+    { href: "/automation", labelKey: "automation" },
 ];
 
 export function Navbar() {
+    const t = useTranslations("Navbar");
+    const locale = useLocale();
+    const router = useRouter();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -28,6 +30,11 @@ export function Navbar() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    const toggleLanguage = (newLocale: "ko" | "en") => {
+        router.replace(pathname, { locale: newLocale });
+        setIsOpen(false);
+    };
 
     return (
         <nav className={cn(
@@ -57,9 +64,32 @@ export function Navbar() {
                                     : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                             )}
                         >
-                            {link.label}
+                            {t(link.labelKey)}
                         </Link>
                     ))}
+
+                    {/* Language Toggle */}
+                    <div className="flex items-center ml-4 pl-4 border-l border-gray-200 space-x-1">
+                        <button
+                            onClick={() => toggleLanguage('ko')}
+                            className={cn(
+                                "px-2 py-1 text-xs font-bold rounded transition-all",
+                                locale === 'ko' ? "bg-blue-600 text-white" : "text-gray-400 hover:text-blue-600"
+                            )}
+                        >
+                            KR
+                        </button>
+                        <span className="text-gray-300">|</span>
+                        <button
+                            onClick={() => toggleLanguage('en')}
+                            className={cn(
+                                "px-2 py-1 text-xs font-bold rounded transition-all",
+                                locale === 'en' ? "bg-blue-600 text-white" : "text-gray-400 hover:text-blue-600"
+                            )}
+                        >
+                            US
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -93,9 +123,32 @@ export function Navbar() {
                                     )}
                                     onClick={() => setIsOpen(false)}
                                 >
-                                    {link.label}
+                                    {t(link.labelKey)}
                                 </Link>
                             ))}
+
+                            {/* Mobile Language Toggle */}
+                            <div className="flex items-center pt-4 mt-4 border-t border-gray-100 space-x-4">
+                                <span className="text-sm text-gray-500 font-medium">Language:</span>
+                                <button
+                                    onClick={() => toggleLanguage('ko')}
+                                    className={cn(
+                                        "px-4 py-2 text-sm font-bold rounded-lg transition-all",
+                                        locale === 'ko' ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
+                                    )}
+                                >
+                                    Korean (KR)
+                                </button>
+                                <button
+                                    onClick={() => toggleLanguage('en')}
+                                    className={cn(
+                                        "px-4 py-2 text-sm font-bold rounded-lg transition-all",
+                                        locale === 'en' ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
+                                    )}
+                                >
+                                    English (US)
+                                </button>
+                            </div>
                         </div>
                     </motion.div>
                 )}
