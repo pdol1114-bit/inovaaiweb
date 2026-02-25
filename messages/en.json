@@ -2,15 +2,47 @@
     "Navbar": {
         "sniff": "Sniff by Hatch",
         "sniffHospital": "Sniff by Hatch for Hospital",
-        "csvAutomation": "CSV Automation",
+        "csvAutomation": "Computer System Validation",
         "femAi": "FEM & AI",
         "automation": "Workflow Automation"
     },
     "Home": {
         "heroBadge": "Leading the AI Era",
-        "heroTitle": "Innovating the Future with <br/> Artificial Intelligence",
-        "heroDescription": "Inova AI is at the forefront of technological transformation, delivering advanced solutions in pet health, pharmaceutical automation, and industrial FEM-AI integration.",
+        "heroTitle": "Innovating the Future with  Artificial Intelligence",
+        "heroDescription": "Inova AI is a solution provider solving problems across daily life and industries with advanced technology—from the 'Sniff by Hatch' platform for pet families to hospital systems, GMP document automation, and industrial 'FEM & AI' optimization.",
         "coreBusinesses": "Our Core Businesses",
-        "coreDescription": "We leverage AI to solve complex challenges across multiple industries."
+        "coreDescription": "We leverage AI to solve complex challenges across multiple industries.",
+        "service1Title": "Sniff by Hatch",
+        "service1Desc": "A revolutionary AI platform for early detection of health issues in pets via visual analysis.",
+        "service2Title": "Sniff by Hatch for Hospital",
+        "service2Desc": "An AI-assisted diagnostic system optimized for veterinary clinics to support accurate diagnoses.",
+        "service3Title": "Computer System Validation (CSV)",
+        "service3Desc": "Optimizing pharmaceutical CSV workflows and automating the GMP documentation process.",
+        "service4Title": "FEM & AI",
+        "service4Desc": "Integrating the Finite Element Method with AI to accelerate industrial design and simulation accuracy.",
+        "service5Title": "Workflow Automation",
+        "service5Desc": "Deploying intelligent AI agents to improve inefficient workflows and maximize productivity.",
+        "learnMore": "Learn more"
+    },
+    "Automation": {
+        "heroBadge": "Workflow Automation",
+        "heroTitle": "AI-Powered <br/> Workflow Automation",
+        "heroDescription": "Optimize your business processes with intelligent AI agents. Reduce repetitive tasks and focus on what matters most.",
+        "ctaButton": "Inquiry",
+        "feature1Title": "AI Agent",
+        "feature1Desc": "We build customized AI agents that intelligently handle repetitive tasks.",
+        "feature2Title": "Process Optimization",
+        "feature2Desc": "We analyze inefficient workflows and automate them in the most efficient way.",
+        "feature3Title": "Data Insight",
+        "feature3Desc": "We monitor automated task performance in real-time and provide analytical reports."
+    },
+    "Footer": {
+        "description": "Leading the AI Era with innovative solutions in pet health, pharmaceutical automation, and industrial simulation.",
+        "services": "Services",
+        "company": "Company",
+        "contact": "Contact Info",
+        "representative": "Representatives: Jise Sung, Kevin Kang",
+        "businessNumber": "Business License: 479-81-03783",
+        "address": "Room 204, 2nd Floor, 4 Daeha 2-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea"
     }
 }

@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   output: 'export',  // 이 줄을 추가하세요!
@@ -9,4 +12,4 @@ const nextConfig: NextConfig = {
   // 기존 설정들...
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

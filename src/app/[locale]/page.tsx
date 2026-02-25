@@ -1,9 +1,18 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Brain, ShieldCheck, Stethoscope, Activity } from "lucide-react";
+import { ArrowRight, Brain, ShieldCheck, Activity, Stethoscope, Settings } from "lucide-react";
 import { QRBadge } from "@/components/ui/qr-badge";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 
-export default function Home() {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("Home");
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -15,14 +24,15 @@ export default function Home() {
         <div className="container relative z-10 mx-auto px-4 text-center">
           <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600 mb-6 animate-fade-in shadow-sm">
             <span className="flex h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
-            Leading the AI Era
+            {t("heroBadge")}
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-gray-900 animate-fade-in">
-            Innovating the Future with <br className="hidden md:block" />
-            Artificial Intelligence
+          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-gray-900 animate-fade-in whitespace-pre-line">
+            {t.rich("heroTitle", {
+              br: () => <br className="hidden md:block" />
+            })}
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
-            Inova AI is at the forefront of technological transformation, delivering advanced solutions in pet health, pharmaceutical automation, and industrial FEM-AI integration.
+            {t("heroDescription")}
           </p>
         </div>
       </section>
@@ -31,58 +41,80 @@ export default function Home() {
       <section className="py-24 bg-gray-50/50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-gray-900">Our Core Businesses</h2>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900">{t("coreBusinesses")}</h2>
             <p className="text-gray-600 max-w-xl mx-auto">
-              We leverage AI to solve complex challenges across multiple industries.
+              {t("coreDescription")}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-8">
+            {/* Service 1: Sniff by Hatch */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-2 group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
               <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                 <Activity className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-2 text-gray-900">Pet Health AI</h3>
-              <p className="text-gray-600">
-                <img src="/logos/sniff-yellow.png" alt="Sniff by Hatch" className="h-5 w-auto mb-2" />
-                A revolutionary AI platform for early detection of health issues in pets via visual analysis.
+              <h3 className="text-xl font-bold mb-3 text-gray-900">{t("service1Title")}</h3>
+              <p className="text-gray-600 mb-6 flex-grow">
+                {t("service1Desc")}
               </p>
-              <Link href="/sniff" className="inline-flex items-center text-blue-400 mt-4 hover:underline">
-                Learn more <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-
-              <div className="mt-8 pt-6 border-t border-gray-100">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Download App</p>
-                <div className="flex flex-col gap-4">
-                  <QRBadge type="ios" url="https://apps.apple.com/kr/app/sniff-by-hatch/id6756805438" />
-                  <QRBadge type="android" url="https://play.google.com/store/apps/details?id=com.kevinkang1114.sniff" />
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-panel p-6 rounded-2xl hover:border-emerald-500/50 transition-colors">
-              <div className="h-12 w-12 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-4">
-                <ShieldCheck className="h-6 w-6 text-emerald-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Pharma Automation</h3>
-              <p className="text-muted-foreground">
-                Optimizing Pharmaceutical CSV workflows and manufacturing processes through intelligent automation.
-              </p>
-              <Link href="/automation" className="inline-flex items-center text-emerald-400 mt-4 hover:underline">
-                Learn more <ArrowRight className="ml-1 h-4 w-4" />
+              <Link href="/sniff" className="inline-flex items-center text-blue-500 font-semibold hover:text-blue-700 transition-colors mt-auto">
+                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
 
-            <div className="glass-panel p-6 rounded-2xl hover:border-purple-500/50 transition-colors">
-              <div className="h-12 w-12 rounded-lg bg-purple-500/20 flex items-center justify-center mb-4">
-                <Brain className="h-6 w-6 text-purple-400" />
+            {/* Service 2: Sniff by Hatch Hospital */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-2 group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600 mb-6 group-hover:bg-sky-600 group-hover:text-white transition-colors">
+                <Stethoscope className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold mb-2">FEM & AI</h3>
-              <p className="text-muted-foreground">
-                Integrating Finite Element Method with AI to accelerate industrial design and simulation accuracy.
+              <h3 className="text-xl font-bold mb-3 text-gray-900">{t("service2Title")}</h3>
+              <p className="text-gray-600 mb-6 flex-grow">
+                {t("service2Desc")}
               </p>
-              <Link href="/fem-ai" className="inline-flex items-center text-purple-400 mt-4 hover:underline">
-                Learn more <ArrowRight className="ml-1 h-4 w-4" />
+              <Link href="/sniff-hospital" className="inline-flex items-center text-sky-500 font-semibold hover:text-sky-700 transition-colors mt-auto">
+                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            {/* Service 3: CSV Automation */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-2 group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                <ShieldCheck className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">{t("service3Title")}</h3>
+              <p className="text-gray-600 mb-6 flex-grow">
+                {t("service3Desc")}
+              </p>
+              <Link href="/csv-automation" className="inline-flex items-center text-emerald-500 font-semibold hover:text-emerald-700 transition-colors mt-auto">
+                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            {/* Service 4: FEM & AI */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-2 lg:col-start-2 group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <Brain className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">{t("service4Title")}</h3>
+              <p className="text-gray-600 mb-6 flex-grow">
+                {t("service4Desc")}
+              </p>
+              <Link href="/fem-ai" className="inline-flex items-center text-purple-500 font-semibold hover:text-purple-700 transition-colors mt-auto">
+                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+
+            {/* Service 5: Workflow Automation */}
+            <div className="col-span-1 md:col-span-2 md:col-start-2 lg:col-span-2 lg:col-start-4 group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+              <div className="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 mb-6 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                <Settings className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">{t("service5Title")}</h3>
+              <p className="text-gray-600 mb-6 flex-grow">
+                {t("service5Desc")}
+              </p>
+              <Link href="/automation" className="inline-flex items-center text-orange-500 font-semibold hover:text-orange-700 transition-colors mt-auto">
+                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
           </div>
@@ -126,21 +158,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 border-t border-white/5 bg-gradient-to-b from-background to-blue-950/20">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Shape the Future with Inova AI</h2>
-          <p className="text-muted-foreground max-w-xl mx-auto mb-10">
-            Join us in our journey to redefine industries through intelligent technology and innovative solutions.
-          </p>
-          <Link href="/auth">
-            <Button size="lg" variant="premium" className="px-12">
-              Join Us Now
-            </Button>
-          </Link>
         </div>
       </section>
     </div>

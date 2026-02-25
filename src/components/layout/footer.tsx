@@ -1,6 +1,12 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
+    const t = useTranslations("Footer");
+    const nt = useTranslations("Navbar");
+
     return (
         <footer className="bg-gray-50 border-t border-gray-100 py-12 mt-auto">
             <div className="container mx-auto px-4">
@@ -14,43 +20,41 @@ export function Footer() {
                             />
                         </Link>
                         <p className="text-gray-500 text-sm leading-relaxed">
-                            Leading the AI Era with innovative solutions in pet health, pharmaceutical automation, and industrial simulation.
+                            {t("description")}
                         </p>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-gray-900 mb-4">Services</h4>
+                        <h4 className="font-bold text-gray-900 mb-4">{t("services")}</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
-                            <li><Link href="/sniff" className="hover:text-blue-600 transition-colors">Sniff by Hatch</Link></li>
-                            <li><Link href="/sniff-hospital" className="hover:text-blue-600 transition-colors">Sniff for Hospital</Link></li>
-                            <li><Link href="/csv-automation" className="hover:text-blue-600 transition-colors">CSV 자동화</Link></li>
-                            <li><Link href="/fem-ai" className="hover:text-blue-600 transition-colors">FEM & AI</Link></li>
-                            <li><Link href="/automation" className="hover:text-blue-600 transition-colors">업무자동화</Link></li>
+                            <li><Link href="/sniff" className="hover:text-blue-600 transition-colors">{nt("sniff")}</Link></li>
+                            <li><Link href="/sniff-hospital" className="hover:text-blue-600 transition-colors">{nt("sniffHospital")}</Link></li>
+                            <li><Link href="/csv-automation" className="hover:text-blue-600 transition-colors">{nt("csvAutomation")}</Link></li>
+                            <li><Link href="/fem-ai" className="hover:text-blue-600 transition-colors">{nt("femAi")}</Link></li>
+                            <li><Link href="/automation" className="hover:text-blue-600 transition-colors">{nt("automation")}</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-gray-900 mb-4">Company</h4>
+                        <h4 className="font-bold text-gray-900 mb-4">{t("company")}</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
                             <li><Link href="/about" className="hover:text-blue-600 transition-colors">About Us</Link></li>
                             <li><Link href="/technology" className="hover:text-blue-600 transition-colors">Technology</Link></li>
-                            <li><Link href="/contact" className="hover:text-blue-600 transition-colors">Contact</Link></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-bold text-gray-900 mb-4">Contact Info</h4>
+                        <h4 className="font-bold text-gray-900 mb-4">{t("contact")}</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
-                            <li>주식회사 이노바에이아이</li>
-                            <li>대표자: 성지세, 강유석</li>
-                            <li>사업자번호: 479-81-03783</li>
-                            <li>충청북도 음성군 맹동면 대하2길 4 2층 204호</li>
+                            <li>{t("representative")}</li>
+                            <li>{t("businessNumber")}</li>
+                            <li>{t("address")}</li>
                             <li>support@inovaai.ai</li>
                         </ul>
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-gray-200 flex flex-col md:row items-center justify-between gap-4">
+                <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-gray-400 text-xs text-center md:text-left">
                         © {new Date().getFullYear()} INOVA.AI. All rights reserved.
                     </p>

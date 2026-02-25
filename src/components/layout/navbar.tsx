@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -69,26 +69,28 @@ export function Navbar() {
                     ))}
 
                     {/* Language Toggle */}
-                    <div className="flex items-center ml-4 pl-4 border-l border-gray-200 space-x-1">
-                        <button
-                            onClick={() => toggleLanguage('ko')}
-                            className={cn(
-                                "px-2 py-1 text-xs font-bold rounded transition-all",
-                                locale === 'ko' ? "bg-blue-600 text-white" : "text-gray-400 hover:text-blue-600"
-                            )}
-                        >
-                            KR
-                        </button>
-                        <span className="text-gray-300">|</span>
-                        <button
-                            onClick={() => toggleLanguage('en')}
-                            className={cn(
-                                "px-2 py-1 text-xs font-bold rounded transition-all",
-                                locale === 'en' ? "bg-blue-600 text-white" : "text-gray-400 hover:text-blue-600"
-                            )}
-                        >
-                            US
-                        </button>
+                    <div className="flex items-center ml-2">
+                        <div className="flex items-center space-x-0.5 bg-gray-50 rounded-lg p-0.5 border border-gray-100">
+                            <Globe className="h-3.5 w-3.5 text-gray-400 ml-1.5 mr-0.5" />
+                            <button
+                                onClick={() => toggleLanguage('ko')}
+                                className={cn(
+                                    "px-1.5 py-1 text-xs font-bold rounded transition-all",
+                                    locale === 'ko' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-blue-600"
+                                )}
+                            >
+                                KR
+                            </button>
+                            <button
+                                onClick={() => toggleLanguage('en')}
+                                className={cn(
+                                    "px-1.5 py-1 text-xs font-bold rounded transition-all",
+                                    locale === 'en' ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-blue-600"
+                                )}
+                            >
+                                US
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -128,25 +130,26 @@ export function Navbar() {
                             ))}
 
                             {/* Mobile Language Toggle */}
-                            <div className="flex items-center pt-4 mt-4 border-t border-gray-100 space-x-4">
-                                <span className="text-sm text-gray-500 font-medium">Language:</span>
+                            <div className="flex items-center pt-4 mt-4 border-t border-gray-100 space-x-2">
+                                <Globe className="h-5 w-5 text-gray-400" />
+                                <span className="text-sm text-gray-500 font-medium mr-2">Language:</span>
                                 <button
                                     onClick={() => toggleLanguage('ko')}
                                     className={cn(
-                                        "px-4 py-2 text-sm font-bold rounded-lg transition-all",
+                                        "px-4 py-2 text-sm font-bold rounded-lg transition-all flex-1",
                                         locale === 'ko' ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
                                     )}
                                 >
-                                    Korean (KR)
+                                    KR
                                 </button>
                                 <button
                                     onClick={() => toggleLanguage('en')}
                                     className={cn(
-                                        "px-4 py-2 text-sm font-bold rounded-lg transition-all",
+                                        "px-4 py-2 text-sm font-bold rounded-lg transition-all flex-1",
                                         locale === 'en' ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600"
                                     )}
                                 >
-                                    English (US)
+                                    US
                                 </button>
                             </div>
                         </div>
