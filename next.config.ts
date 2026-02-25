@@ -4,7 +4,8 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
-  output: 'export',  // 이 줄을 추가하세요!
+  output: "standalone",
+
   images: {
     unoptimized: true, // 정적 배포 시 이미지 최적화 기능을 꺼야 합니다.
   },
