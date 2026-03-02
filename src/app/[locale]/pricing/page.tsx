@@ -1,19 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Loader2, Lock, Sparkles, User, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "@/i18n/routing";
 import Link from "next/link";
-import Image from "next/image";
 
 type Plan = "monthly" | "yearly";
 type Step = "select" | "auth" | "pay" | "success";
 
 export default function PricingPage() {
+    const router = useRouter();
     const [step, setStep] = useState<Step>("select");
     const [billing, setBilling] = useState<Plan>("monthly");
     const [isLoading, setIsLoading] = useState(false);
+
+    // Simulating authentication state as per the approved plan
+    const [isLoggedIn] = useState(false);
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+            alert("로그인을 먼저 하세요");
+            router.replace("/auth");
+        }
+    }, [isLoggedIn, router]);
+
+    // Prevent rendering the rest of the page if not logged in to avoid a flash
+    if (!isLoggedIn) {
+        return <div className="min-h-screen bg-background flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-cyan-400" /></div>;
+    }
 
     const handlePlanSelect = () => {
         setStep("auth");
@@ -126,7 +142,7 @@ export default function PricingPage() {
                                 <div className="text-left">
                                     <h3 className="text-lg font-bold mb-2">Sniff by Hatch</h3>
                                     <p className="text-sm text-muted-foreground mb-4">
-                                        Manage your pet's health on the go. Available on iOS and Android.
+                                        Manage your pet&apos;s health on the go. Available on iOS and Android.
                                     </p>
                                     <div className="flex gap-4">
                                         <Button variant="outline" size="sm" className="h-10">

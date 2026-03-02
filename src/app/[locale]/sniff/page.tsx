@@ -34,7 +34,7 @@ export default async function SniffPage({
                             <Link href="/pricing">{t("getStarted")}</Link>
                         </Button>
                         <Button size="lg" variant="outline" className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 px-8 h-12 text-base" asChild>
-                            <Link href="/auth/login">{t("login")}</Link>
+                            <Link href="/auth">{t("login")}</Link>
                         </Button>
                     </div>
 
