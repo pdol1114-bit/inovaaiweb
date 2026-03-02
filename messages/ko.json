@@ -44,5 +44,31 @@
         "representative": "대표자: 성지세, 강유석",
         "businessNumber": "사업자번호: 479-81-03783",
         "address": "충청북도 음성군 맹동면 대하2길 4 2층 204호"
+    },
+    "About": {
+        "heroTitle": "우리는 <span className=\"text-cyan-400\">INOVA.AI</span> 입니다",
+        "heroDescription": "AI 기반 스타트업으로서 반려동물 의료 서비스를 새롭게 정의합니다. 또한 제약산업과 제조산업의 AI 도입을 장려하고 격차를 해소하여 모든 산업에서 전문가 수준의 업무를 진행할 수 있도록 지원 합니다.",
+        "missionLabel": "우리의 미션",
+        "missionTitle": "반려동물 건강의 대중화",
+        "missionDesc1": "건강 이상 징후를 조기에 발견하는 것이 장수의 핵심입니다. 우리는 모든 보호자가 예약 없이도 즉각적이고 정확한 건강 정보를 얻을 자격이 있다고 믿습니다.",
+        "missionDesc2": "고도화된 컴퓨터 비전 기술과 숙련된 수의사의 지식을 결합하여, 24시간 잠들지 않는 안전망을 구축합니다.",
+        "vetLedTitle": "수의사 주도 혁신",
+        "vetLedDesc": "현직 수의사(DVM)가 공동 창업하여 모든 알고리즘의 임상적 유효성을 보장합니다.",
+        "petCentricTitle": "반려동물 중심 설계",
+        "petCentricDesc": "우리가 만드는 모든 것은 동물의 편안함과 웰빙에 집중하며, 스트레스를 최소화하고 케어를 극대화합니다.",
+        "journeyTitle": "우리의 여정과 미래",
+        "journeyNowTitle": "현재: 핵심 분석",
+        "journeyNowDesc": "Sniff by Hatch 베타 서비스 런칭",
+        "journeyNowFeature1": "피부 및 치과 시각 분석",
+        "journeyNowFeature2": "기본 AI 분류 챗봇",
+        "journeyNextTitle": "2025년 4분기: AI 차트 작성",
+        "journeyNextDesc": "수의사와 보호자를 위한 문서 작업 자동화",
+        "journeyNextFeature1": "의료 기록 자동 생성",
+        "journeyNextFeature2": "증상 시각 타임라인",
+        "journeyFutureTitle": "2026년: 맞춤형 케어 플랜",
+        "journeyFutureDesc": "품종, 연령, 건강 이력을 기반으로 한 문맥 인지형 라이프스타일 및 영양 추천",
+        "officeTitle": "본사",
+        "officeLocation": "대한민국 서",
+        "contactButton": "고객 지원 문의하기"
     }
 }

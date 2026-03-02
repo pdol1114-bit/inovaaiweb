@@ -44,5 +44,31 @@
         "representative": "Representatives: Jise Sung, Kevin Kang",
         "businessNumber": "Business License: 479-81-03783",
         "address": "Room 204, 2nd Floor, 4 Daeha 2-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea"
+    },
+    "About": {
+        "heroTitle": "We are <span className=\"text-cyan-400\">INOVA.AI</span>",
+        "heroDescription": "As an AI-native startup, we redefine pet healthcare. We also encourage AI adoption in the pharmaceutical and manufacturing industries, bridging the gap to support professional-grade work across all sectors.",
+        "missionLabel": "Our Mission",
+        "missionTitle": "Democratizing Pet Health",
+        "missionDesc1": "Detecting health issues early is the key to longevity. We believe every pet owner deserves access to immediate, accurate health insights without waiting for an appointment.",
+        "missionDesc2": "By combining advanced computer vision with the knowledge of experienced veterinarians, we create a safety net that never sleeps.",
+        "vetLedTitle": "Vet-Led Innovation",
+        "vetLedDesc": "Co-founded by a practicing veterinarian (DVM) to ensure clinical validity in every algorithm we build.",
+        "petCentricTitle": "Pet-Centric Design",
+        "petCentricDesc": "Everything we build focuses on the comfort and well-being of the animal, minimizing stress and maximizing care.",
+        "journeyTitle": "Our Journey & Future",
+        "journeyNowTitle": "NOW: Core Analysis",
+        "journeyNowDesc": "Launch of Sniff by Hatch beta.",
+        "journeyNowFeature1": "Dermatology & Dental visual analysis",
+        "journeyNowFeature2": "Basic AI triage chatbot",
+        "journeyNextTitle": "Q4 2025: AI Charting",
+        "journeyNextDesc": "Automating the paperwork for vets and owners.",
+        "journeyNextFeature1": "Auto-generation of medical notes",
+        "journeyNextFeature2": "Visual timeline of symptoms",
+        "journeyFutureTitle": "2026: Personalized Care Plans",
+        "journeyFutureDesc": "Context-aware lifestyle and nutrition recommendations based on breed, age, and health history.",
+        "officeTitle": "Headquarters",
+        "officeLocation": "Seoul, South Korea",
+        "contactButton": "Contact Support"
     }
 }
