@@ -90,7 +90,7 @@ export default async function AboutPage({
 
                         <div className="relative">
                             <div className="absolute -left-[39px] h-5 w-5 rounded-full bg-slate-700 border-4 border-background"></div>
-                            <h3 className="text-xl font-bold text-white mb-2">{t("journeyNextTitle")}</h3>
+                            <h3 className="text-xl font-bold text-foreground mb-2">{t("journeyNextTitle")}</h3>
                             <p className="text-muted-foreground mb-4">
                                 {t("journeyNextDesc")}
                             </p>
@@ -102,7 +102,7 @@ export default async function AboutPage({
 
                         <div className="relative">
                             <div className="absolute -left-[39px] h-5 w-5 rounded-full bg-slate-700 border-4 border-background"></div>
-                            <h3 className="text-xl font-bold text-white mb-2">{t("journeyFutureTitle")}</h3>
+                            <h3 className="text-xl font-bold text-foreground mb-2">{t("journeyFutureTitle")}</h3>
                             <p className="text-muted-foreground">
                                 {t("journeyFutureDesc")}
                             </p>
