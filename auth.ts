@@ -7,6 +7,7 @@ import { adapter } from "./src/lib/auth-adapter";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter,
+    trustHost: true,
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
@@ -14,7 +15,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
         Apple({
             clientId: process.env.AUTH_APPLE_ID,
-            clientSecret: process.env.AUTH_APPLE_SECRET,
+            clientSecret: process.env.AUTH_APPLE_SECRET?.trim() || undefined,
+            // For NextAuth v5 to automatically generate the Apple JWT secret
+            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim() || undefined,
+            keyId: process.env.AUTH_APPLE_KEY_ID?.trim() || undefined,
+            privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || undefined,
         }),
         Naver({
             clientId: process.env.AUTH_NAVER_ID,
