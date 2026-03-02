@@ -132,8 +132,6 @@
         "apple": "Continue with Apple",
         "kakao": "Continue with Kakao",
         "naver": "Continue with Naver",
-        "termsAgreement": "By continuing, you agree to Inova AI's {terms} and {privacy}.",
-        "terms": "Terms of Service",
-        "privacy": "Privacy Policy"
+        "termsAgreement": "By continuing, you agree to Inova AI's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
     }
 }

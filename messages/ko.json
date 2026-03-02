@@ -132,8 +132,6 @@
         "apple": "Apple로 계속하기",
         "kakao": "Kakao로 계속하기",
         "naver": "Naver로 계속하기",
-        "termsAgreement": "계속 진행함으로써 Inova AI의 {terms} 및 {privacy}에 동의하게 됩니다.",
-        "terms": "이용약관",
-        "privacy": "개인정보처리방침"
+        "termsAgreement": "계속 진행함으로써 Inova AI의 <terms>이용약관</terms> 및 <privacy>개인정보처리방침</privacy>에 동의하게 됩니다."
     }
 }
