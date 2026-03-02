@@ -98,5 +98,28 @@
         "patentTitleEn": "\"AI-based Pet Health Assessment System using Questionnaire and Biosignals\"",
         "patentTitleKo": "(인공지능 기반 반려동물 건강 상태 분석 시스템)",
         "ctaButton": "See the Tech in Action"
+    },
+    "Sniff": {
+        "heroTitle1": "AI-Powered Health Analysis",
+        "heroTitle2": "for Your Beloved Pets",
+        "heroDesc": "Sniff by Hatch uses advanced visual recognition AI to monitor your pet's health. Simply take a photo and get instant insights into their well-being.",
+        "getStarted": "Get Started",
+        "login": "Login",
+        "downloadApp": "Download the Sniff App",
+        "howItWorksTitle": "How it Works",
+        "step1Title": "Fill out the Questionnaire",
+        "step1Desc": "Please fill out the questionnaire first. <br /> You can leave the parts you don't know blank.",
+        "step2Title": "Take a Photo",
+        "step2Desc": "Please take a clear photo of your dog/cat's eyes, teeth, skin, etc. <br /> Even if you think the posture is unusual, please take a full-body photo.",
+        "step3Title": "AI Analysis & Results",
+        "step3Desc": "Our deep learning model analyzes the image to provide an instant health status report.",
+        "whyTitle": "Why Sniff by Hatch?",
+        "whyDesc": "We bridge the gap between home care and veterinary visits using state-of-the-art AI technology.",
+        "feature1Title": "Vision + LLM AI",
+        "feature1Desc": "Our AI analyzes visual cues from photos (skin, teeth, wounds) and combines them with symptom history for accurate assessments.",
+        "feature2Title": "Vet-Verified",
+        "feature2Desc": "Developed with leading veterinarians to ensure medical relevance. Critical cases are flagged for immediate professional care.",
+        "feature3Title": "Proactive Monitoring",
+        "feature3Desc": "Track your pet's health timeline. Detect subtle changes early before they become serious issues."
     }
 }

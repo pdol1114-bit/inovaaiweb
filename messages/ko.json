@@ -98,5 +98,28 @@
         "patentTitleEn": "\"AI-based Pet Health Assessment System using Questionnaire and Biosignals\"",
         "patentTitleKo": "(인공지능 기반 반려동물 건강 상태 분석 시스템)",
         "ctaButton": "기술 시연 보기"
+    },
+    "Sniff": {
+        "heroTitle1": "사랑하는 당신의 반려동물을 위한",
+        "heroTitle2": "AI 기반 건강 분석",
+        "heroDesc": "Sniff by Hatch는 고급 시각 인식 AI를 사용하여 반려동물의 건강을 모니터링합니다. 간단히 사진을 찍어 즉각적인 건강 상태 정보를 확인하세요.",
+        "getStarted": "시작하기",
+        "login": "로그인",
+        "downloadApp": "Sniff 앱 다운로드",
+        "howItWorksTitle": "작동 방식",
+        "step1Title": "문진표 작성",
+        "step1Desc": "문진표를 먼저 작성해 주시기 바랍니다. <br /> 모르는 부분은 빈칸으로 두어두셔도 됩니다.",
+        "step2Title": "사진 촬영",
+        "step2Desc": "반려견(묘)의 눈, 치아, 피부 등을 잘보이게 촬영해주세요. <br /> 자세가 이상하다고 생각하는 경우에도 전신 사진을 촬영해 주세요.",
+        "step3Title": "AI 분석 및 결과",
+        "step3Desc": "딥러닝 모델이 이미지를 분석하여 즉각적인 건강 상태 리포트를 제공합니다.",
+        "whyTitle": "왜 Sniff by Hatch인가요?",
+        "whyDesc": "최첨단 AI 기술을 활용하여 가정에서의 관리와 수의사 진료 사이의 격차를 해소합니다.",
+        "feature1Title": "Vision + LLM AI",
+        "feature1Desc": "우리의 AI는 사진(피부, 치아, 상처)의 시각적 단서를 분석하고 이를 증상 이력과 결합하여 정확한 평가를 제공합니다.",
+        "feature2Title": "수의사 검증",
+        "feature2Desc": "의학적 타당성을 보장하기 위해 선도적인 수의사들과 함께 개발되었습니다. 위급한 사례는 즉각적인 전문 치료를 위해 표시됩니다.",
+        "feature3Title": "사전 모니터링",
+        "feature3Desc": "반려동물의 건강 타임라인을 추적하세요. 심각한 문제가 되기 전에 미세한 변화를 조기에 감지합니다."
     }
 }
