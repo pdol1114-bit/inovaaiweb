@@ -17,8 +17,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientId: process.env.AUTH_APPLE_ID,
             clientSecret: process.env.AUTH_APPLE_SECRET?.trim() || undefined,
             // For NextAuth v5 to automatically generate the Apple JWT secret
+            // @ts-expect-error: teamId is used by AppleProvider dynamic secret generation
             teamId: process.env.AUTH_APPLE_TEAM_ID?.trim() || undefined,
+            // @ts-expect-error: keyId is used by AppleProvider dynamic secret generation
             keyId: process.env.AUTH_APPLE_KEY_ID?.trim() || undefined,
+            // @ts-expect-error: privateKey is used by AppleProvider dynamic secret generation
             privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || undefined,
         }),
         Naver({
