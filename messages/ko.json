@@ -46,7 +46,7 @@
         "address": "충청북도 음성군 맹동면 대하2길 4 2층 204호"
     },
     "About": {
-        "heroTitle": "우리는 <span className=\"text-cyan-400\">INOVA.AI</span> 입니다",
+        "heroTitle": "우리는 <span >INOVA.AI</span> 입니다",
         "heroDescription": "AI 기반 스타트업으로서 반려동물 의료 서비스를 새롭게 정의합니다. 또한 모든 산업의 AI 도입을 장려하고 격차를 해소하여 모든 산업에서 전문가 수준의 업무를 진행할 수 있도록 지원합니다.",
         "missionLabel": "우리의 미션",
         "missionTitle": "반려동물 건강의 대중화",

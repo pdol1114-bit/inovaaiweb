@@ -46,7 +46,7 @@
         "address": "Room 204, 2nd Floor, 4 Daeha 2-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea"
     },
     "About": {
-        "heroTitle": "We are <span className=\"text-cyan-400\">INOVA.AI</span>",
+        "heroTitle": "We are <span>INOVA.AI</span>",
         "heroDescription": "As an AI-native startup, we redefine pet healthcare. We also encourage AI adoption in the pharmaceutical and manufacturing industries, bridging the gap to support professional-grade work across all sectors.",
         "missionLabel": "Our Mission",
         "missionTitle": "Democratizing Pet Health",
