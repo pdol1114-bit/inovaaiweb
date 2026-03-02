@@ -70,5 +70,33 @@
         "officeTitle": "Headquarters",
         "officeLocation": "Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, South Korea",
         "contactButton": "Contact Support"
+    },
+    "Technology": {
+        "heroTitle": "Built on Cutting-Edge AI",
+        "heroDesc": "We combine state-of-the-art Computer Vision with Large Language Models to simulate a veterinary consultation.",
+        "cvTitle": "Computer Vision",
+        "cvDesc": "Our fine-tuned CNN/Transformer hybrid models are trained on a proprietary dataset of dermatological and dental conditions in dogs and cats.",
+        "cvFeature1": "Lesion localization and segmentation",
+        "cvFeature2": "Severity classification (mild, moderate, severe)",
+        "cvFeature3": "Real-time inference on edge devices (planned)",
+        "llmTitle": "Large Language Models (LLM)",
+        "llmDesc": "We use advanced LLMs to conduct dynamic medical interviews (anamnesis) and synthesize visual findings into a coherent report.",
+        "llmFeature1": "Context-aware follow-up questions",
+        "llmFeature2": "Medical jargon translation for pet owners",
+        "llmFeature3": "Multi-turn dialogue management",
+        "backendTitle": "Robust Backend",
+        "backendDesc": "Powered by FastAPI and microservices architecture to ensure low-latency responses and high availability.",
+        "privacyTitle": "Data Privacy",
+        "privacyDesc": "We adhere to strict data privacy standards. Images are processed anonymously where possible, and personal data is encrypted at rest and in transit.",
+        "patentSectionTitle": "Intellectual Property",
+        "patentSectionDesc": "INOVA.AI has secured patents for our core technology, protecting our unique approach to combining biosignals with questionnaire data.",
+        "patentPending": "Patent Pending",
+        "patentAppNo": "App. No",
+        "patentDate": "Date",
+        "patentInventors": "Inventors",
+        "patentTitleLabel": "Title",
+        "patentTitleEn": "\"AI-based Pet Health Assessment System using Questionnaire and Biosignals\"",
+        "patentTitleKo": "(인공지능 기반 반려동물 건강 상태 분석 시스템)",
+        "ctaButton": "See the Tech in Action"
     }
 }

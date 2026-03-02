@@ -2,15 +2,25 @@ import { Badge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function TechnologyPage() {
+import { setRequestLocale, getTranslations } from "next-intl/server";
+
+export default async function TechnologyPage({
+    params,
+}: {
+    params: Promise<{ locale: string }>;
+}) {
+    const { locale } = await params;
+    setRequestLocale(locale);
+    const t = await getTranslations("Technology");
+
     return (
         <div className="flex flex-col min-h-screen">
             {/* Tech Hero */}
             <section className="py-20 bg-background text-center">
                 <div className="container mx-auto px-4">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-6">Built on Cutting-Edge AI</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("heroTitle")}</h1>
                     <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-                        We combine state-of-the-art Computer Vision with Large Language Models to simulate a veterinary consultation.
+                        {t("heroDesc")}
                     </p>
                 </div>
             </section>
@@ -21,35 +31,35 @@ export default function TechnologyPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         {/* Vision Model */}
                         <div className="p-8 rounded-2xl bg-card border border-white/5">
-                            <h3 className="text-2xl font-bold mb-4 text-cyan-400">Computer Vision</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-cyan-400">{t("cvTitle")}</h3>
                             <p className="text-muted-foreground mb-4">
-                                Our fine-tuned CNN/Transformer hybrid models are trained on a proprietary dataset of dermatological and dental conditions in dogs and cats.
+                                {t("cvDesc")}
                             </p>
                             <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                                <li>Lesion localization and segmentation</li>
-                                <li>Severity classification (mild, moderate, severe)</li>
-                                <li>Real-time inference on edge devices (planned)</li>
+                                <li>{t("cvFeature1")}</li>
+                                <li>{t("cvFeature2")}</li>
+                                <li>{t("cvFeature3")}</li>
                             </ul>
                         </div>
 
                         {/* LLM */}
                         <div className="p-8 rounded-2xl bg-card border border-white/5">
-                            <h3 className="text-2xl font-bold mb-4 text-purple-400">Large Language Models (LLM)</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-purple-400">{t("llmTitle")}</h3>
                             <p className="text-muted-foreground mb-4">
-                                We use advanced LLMs to conduct dynamic medical interviews (anamnesis) and synthesize visual findings into a coherent report.
+                                {t("llmDesc")}
                             </p>
                             <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                                <li>Context-aware follow-up questions</li>
-                                <li>Medical jargon translation for pet owners</li>
-                                <li>Multi-turn dialogue management</li>
+                                <li>{t("llmFeature1")}</li>
+                                <li>{t("llmFeature2")}</li>
+                                <li>{t("llmFeature3")}</li>
                             </ul>
                         </div>
 
                         {/* Backend */}
                         <div className="p-8 rounded-2xl bg-card border border-white/5">
-                            <h3 className="text-2xl font-bold mb-4 text-emerald-400">Robust Backend</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-emerald-400">{t("backendTitle")}</h3>
                             <p className="text-muted-foreground mb-4">
-                                Powered by FastAPI and microservices architecture to ensure low-latency responses and high availability.
+                                {t("backendDesc")}
                             </p>
                             <div className="flex gap-2 flex-wrap">
                                 <span className="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-300">FastAPI</span>
@@ -61,9 +71,9 @@ export default function TechnologyPage() {
 
                         {/* Security */}
                         <div className="p-8 rounded-2xl bg-card border border-white/5">
-                            <h3 className="text-2xl font-bold mb-4 text-orange-400">Data Privacy</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-orange-400">{t("privacyTitle")}</h3>
                             <p className="text-muted-foreground mb-4">
-                                We adhere to strict data privacy standards. Images are processed anonymously where possible, and personal data is encrypted at rest and in transit.
+                                {t("privacyDesc")}
                             </p>
                         </div>
                     </div>
@@ -77,27 +87,27 @@ export default function TechnologyPage() {
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <Badge className="h-32 w-32" />
                         </div>
-                        <h2 className="text-3xl font-bold mb-6">Intellectual Property</h2>
+                        <h2 className="text-3xl font-bold mb-6">{t("patentSectionTitle")}</h2>
                         <p className="text-lg mb-8 text-muted-foreground">
-                            INOVA.AI has secured patents for our core technology, protecting our unique approach to combining biosignals with questionnaire data.
+                            {t("patentSectionDesc")}
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <h4 className="font-semibold text-cyan-400 mb-2">Patent Pending</h4>
+                                <h4 className="font-semibold text-cyan-400 mb-2">{t("patentPending")}</h4>
                                 <div className="text-sm space-y-1 text-muted-foreground">
-                                    <p><span className="font-medium text-white">App. No:</span> EPA-2025-0137</p>
-                                    <p><span className="font-medium text-white">Date:</span> 2025-08-20</p>
-                                    <p><span className="font-medium text-white">Inventors:</span> Ji-Se Seong, Yu-Seok Kang</p>
+                                    <p><span className="font-medium text-white">{t("patentAppNo")}:</span> EPA-2025-0137</p>
+                                    <p><span className="font-medium text-white">{t("patentDate")}:</span> 2025-08-20</p>
+                                    <p><span className="font-medium text-white">{t("patentInventors")}:</span> Ji-Se Seong, Yu-Seok Kang</p>
                                 </div>
                             </div>
                             <div>
-                                <h4 className="font-semibold text-cyan-400 mb-2">Title</h4>
+                                <h4 className="font-semibold text-cyan-400 mb-2">{t("patentTitleLabel")}</h4>
                                 <p className="text-sm text-muted-foreground italic">
-                                    "AI-based Pet Health Assessment System using Questionnaire and Biosignals"
+                                    {t("patentTitleEn")}
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    (인공지능 기반 반려동물 건강 상태 분석 시스템)
+                                    {t("patentTitleKo")}
                                 </p>
                             </div>
                         </div>
@@ -108,7 +118,7 @@ export default function TechnologyPage() {
             <section className="py-20 text-center">
                 <Link href="/pricing">
                     <Button size="lg" variant="default" className="bg-white text-black hover:bg-zinc-200">
-                        See the Tech in Action
+                        {t("ctaButton")}
                     </Button>
                 </Link>
             </section>

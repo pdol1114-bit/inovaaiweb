@@ -70,5 +70,33 @@
         "officeTitle": "본사",
         "officeLocation": "대한민국 충청북도 음성군 맹동면 ",
         "contactButton": "고객 지원 문의하기"
+    },
+    "Technology": {
+        "heroTitle": "최첨단 AI 기반",
+        "heroDesc": "최첨단 컴퓨터 비전과 대규모 언어 모델(LLM)을 결합하여 수의학 상담을 시뮬레이션합니다.",
+        "cvTitle": "컴퓨터 비전",
+        "cvDesc": "우리의 미세 조정된 CNN/Transformer 하이브리드 모델은 개와 고양이의 피부 및 치과 질환에 대한 독점 데이터 세트로 학습됩니다.",
+        "cvFeature1": "병변 위치 추적 및 세분화",
+        "cvFeature2": "중증도 분류 (경증, 중등도, 중증)",
+        "cvFeature3": "엣지 디바이스에서의 실시간 추론 (예정)",
+        "llmTitle": "대규모 언어 모델 (LLM)",
+        "llmDesc": "고급 LLM을 사용하여 동적인 문진을 수행하고, 시각적 소견을 일관된 보고서로 종합합니다.",
+        "llmFeature1": "문맥을 인지하는 후속 질문",
+        "llmFeature2": "보호자를 위한 의학 용어 번역",
+        "llmFeature3": "다중 턴(Multi-turn) 대화 관리",
+        "backendTitle": "강력한 백엔드",
+        "backendDesc": "FastAPI와 마이크로서비스 아키텍처를 기반으로 하여 짧은 지연 시간과 높은 가용성을 보장합니다.",
+        "privacyTitle": "데이터 프라이버시",
+        "privacyDesc": "우리는 엄격한 데이터 개인정보 보호 표준을 준수합니다. 이미지는 가능한 한 익명으로 처리되며, 개인 데이터는 저장 및 전송 시 암호화됩니다.",
+        "patentSectionTitle": "지적 재산권",
+        "patentSectionDesc": "INOVA.AI는 생체 신호와 문진 데이터를 결합하는 당사만의 고유한 접근 방식을 보호하는 핵심 기술에 대한 특허를 확보했습니다.",
+        "patentPending": "특허 출원 중",
+        "patentAppNo": "출원 번호",
+        "patentDate": "출원일",
+        "patentInventors": "발명자",
+        "patentTitleLabel": "발명의 명칭",
+        "patentTitleEn": "\"AI-based Pet Health Assessment System using Questionnaire and Biosignals\"",
+        "patentTitleKo": "(인공지능 기반 반려동물 건강 상태 분석 시스템)",
+        "ctaButton": "기술 시연 보기"
     }
 }
