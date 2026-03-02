@@ -6,12 +6,14 @@ import { Check, CreditCard, Loader2, Lock, Sparkles, User, Smartphone } from "lu
 import { cn } from "@/lib/utils";
 import { useRouter } from "@/i18n/routing";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 type Plan = "monthly" | "yearly";
 type Step = "select" | "auth" | "pay" | "success";
 
 export default function PricingPage() {
     const router = useRouter();
+    const t = useTranslations("Auth");
     const [step, setStep] = useState<Step>("select");
     const [billing, setBilling] = useState<Plan>("monthly");
     const [isLoading, setIsLoading] = useState(false);
@@ -21,10 +23,10 @@ export default function PricingPage() {
 
     useEffect(() => {
         if (!isLoggedIn) {
-            alert("로그인을 먼저 하세요");
+            alert(t("loginRequiredAlert"));
             router.replace("/auth");
         }
-    }, [isLoggedIn, router]);
+    }, [isLoggedIn, router, t]);
 
     // Prevent rendering the rest of the page if not logged in to avoid a flash
     if (!isLoggedIn) {

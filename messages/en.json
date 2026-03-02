@@ -121,5 +121,19 @@
         "feature2Desc": "Developed with leading veterinarians to ensure medical relevance. Critical cases are flagged for immediate professional care.",
         "feature3Title": "Proactive Monitoring",
         "feature3Desc": "Track your pet's health timeline. Detect subtle changes early before they become serious issues."
+    },
+    "Auth": {
+        "loginRequiredAlert": "Please log in first.",
+        "welcomeTitle": "Welcome Back",
+        "welcomeDesc": "Sign in to your Inova AI account",
+        "conflictErrorTitle": "Email already registered with another provider.",
+        "conflictErrorDesc": "Please log in with the social account you originally used.",
+        "google": "Continue with Google",
+        "apple": "Continue with Apple",
+        "kakao": "Continue with Kakao",
+        "naver": "Continue with Naver",
+        "termsAgreement": "By continuing, you agree to Inova AI's {terms} and {privacy}.",
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy"
     }
 }
