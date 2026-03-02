@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Brain, Stethoscope, Activity } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { QRBadge } from "@/components/ui/qr-badge";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 

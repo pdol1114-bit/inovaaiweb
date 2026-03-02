@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Camera, FileText, MessageCircle, Shield, Zap } from "lucide-react";
-import Link from "next/link";
-
+import { Link } from "@/i18n/routing";
 export default function ProductPage() {
     return (
         <div className="flex flex-col min-h-screen">
