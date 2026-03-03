@@ -9,21 +9,79 @@ runConfig:
 
 # Environment variables and secrets.
 env:
-  # AUTH_URL tells NextAuth.js the canonical public URL of the deployed app.
-  # Without this, it falls back to the container's internal address (0.0.0.0:8080).
   - variable: AUTH_URL
     value: https://inovaai.ai
     availability:
       - BUILD
       - RUNTIME
 
-  # AUTH_TRUST_HOST is an alternative flag that also fixes the 0.0.0.0 redirect issue.
   - variable: AUTH_TRUST_HOST
     value: "true"
     availability:
       - RUNTIME
 
-  # Grant access to secrets in Cloud Secret Manager.
-  # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
-  # - variable: MY_SECRET
-  #   secret: mySecretRef
+  - variable: AUTH_SECRET
+    value: xBkcbu0WWaW4Ueha5OtZWP4sWUj/NW41WeD41hssSv0=
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_GOOGLE_ID
+    value: 488173379572-gpjb5nje0hscaimd2dtakd8sret1057u.apps.googleusercontent.com
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_GOOGLE_SECRET
+    value: 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
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_KAKAO_ID
+    value: fbef8c97b19215b25eee5f0365363328
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_KAKAO_SECRET
+    value: 5mpHpvxSLs2Hbdfl9Wo3O09dwe2xbZI4
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_NAVER_ID
+    value: Q53cTjMkqH1nmHollpH8
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_NAVER_SECRET
+    value: iA2VRFv1jF
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_APPLE_ID
+    value: ai.inovaai.web
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_APPLE_TEAM_ID
+    value: M7LMNHX3LH
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_APPLE_KEY_ID
+    value: 9N9655A977
+    availability:
+      - RUNTIME
+
+  - variable: AUTH_APPLE_PRIVATE_KEY
+    value: "-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg8ryEah2uNG0N4J2t\nB/q13XyUb4XKr9wy3n0p7Zsckj2gCgYIKoZIzj0DAQehRANCAASB/1r4pbkdmPft\na3qxUlod4ULs38xzCkBwrhu0B/OaZBDwraAbbO3iex9BZjYBBxkSCXnIP7rN0vFe\nR35YtpTt\n-----END PRIVATE KEY-----"
+    availability:
+      - RUNTIME
+
+  - variable: FBASE_PROJECT_ID
+    value: sniff-by-hatch-app
+    availability:
+      - RUNTIME
+
+  - variable: FBASE_CLIENT_EMAIL
+    value: firebase-adminsdk-fbsvc@sniff-by-hatch-app.iam.gserviceaccount.com
+    availability:
+      - RUNTIME
+
