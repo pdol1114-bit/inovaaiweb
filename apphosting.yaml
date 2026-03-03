@@ -8,14 +8,20 @@ runConfig:
   # memoryMiB: 512
 
 # Environment variables and secrets.
-# env:
-  # Configure environment variables.
-  # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
-  # - variable: MESSAGE
-  #   value: Hello world!
-  #   availability:
-  #     - BUILD
-  #     - RUNTIME
+env:
+  # AUTH_URL tells NextAuth.js the canonical public URL of the deployed app.
+  # Without this, it falls back to the container's internal address (0.0.0.0:8080).
+  - variable: AUTH_URL
+    value: https://inovaai.ai
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # AUTH_TRUST_HOST is an alternative flag that also fixes the 0.0.0.0 redirect issue.
+  - variable: AUTH_TRUST_HOST
+    value: "true"
+    availability:
+      - RUNTIME
 
   # Grant access to secrets in Cloud Secret Manager.
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
