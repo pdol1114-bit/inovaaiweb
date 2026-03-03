@@ -4,6 +4,6 @@ import { routing } from './src/i18n/routing';
 export default createMiddleware(routing);
 
 export const config = {
-    // Match only internationalized pathnames
-    matcher: ['/', '/(ko|en)/:path*']
+    // Match all pathnames except internals and static files
+    matcher: ['/((?!_next|_vercel|api/|.*\\..*).*)']
 };

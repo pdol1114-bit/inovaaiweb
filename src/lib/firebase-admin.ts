@@ -1,24 +1,30 @@
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-// Initialize Firebase Admin for server-side
-// Locally, you need either FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY
-// or GOOGLE_APPLICATION_CREDENTIALS set.
-// On GCP/Firebase App Hosting, it will automatically use Application Default Credentials.
+// Initialize Firebase Admin for server-side.
+// On Firebase App Hosting / Cloud Run, Application Default Credentials are used automatically.
+// For local development, set FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL, FIREBASE_PROJECT_ID.
 
-if (!getApps().length) {
-    if (process.env.FIREBASE_PRIVATE_KEY) {
-        initializeApp({
-            credential: cert({
-                projectId: process.env.FIREBASE_PROJECT_ID || "sniff-by-hatch-app",
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-            }),
-        });
-    } else {
-        // Fallback for Application Default Credentials (e.g. deployed environments)
-        initializeApp({ projectId: "sniff-by-hatch-app" });
+try {
+    if (!getApps().length) {
+        if (process.env.FIREBASE_PRIVATE_KEY &&
+            !process.env.FIREBASE_PRIVATE_KEY.includes("중략") &&
+            !process.env.FIREBASE_PRIVATE_KEY.includes("...")) {
+            // Explicit service account credentials (for local dev)
+            initializeApp({
+                credential: cert({
+                    projectId: process.env.FIREBASE_PROJECT_ID || "sniff-by-hatch-app",
+                    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                }),
+            });
+        } else {
+            // Application Default Credentials (works automatically on Firebase App Hosting / GCP)
+            initializeApp({ projectId: process.env.FIREBASE_PROJECT_ID || "sniff-by-hatch-app" });
+        }
     }
+} catch (e) {
+    console.error("[firebase-admin] Initialization failed:", e);
 }
 
 export const firestore = getFirestore();
