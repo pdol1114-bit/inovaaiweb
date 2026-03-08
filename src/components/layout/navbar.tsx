@@ -2,10 +2,11 @@
 
 import { usePathname, useRouter, Link } from "@/i18n/routing";
 import { useState, useEffect } from "react";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, LogOut, User } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSession, signOut } from "next-auth/react";
 
 const links = [
     { href: "/sniff", labelKey: "sniff" },
@@ -20,6 +21,7 @@ export function Navbar() {
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();
+    const { data: session, status } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -69,7 +71,7 @@ export function Navbar() {
                     ))}
 
                     {/* Language Toggle */}
-                    <div className="flex items-center ml-2">
+                    <div className="flex items-center ml-2 mr-4">
                         <div className="flex items-center space-x-0.5 bg-gray-50 rounded-lg p-0.5 border border-gray-100">
                             <Globe className="h-3.5 w-3.5 text-gray-400 ml-1.5 mr-0.5" />
                             <button
@@ -91,6 +93,42 @@ export function Navbar() {
                                 US
                             </button>
                         </div>
+                    </div>
+
+                    {/* Auth Status */}
+                    <div className="flex items-center space-x-2 border-l border-gray-100 pl-4">
+                        {status === "authenticated" ? (
+                            <div className="flex items-center space-x-3">
+                                {session.user?.image ? (
+                                    <img
+                                        src={session.user.image}
+                                        alt={session.user.name || "User"}
+                                        className="h-8 w-8 rounded-full border border-gray-200"
+                                    />
+                                ) : (
+                                    <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 border border-blue-200">
+                                        <User className="h-4 w-4" />
+                                    </div>
+                                )}
+                                <span className="text-sm font-medium text-gray-700 hidden lg:block">
+                                    {session.user?.name}
+                                </span>
+                                <button
+                                    onClick={() => signOut()}
+                                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                    title="Logout"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <Link
+                                href="/auth"
+                                className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-all shadow-md shadow-blue-200"
+                            >
+                                {t("login")}
+                            </Link>
+                        )}
                     </div>
                 </div>
 
@@ -129,8 +167,48 @@ export function Navbar() {
                                 </Link>
                             ))}
 
+                            {/* Mobile Auth Status */}
+                            <div className="pt-4 mt-4 border-t border-gray-100">
+                                {status === "authenticated" ? (
+                                    <div className="flex flex-col space-y-4">
+                                        <div className="flex items-center space-x-3 px-4 py-2">
+                                            {session.user?.image ? (
+                                                <img
+                                                    src={session.user.image}
+                                                    alt={session.user.name || "User"}
+                                                    className="h-10 w-10 rounded-full border border-gray-100"
+                                                />
+                                            ) : (
+                                                <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                                    <User className="h-5 w-5" />
+                                                </div>
+                                            )}
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold text-gray-900">{session.user?.name}</span>
+                                                <span className="text-xs text-gray-500">{session.user?.email}</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => signOut()}
+                                            className="flex items-center justify-center space-x-2 px-4 py-3 text-red-600 bg-red-50 rounded-xl font-medium transition-colors"
+                                        >
+                                            <LogOut className="h-5 w-5" />
+                                            <span>Logout</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <Link
+                                        href="/auth"
+                                        className="flex items-center justify-center px-4 py-3 text-white bg-blue-600 rounded-xl font-bold shadow-lg shadow-blue-100"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        {t("login")}
+                                    </Link>
+                                )}
+                            </div>
+
                             {/* Mobile Language Toggle */}
-                            <div className="flex items-center pt-4 mt-4 border-t border-gray-100 space-x-2">
+                            <div className="flex items-center pt-4 mt-2 border-t border-gray-100 space-x-2">
                                 <Globe className="h-5 w-5 text-gray-400" />
                                 <span className="text-sm text-gray-500 font-medium mr-2">Language:</span>
                                 <button
