@@ -4,14 +4,13 @@ import Apple from "next-auth/providers/apple";
 import Naver from "next-auth/providers/naver";
 import Kakao from "next-auth/providers/kakao";
 
-// We deliberately do NOT import firebase-admin at module level.
-// firebase-admin uses Node.js APIs that crash during Next.js build-time page data collection.
-// Instead, we use JWT sessions and dynamically import Firebase only inside async callbacks
-// (which run at request time, not build time).
+// NextAuth v5 configuration
+import { adapter } from "@/lib/auth-adapter";
+import { firestore } from "@/lib/firebase-admin";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    // Use JWT-based sessions (no database needed for session storage).
-    // This avoids any build-time Firebase initialization issues.
+    adapter,
+    // Use JWT-based sessions. The adapter will still manage user/account creation in Firestore.
     session: { strategy: "jwt" },
     trustHost: true,
     providers: [
@@ -21,19 +20,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Apple({
-            clientId: process.env.AUTH_APPLE_ID,
-            clientSecret: process.env.AUTH_APPLE_SECRET?.trim() || undefined,
-            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim() || undefined,
-            keyId: process.env.AUTH_APPLE_KEY_ID?.trim() || undefined,
-            privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n") || undefined,
+            clientId: process.env.AUTH_APPLE_ID?.trim(),
+            clientSecret: process.env.AUTH_APPLE_SECRET?.trim(),
+            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim(),
+            keyId: process.env.AUTH_APPLE_KEY_ID?.trim(),
+            privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
         } as any),
         Naver({
-            clientId: process.env.AUTH_NAVER_ID,
-            clientSecret: process.env.AUTH_NAVER_SECRET,
+            clientId: process.env.AUTH_NAVER_ID?.trim(),
+            clientSecret: process.env.AUTH_NAVER_SECRET?.trim(),
         }),
         Kakao({
-            clientId: process.env.AUTH_KAKAO_ID,
-            clientSecret: process.env.AUTH_KAKAO_SECRET,
+            clientId: process.env.AUTH_KAKAO_ID?.trim(),
+            clientSecret: process.env.AUTH_KAKAO_SECRET?.trim(),
         }),
     ],
     pages: {
@@ -47,14 +46,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (!account || !user.email) return true;
 
             try {
-                // Dynamic import ensures Firebase is never loaded at build time
-                const { getApps, initializeApp } = await import("firebase-admin/app");
-                const { getFirestore } = await import("firebase-admin/firestore");
-
-                if (!getApps().length) {
-                    initializeApp({ projectId: process.env.FBASE_PROJECT_ID || "sniff-by-hatch-app" });
-                }
-                const db = getFirestore();
+                // Use the shared firestore instance
+                const db = firestore;
 
                 // Query the accounts collection for this email
                 const snapshot = await db

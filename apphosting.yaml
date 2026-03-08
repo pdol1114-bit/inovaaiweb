@@ -85,3 +85,8 @@ env:
     availability:
       - RUNTIME
 
+  - variable: FBASE_PRIVATE_KEY
+    secret: FBASE_PRIVATE_KEY
+    availability:
+      - RUNTIME
+

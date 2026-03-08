@@ -7,20 +7,22 @@ import { getFirestore } from "firebase-admin/firestore";
 
 try {
     if (!getApps().length) {
-        if (process.env.FBASE_PRIVATE_KEY &&
-            !process.env.FBASE_PRIVATE_KEY.includes("중략") &&
-            !process.env.FBASE_PRIVATE_KEY.includes("...")) {
-            // Explicit service account credentials (for local dev)
+        const projectId = process.env.FBASE_PROJECT_ID || "sniff-by-hatch-app";
+        const clientEmail = process.env.FBASE_CLIENT_EMAIL;
+        const privateKey = process.env.FBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+        if (privateKey && clientEmail) {
+            // Explicit service account credentials (local dev or specific environment)
             initializeApp({
                 credential: cert({
-                    projectId: process.env.FBASE_PROJECT_ID || "sniff-by-hatch-app",
-                    clientEmail: process.env.FBASE_CLIENT_EMAIL,
-                    privateKey: process.env.FBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                    projectId,
+                    clientEmail,
+                    privateKey,
                 }),
             });
         } else {
             // Application Default Credentials (works automatically on Firebase App Hosting / GCP)
-            initializeApp({ projectId: process.env.FBASE_PROJECT_ID || "sniff-by-hatch-app" });
+            initializeApp({ projectId });
         }
     }
 } catch (e) {
