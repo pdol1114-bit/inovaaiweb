@@ -132,7 +132,13 @@
         "apple": "Continue with Apple",
         "kakao": "Continue with Kakao",
         "naver": "Continue with Naver",
-        "termsAgreement": "By continuing, you agree to Inova AI's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+        "termsAgreement": "By continuing, you agree to Inova AI's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+        "successTitle": "Login Successful",
+        "successDesc": "Welcome back! You can now proceed to payment to start using our services.",
+        "goToPayment": "Go to Payment",
+        "errorTitle": "Login Failed",
+        "errorDesc": "An error occurred during login. Please try again.",
+        "backToLogin": "Go to Login Page"
     },
     "Payment": {
         "title": "Payment",

@@ -38,7 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     pages: {
         signIn: "/auth",
-        error: "/auth",
+        error: "/auth/error",
     },
     callbacks: {
         // Check for provider conflicts: if a user already signed up with Google,
