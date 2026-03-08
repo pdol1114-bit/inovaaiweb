@@ -133,5 +133,17 @@
         "kakao": "Continue with Kakao",
         "naver": "Continue with Naver",
         "termsAgreement": "By continuing, you agree to Inova AI's <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>."
+    },
+    "Payment": {
+        "title": "Payment",
+        "description": "Please proceed with the payment for your selected service.",
+        "planTitle": "Selected Plan",
+        "planName": "Standard Plan",
+        "price": "₩29,900 / month",
+        "paymentMethod": "Select Payment Method",
+        "card": "Credit/Debit Card",
+        "bank": "Bank Transfer",
+        "payNow": "Pay Now",
+        "securePayment": "Secure payment system is active."
     }
 }

@@ -40,7 +40,7 @@ export default async function AuthPage({
                     {/* Google */}
                     <form action={async () => {
                         "use server"
-                        await signIn("google")
+                        await signIn("google", { redirectTo: `/${locale}/payment` })
                     }}>
                         <Button type="submit" variant="outline" className="w-full h-12 text-base border-white/10 hover:bg-white/5 space-x-3 bg-white/5">
                             <Chrome className="h-5 w-5" />
@@ -51,7 +51,7 @@ export default async function AuthPage({
                     {/* Apple */}
                     <form action={async () => {
                         "use server"
-                        await signIn("apple")
+                        await signIn("apple", { redirectTo: `/${locale}/payment` })
                     }}>
                         <Button type="submit" variant="outline" className="w-full h-12 text-base border-white/10 hover:bg-white/5 space-x-3 bg-white/5">
                             <Apple className="h-5 w-5" />
@@ -62,7 +62,7 @@ export default async function AuthPage({
                     {/* Kakao */}
                     <form action={async () => {
                         "use server"
-                        await signIn("kakao")
+                        await signIn("kakao", { redirectTo: `/${locale}/payment` })
                     }}>
                         <Button type="submit" className="w-full h-12 text-base bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90 space-x-3">
                             <MessageCircle className="h-5 w-5 fill-current" />
@@ -73,7 +73,7 @@ export default async function AuthPage({
                     {/* Naver */}
                     <form action={async () => {
                         "use server"
-                        await signIn("naver")
+                        await signIn("naver", { redirectTo: `/${locale}/payment` })
                     }}>
                         <Button type="submit" className="w-full h-12 text-base bg-[#03C75A] text-white hover:bg-[#03C75A]/90 space-x-3">
                             <Navigation2 className="h-5 w-5 fill-current" />
