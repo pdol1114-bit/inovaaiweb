@@ -167,6 +167,93 @@
         "card": "Credit/Debit Card",
         "bank": "Bank Transfer",
         "payNow": "Subscribe Now",
-        "securePayment": "Secure payment system is active."
+        "securePayment": "Secure payment system is active.",
+        "Privacy": {
+        "title": "Privacy Policy",
+        "companyName": "Sniff by Hatch · InovaAI",
+        "effectiveDate": "Effective Date: November 1, 2025",
+        "intro": "InovaAI (hereinafter the \"Company\") complies with the Personal Information Protection Act and related laws and regulations, and established this Privacy Policy to protect the personal information of users (hereinafter \"Users\") who use the Sniff by Hatch application (hereinafter the \"App\").",
+        "section1Title": "1. Personal Information Collected",
+        "section1Subtitle1": "1) Mandatory Items",
+        "section1List1": [
+            "Basic Pet Info: Species (dog/cat), breed, date of birth/age, weight, gender, neutering status, etc.",
+            "Pet Living Info: Eating habits, living environment, other pets, vaccination and parasite prevention info, etc.",
+            "Health Questionnaire: Current symptoms, past/current illness and treatment history, guardian's concerns, etc.",
+            "Photos for Analysis: Pet photos uploaded directly by the user.",
+            "Device Information: OS type, app version, usage logs, and other minimal technical information to ensure service stability."
+        ],
+        "section1Subtitle2": "2) Optional Items",
+        "section1List2": [
+            "Email Address and Nickname: For sending result reports, responding to inquiries, and service announcements.",
+            "Other information voluntarily entered by the user."
+        ],
+        "section2Title": "2. Purpose of Collection and Use",
+        "section2Intro": "The Company uses the collected information for the following purposes:",
+        "section2List": [
+            "Pet health analysis and providing result reports",
+            "Providing analysis services using AI models such as Google Gemini, OpenAI GPT-4, etc.",
+            "Service quality improvement, statistical analysis, and error/failure response",
+            "Processing user inquiries and customer support",
+            "Record keeping for legal compliance"
+        ],
+        "section3Title": "3. Retention and Use Period",
+        "section3List": [
+            "In principle, personal information is destroyed immediately once the purpose of collection and use is achieved.",
+            "Information necessary for service operation and analysis advancement is kept for up to 1 year from the date of collection and then destroyed.",
+            "If preservation is required by relevant laws, it will be kept only for the period specified by the law.",
+            "If a user directly requests deletion, it will be deleted without delay within the range permitted by law."
+        ],
+        "section4Title": "4. Provision to Third Parties and International Transfer",
+        "section4Subtitle1": "1) Provision to Third Parties",
+        "section4Text1": "The Company does not provide personal information to third parties without the user's prior consent. However, exceptions may be made if there is a legal basis or a legitimate request from an investigative agency.",
+        "section4Subtitle2": "2) International Transfer",
+        "section4Text2": "Some information may be transferred to and stored on overseas servers for the use of the services below:",
+        "section4List2": [
+            "Google Gemini (Google Cloud, USA, etc.)",
+            "OpenAI API (USA, etc.)"
+        ],
+        "section4Footer2": "The Company complies with the terms and policies of these service providers, transmits and processes data only within the scope of service provision purposes, and takes necessary protective measures as required by law.",
+        "section5Title": "5. Entrustment of Personal Information Processing",
+        "section5Text": "The Company may entrust some tasks to external companies as needed for service provision. In this case, personal information protection obligations are clearly defined through entrustment contracts in accordance with the Personal Information Protection Act.",
+        "section6Title": "6. Destruction Procedure and Method",
+        "section6List": [
+            "Personal information that has passed the retention period or reached the processing purpose is destroyed without delay according to internal policies.",
+            "Information in electronic file format is deleted using technical methods that make recovery impossible.",
+            "Paper documents are destroyed through shredding or incineration."
+        ],
+        "section7Title": "7. User Rights and How to Exercise Them",
+        "section7List": [
+            "Users can request access, correction, deletion, or suspension of processing of their personal information at any time.",
+            "Requests can be made through the in-app inquiry function or email (support@inovaai.ai).",
+            "The Company will take necessary measures without delay after verifying identity and will provide guidance if there are legal restrictions."
+        ],
+        "section8Title": "8. Security Measures for Protecting Personal Information",
+        "section8Intro": "The Company takes the following measures for the safe processing of personal information:",
+        "section8List": [
+            "Data protection through transmission section encryption (HTTPS/SSL, etc.)",
+            "Minimizing personal information handling personnel and managing access rights",
+            "Regular security checks and log monitoring",
+            "Preventing unauthorized access to systems and data"
+        ],
+        "section9Title": "9. Protection of Children's Personal Information",
+        "section9List": [
+            "This app does not directly target children under 14 and provides services to guardians (adults).",
+            "If the Company becomes aware that personal information of a child under 14 has been collected, it will take measures to delete it immediately."
+        ],
+        "section10Title": "10. Personal Information Protection Officer",
+        "section10Intro": "The Company designates a Personal Information Protection Officer as below to handle inquiries related to personal information protection:",
+        "section10List": [
+            "Name: Yu-Seok Kang",
+            "Department: InovaAI",
+            "Email: support@inovaai.ai"
+        ],
+        "section11Title": "11. Changes to Privacy Policy",
+        "section11List": [
+            "This policy may be modified according to changes in laws or service content.",
+            "Important changes will be noticed in advance through in-app or website announcements.",
+            "The modified policy takes effect from the date of implementation posted on the website."
+        ],
+        "finalNote": "This Privacy Policy was enacted on November 1, 2025, and any subsequent changes will be announced through the InovaAI website."
     }
+}
 }
