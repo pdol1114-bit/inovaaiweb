@@ -6,6 +6,24 @@ import Apple from "next-auth/providers/apple";
 import { adapter } from "@/lib/auth-adapter";
 import { firestore } from "@/lib/firebase-admin";
 
+/**
+ * Firebase App Hosting passes env vars as literal strings (no \n → newline conversion).
+ * This helper handles: base64-encoded keys, literal \\n, and actual newlines.
+ */
+function parsePrivateKey(raw: string | undefined): string {
+    if (!raw) return "";
+    // If it looks like base64 (no PEM header), decode it
+    if (!raw.includes("-----BEGIN")) {
+        try {
+            return Buffer.from(raw, "base64").toString("utf-8");
+        } catch {
+            return raw;
+        }
+    }
+    // Replace literal \n with actual newlines
+    return raw.replace(/\\n/g, "\n");
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     debug: true,
     adapter,
@@ -23,7 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientId: process.env.AUTH_APPLE_ID?.trim() ?? "",
             teamId: process.env.AUTH_APPLE_TEAM_ID?.trim() ?? "",
             keyId: process.env.AUTH_APPLE_KEY_ID?.trim() ?? "",
-            privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+            privateKey: parsePrivateKey(process.env.AUTH_APPLE_PRIVATE_KEY),
         } as any),
     ],
     pages: {
