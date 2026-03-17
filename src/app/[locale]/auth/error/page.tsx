@@ -5,10 +5,13 @@ import { Link } from "@/i18n/routing";
 
 export default async function LoginErrorPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ locale: string }>;
+    searchParams: Promise<{ error?: string }>;
 }) {
     const { locale } = await params;
+    const { error } = await searchParams;
     setRequestLocale(locale);
     const t = await getTranslations("Auth");
 
@@ -35,6 +38,11 @@ export default async function LoginErrorPage({
                         <p className="text-gray-600 leading-relaxed">
                             {t("errorDesc")}
                         </p>
+                        {error && (
+                            <p className="text-xs text-gray-400 font-mono bg-gray-100 rounded px-2 py-1 mt-2">
+                                error: {error}
+                            </p>
+                        )}
                     </div>
 
                     <div className="pt-4 space-y-3">

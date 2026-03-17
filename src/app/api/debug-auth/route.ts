@@ -1,18 +1,7 @@
 import { NextResponse } from "next/server";
+import { parsePrivateKey } from "@/lib/auth-utils";
 
 export const dynamic = "force-dynamic";
-
-function parsePrivateKey(raw: string): string {
-    if (!raw) return "";
-    if (!raw.includes("-----BEGIN")) {
-        try {
-            return Buffer.from(raw, "base64").toString("utf-8");
-        } catch {
-            return raw;
-        }
-    }
-    return raw.replace(/\\n/g, "\n");
-}
 
 export async function GET() {
     const rawAppleKey = process.env.AUTH_APPLE_PRIVATE_KEY ?? "";
