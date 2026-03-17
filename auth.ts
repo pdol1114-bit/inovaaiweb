@@ -5,11 +5,23 @@ import Apple from "next-auth/providers/apple";
 // NextAuth v5 configuration
 import { adapter } from "@/lib/auth-adapter";
 import { firestore } from "@/lib/firebase-admin";
-
 import { parsePrivateKey } from "@/lib/auth-utils";
+import { captureAuthError } from "@/lib/error-store";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     debug: true,
+    logger: {
+        error(code, ...message) {
+            console.error("[authjs:error]", code, JSON.stringify(message));
+            captureAuthError(String(code), message);
+        },
+        warn(code) {
+            console.warn("[authjs:warn]", code);
+        },
+        debug(code, ...message) {
+            console.log("[authjs:debug]", code, typeof message === "object" ? JSON.stringify(message).substring(0, 200) : message);
+        },
+    },
     adapter,
     // Use JWT-based sessions. The adapter will still manage user/account creation in Firestore.
     session: { strategy: "jwt" },
