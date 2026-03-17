@@ -15,15 +15,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     providers: [
         Google({
-            clientId: process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET,
+            clientId: process.env.AUTH_GOOGLE_ID?.trim(),
+            clientSecret: process.env.AUTH_GOOGLE_SECRET?.trim(),
         }),
-        // Apple provider requires teamId/keyId/privateKey; cast needed due to incomplete type definition
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Apple({
-            clientId: process.env.AUTH_APPLE_ID?.trim() ?? "",
-            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim() ?? "",
-            keyId: process.env.AUTH_APPLE_KEY_ID?.trim() ?? "",
+            clientId: process.env.AUTH_APPLE_ID?.trim(),
+            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim(),
+            keyId: process.env.AUTH_APPLE_KEY_ID?.trim(),
             privateKey: parsePrivateKey(process.env.AUTH_APPLE_PRIVATE_KEY),
         } as any),
     ],
