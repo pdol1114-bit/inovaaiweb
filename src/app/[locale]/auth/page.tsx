@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Chrome, Apple, MessageCircle, Navigation2, AlertCircle } from "lucide-react";
+import { Chrome, Apple, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { signIn } from "../../../../auth";
 import { getTranslations } from "next-intl/server";
@@ -59,27 +59,7 @@ export default async function AuthPage({
                         </Button>
                     </form>
 
-                    {/* Kakao */}
-                    <form action={async () => {
-                        "use server"
-                        await signIn("kakao", { redirectTo: `/${locale}/auth/success` })
-                    }}>
-                        <Button type="submit" className="w-full h-12 text-base bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90 space-x-3">
-                            <MessageCircle className="h-5 w-5 fill-current" />
-                            <span>{t("kakao")}</span>
-                        </Button>
-                    </form>
 
-                    {/* Naver */}
-                    <form action={async () => {
-                        "use server"
-                        await signIn("naver", { redirectTo: `/${locale}/auth/success` })
-                    }}>
-                        <Button type="submit" className="w-full h-12 text-base bg-[#03C75A] text-white hover:bg-[#03C75A]/90 space-x-3">
-                            <Navigation2 className="h-5 w-5 fill-current" />
-                            <span>{t("naver")}</span>
-                        </Button>
-                    </form>
                 </div>
 
                 <p className="text-center text-xs text-muted-foreground pt-4">

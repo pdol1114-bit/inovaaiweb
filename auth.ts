@@ -1,8 +1,6 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
-import Naver from "next-auth/providers/naver";
-import Kakao from "next-auth/providers/kakao";
 
 // NextAuth v5 configuration
 import { adapter } from "@/lib/auth-adapter";
@@ -19,62 +17,71 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             clientId: process.env.AUTH_GOOGLE_ID,
             clientSecret: process.env.AUTH_GOOGLE_SECRET,
         }),
+        // Apple provider requires teamId/keyId/privateKey; cast needed due to incomplete type definition
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Apple({
-            clientId: process.env.AUTH_APPLE_ID?.trim(),
-            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim(),
-            keyId: process.env.AUTH_APPLE_KEY_ID?.trim(),
-            privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+            clientId: process.env.AUTH_APPLE_ID?.trim() ?? "",
+            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim() ?? "",
+            keyId: process.env.AUTH_APPLE_KEY_ID?.trim() ?? "",
+            privateKey: process.env.AUTH_APPLE_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
         } as any),
-        Naver({
-            clientId: process.env.AUTH_NAVER_ID?.trim(),
-            clientSecret: process.env.AUTH_NAVER_SECRET?.trim(),
-        }),
-        Kakao({
-            clientId: process.env.AUTH_KAKAO_ID?.trim(),
-            clientSecret: process.env.AUTH_KAKAO_SECRET?.trim(),
-        }),
     ],
     pages: {
         signIn: "/auth",
         error: "/auth/error",
     },
     callbacks: {
-        // Check for provider conflicts: if a user already signed up with Google,
-        // they should not be able to log in with Naver/Kakao using the same email.
-        async signIn({ user, account, profile }) {
+        async signIn({ user, account }) {
             console.log("[auth] signIn callback:", {
                 provider: account?.provider,
                 email: user.email,
                 id: user.id
             });
+            // user.id is not available yet on first Apple login
+            // Allow sign-in; adapter will handle user/account creation
             if (!account || !user.email) return true;
 
             try {
-                // Use the shared firestore instance
                 const db = firestore;
+                // Only check for conflicts if we have a valid userId
+                if (user.id) {
+                    const snapshot = await db
+                        .collection("accounts")
+                        .where("userId", "==", user.id)
+                        .get();
 
-                // Query the accounts collection for this email
-                const snapshot = await db
-                    .collection("accounts")
-                    .where("userId", "==", user.id || user.email)
-                    .get();
-
-                if (!snapshot.empty) {
-                    const existingAccount = snapshot.docs.find(
-                        (doc) => doc.data().provider !== account.provider
-                    );
-                    if (existingAccount) {
-                        const existingProvider = existingAccount.data().provider;
-                        return `/auth?error=OAuthAccountNotLinked&provider=${existingProvider}`;
+                    if (!snapshot.empty) {
+                        const existingAccount = snapshot.docs.find(
+                            (doc) => doc.data().provider !== account.provider
+                        );
+                        if (existingAccount) {
+                            const existingProvider = existingAccount.data().provider;
+                            return `/auth?error=OAuthAccountNotLinked&provider=${existingProvider}`;
+                        }
                     }
                 }
             } catch (e) {
-                // If Firestore check fails (e.g., first time user), allow sign-in
                 console.error("[auth] signIn callback error:", e);
             }
 
             return true;
+        },
+        async jwt({ token, user, account }) {
+            // Persist user id and provider into the token on first sign-in
+            if (user) {
+                token.uid = user.id;
+            }
+            if (account) {
+                token.provider = account.provider;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            // Pass uid and provider through to the client session
+            if (token.uid) {
+                session.user.id = token.uid as string;
+            }
+            return session;
         },
     },
 });
