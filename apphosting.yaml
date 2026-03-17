@@ -21,7 +21,7 @@ env:
       - RUNTIME
 
   - variable: AUTH_SECRET
-    value: xBkcbu0WWaW4Ueha5OtZWP4sWUj/NW41WeD41hssSv0=
+    secret: AUTH_SECRET
     availability:
       - RUNTIME
 
@@ -50,10 +50,8 @@ env:
     availability:
       - RUNTIME
 
-  # Base64-encoded Apple private key (EC P-256).
-  # Decoded in auth.ts parsePrivateKey() to handle Firebase App Hosting env var limitations.
   - variable: AUTH_APPLE_PRIVATE_KEY
-    value: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZzhyeUVhaDJ1TkcwTjRKMnQKQi9xMTNYeVViNFhLcjl3eTNuMHA3WnNja2oyZ0NnWUlLb1pJemowREFRZWhSQU5DQUFTQi8xcjRwYmtkbVBmdAphM3F4VWxvZDRVTHMzOHh6Q2tCd3JodTBCL09hWkJEd3JhQWJiTzNpZXg5QlpqWUJCeGtTQ1huSVA3ck4wdkZlClIzNVl0cFR0Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=
+    secret: AUTH_APPLE_PRIVATE_KEY
     availability:
       - RUNTIME
 
