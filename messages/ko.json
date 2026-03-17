@@ -97,7 +97,17 @@
         "patentTitleLabel": "발명의 명칭",
         "patentTitleEn": "\"AI-based Pet Health Assessment System using Questionnaire and Biosignals\"",
         "patentTitleKo": "(인공지능 기반 반려동물 건강 상태 분석 시스템)",
-        "ctaButton": "기술 시연 보기"
+        "copyrightSectionTitle": "저작권 등록",
+        "copyrightWorkTitle": "제호",
+        "copyrightWorkTitleValue": "Sniff by hatch (스니프바이해치)",
+        "copyrightNo": "등록 번호",
+        "copyrightNoValue": "C-2026-013694",
+        "copyrightDate": "등록 일자",
+        "copyrightDateValue": "2026-03-17",
+        "copyrightAuthor": "저작권자",
+        "copyrightAuthorValue": "강유석",
+        "copyrightType": "종류",
+        "copyrightTypeValue": "컴퓨터프로그램저작물 (응용프로그램)"
     },
     "Sniff": {
         "heroTitle1": "사랑하는 당신의 반려동물을 위한",

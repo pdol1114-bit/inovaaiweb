@@ -96,8 +96,18 @@
         "patentInventors": "Inventors",
         "patentTitleLabel": "Title",
         "patentTitleEn": "\"AI-based Pet Health Assessment System using Questionnaire and Biosignals\"",
-        "patentTitleKo": "(인공지능 기반 반려동물 건강 상태 분석 시스템)",
-        "ctaButton": "See the Tech in Action"
+        "patentTitleKo": "(AI-based Pet Health Assessment System)",
+        "copyrightSectionTitle": "Copyright Registration",
+        "copyrightWorkTitle": "Work Title",
+        "copyrightWorkTitleValue": "Sniff by hatch",
+        "copyrightNo": "Registration No.",
+        "copyrightNoValue": "C-2026-013694",
+        "copyrightDate": "Registration Date",
+        "copyrightDateValue": "2026-03-17",
+        "copyrightAuthor": "Copyright Owner",
+        "copyrightAuthorValue": "Yu-Seok Kang",
+        "copyrightType": "Work Type",
+        "copyrightTypeValue": "Computer Program (Application)"
     },
     "Sniff": {
         "heroTitle1": "AI-Powered Health Analysis",
