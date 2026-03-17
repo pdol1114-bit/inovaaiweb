@@ -13,19 +13,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter,
     session: { strategy: "jwt" },
     trustHost: true,
-    // Apple uses form_post (cross-site POST) for its callback.
-    // NextAuth's default SameSite=Lax prevents cookies from being sent in cross-site POSTs.
-    // Only nonce and state need SameSite=None — do NOT include sessionToken to avoid Configuration error.
-    cookies: {
-        state: {
-            name: `__Secure-authjs.state`,
-            options: { httpOnly: true, sameSite: "none" as const, path: "/", secure: true, maxAge: 60 * 15 },
-        },
-        nonce: {
-            name: `__Secure-authjs.nonce`,
-            options: { httpOnly: true, sameSite: "none" as const, path: "/", secure: true },
-        },
-    },
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
