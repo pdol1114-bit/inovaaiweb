@@ -5,82 +5,110 @@ import Apple from "next-auth/providers/apple";
 // NextAuth v5 configuration
 import { adapter } from "@/lib/auth-adapter";
 import { firestore } from "@/lib/firebase-admin";
-
 import { parsePrivateKey } from "@/lib/auth-utils";
+import * as jose from "jose";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-    debug: true,
-    adapter,
-    session: { strategy: "jwt" },
-    trustHost: true,
-    providers: [
-        Google({
-            clientId: process.env.AUTH_GOOGLE_ID?.trim(),
-            clientSecret: process.env.AUTH_GOOGLE_SECRET?.trim(),
-        }),
-        Apple({
-            clientId: process.env.AUTH_APPLE_ID?.trim(),
-            teamId: process.env.AUTH_APPLE_TEAM_ID?.trim(),
-            keyId: process.env.AUTH_APPLE_KEY_ID?.trim(),
-            privateKey: parsePrivateKey(process.env.AUTH_APPLE_PRIVATE_KEY),
-        } as any),
-    ],
-    pages: {
-        signIn: "/auth",
-        error: "/auth/error",
-    },
-    callbacks: {
-        async signIn({ user, account }) {
-            console.log("[auth] signIn callback:", {
-                provider: account?.provider,
-                email: user.email,
-                id: user.id
-            });
-            // user.id is not available yet on first Apple login
-            // Allow sign-in; adapter will handle user/account creation
-            if (!account || !user.email) return true;
+/**
+ * Manually generates a Client Secret JWT for Apple.
+ * This is more robust than letting NextAuth generate it internally in some environments.
+ */
+async function getAppleClientSecret() {
+    const key = parsePrivateKey(process.env.AUTH_APPLE_PRIVATE_KEY);
+    const clientId = process.env.AUTH_APPLE_ID?.trim();
+    const teamId = process.env.AUTH_APPLE_TEAM_ID?.trim();
+    const keyId = process.env.AUTH_APPLE_KEY_ID?.trim();
 
-            try {
-                const db = firestore;
-                // Only check for conflicts if we have a valid userId
-                if (user.id) {
-                    const snapshot = await db
-                        .collection("accounts")
-                        .where("userId", "==", user.id)
-                        .get();
+    if (!key || !clientId || !teamId || !keyId) {
+        console.error("[auth] Missing Apple credentials for clientSecret generation");
+        return undefined;
+    }
 
-                    if (!snapshot.empty) {
-                        const existingAccount = snapshot.docs.find(
-                            (doc) => doc.data().provider !== account.provider
-                        );
-                        if (existingAccount) {
-                            const existingProvider = existingAccount.data().provider;
-                            return `/auth?error=OAuthAccountNotLinked&provider=${existingProvider}`;
+    try {
+        const privateKey = await jose.importPKCS8(key, "ES256");
+        return await new jose.SignJWT({})
+            .setProtectedHeader({ alg: "ES256", kid: keyId, typ: "JWT" })
+            .setIssuer(teamId)
+            .setIssuedAt()
+            .setExpirationTime("1h") // 1 hour expiration
+            .setAudience("https://appleid.apple.com")
+            .setSubject(clientId)
+            .sign(privateKey);
+    } catch (e) {
+        console.error("[auth] Error generating Apple client secret:", e);
+        return undefined;
+    }
+}
+
+export const { handlers, signIn, signOut, auth } = NextAuth(async () => {
+    const appleSecret = await getAppleClientSecret();
+
+    return {
+        debug: true,
+        adapter,
+        session: { strategy: "jwt" },
+        trustHost: true,
+        providers: [
+            Google({
+                clientId: process.env.AUTH_GOOGLE_ID?.trim(),
+                clientSecret: process.env.AUTH_GOOGLE_SECRET?.trim(),
+            }),
+            Apple({
+                clientId: process.env.AUTH_APPLE_ID?.trim(),
+                clientSecret: appleSecret,
+            }),
+        ],
+        pages: {
+            signIn: "/auth",
+            error: "/auth/error",
+        },
+        callbacks: {
+            async signIn({ user, account }) {
+                console.log("[auth] signIn callback:", {
+                    provider: account?.provider,
+                    email: user.email,
+                    id: user.id
+                });
+                if (!account || !user.email) return true;
+
+                try {
+                    const db = firestore;
+                    if (user.id) {
+                        const snapshot = await db
+                            .collection("accounts")
+                            .where("userId", "==", user.id)
+                            .get();
+
+                        if (!snapshot.empty) {
+                            const existingAccount = snapshot.docs.find(
+                                (doc) => doc.data().provider !== account.provider
+                            );
+                            if (existingAccount) {
+                                const existingProvider = existingAccount.data().provider;
+                                return `/auth?error=OAuthAccountNotLinked&provider=${existingProvider}`;
+                            }
                         }
                     }
+                } catch (e) {
+                    console.error("[auth] signIn callback error:", e);
                 }
-            } catch (e) {
-                console.error("[auth] signIn callback error:", e);
-            }
 
-            return true;
+                return true;
+            },
+            async jwt({ token, user, account }) {
+                if (user) {
+                    token.uid = user.id;
+                }
+                if (account) {
+                    token.provider = account.provider;
+                }
+                return token;
+            },
+            async session({ session, token }) {
+                if (token.uid) {
+                    session.user.id = token.uid as string;
+                }
+                return session;
+            },
         },
-        async jwt({ token, user, account }) {
-            // Persist user id and provider into the token on first sign-in
-            if (user) {
-                token.uid = user.id;
-            }
-            if (account) {
-                token.provider = account.provider;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            // Pass uid and provider through to the client session
-            if (token.uid) {
-                session.user.id = token.uid as string;
-            }
-            return session;
-        },
-    },
+    };
 });
