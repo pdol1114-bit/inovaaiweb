@@ -14,6 +14,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Use JWT-based sessions. The adapter will still manage user/account creation in Firestore.
     session: { strategy: "jwt" },
     trustHost: true,
+    // Apple uses form_post (cross-site POST) for its callback.
+    // We must explicitly set SameSite=None on auth-related cookies so the browser
+    // sends them back when Apple POSTs to our callback URL.
+    cookies: {
+        state: {
+            name: "__Secure-authjs.state",
+            options: { httpOnly: true, sameSite: "none", path: "/", secure: true },
+        },
+        nonce: {
+            name: "__Secure-authjs.nonce",
+            options: { httpOnly: true, sameSite: "none", path: "/", secure: true },
+        },
+        pkceCodeVerifier: {
+            name: "__Secure-authjs.pkce.code_verifier",
+            options: { httpOnly: true, sameSite: "none", path: "/", secure: true },
+        },
+        callbackUrl: {
+            name: "__Secure-authjs.callback-url",
+            options: { httpOnly: true, sameSite: "none", path: "/", secure: true },
+        },
+        sessionToken: {
+            name: "__Secure-authjs.session-token",
+            options: { httpOnly: true, sameSite: "lax", path: "/", secure: true },
+        },
+    },
     providers: [
         Google({
             clientId: process.env.AUTH_GOOGLE_ID,
