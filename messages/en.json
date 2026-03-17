@@ -141,15 +141,22 @@
         "backToLogin": "Go to Login Page"
     },
     "Payment": {
-        "title": "Payment",
-        "description": "Please proceed with the payment for your selected service.",
+        "title": "Premium Subscription",
+        "description": "Start your smart pet health management with INOVA.AI Premium service.",
         "planTitle": "Selected Plan",
-        "planName": "Standard Plan",
-        "price": "₩29,900 / month",
+        "planName": "Sniff Premium",
+        "price": "$4.99 / month",
+        "vatNote": "Price includes all applicable taxes",
+        "features": {
+            "aiAnalysis": "Unlimited AI Analysis",
+            "healthHistory": "Pet Health History Management",
+            "expertSupport": "Professional Veterinary Simulation",
+            "earlyDetection": "Early Disease Symptom Detection"
+        },
         "paymentMethod": "Select Payment Method",
         "card": "Credit/Debit Card",
         "bank": "Bank Transfer",
-        "payNow": "Pay Now",
+        "payNow": "Subscribe Now",
         "securePayment": "Secure payment system is active."
     }
 }

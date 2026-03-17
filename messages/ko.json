@@ -141,15 +141,22 @@
         "backToLogin": "로그인 페이지로 이동"
     },
     "Payment": {
-        "title": "결제",
-        "description": "선택하신 서비스의 결제를 진행해 주세요.",
+        "title": "Premium 구독",
+        "description": "반려동물의 건강을 스마트하게 관리하는 INOVA.AI 프리미엄 서비스를 시작하세요.",
         "planTitle": "선택한 플랜",
-        "planName": "Standard Plan",
-        "price": "₩29,900 / 월",
+        "planName": "Sniff Premium",
+        "price": "₩3,300 / 월",
+        "vatNote": "부가세 포함",
+        "features": {
+            "aiAnalysis": "무제한 AI 분석",
+            "healthHistory": "반려동물 건강 히스토리 관리",
+            "expertSupport": "전문적인 수의학 문진 시뮬레이션",
+            "earlyDetection": "질병 조기 징후 감지"
+        },
         "paymentMethod": "결제 수단 선택",
         "card": "신용/체크카드",
         "bank": "계좌이체",
-        "payNow": "지금 결제하기",
+        "payNow": "지금 구독하기",
         "securePayment": "보안 결제 시스템이 적용되어 있습니다."
     }
 }
