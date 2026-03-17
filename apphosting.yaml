@@ -35,25 +35,6 @@ env:
     availability:
       - RUNTIME
 
-  - variable: AUTH_KAKAO_ID
-    value: fbef8c97b19215b25eee5f0365363328
-    availability:
-      - RUNTIME
-
-  - variable: AUTH_KAKAO_SECRET
-    value: 5mpHpvxSLs2Hbdfl9Wo3O09dwe2xbZI4
-    availability:
-      - RUNTIME
-
-  - variable: AUTH_NAVER_ID
-    value: Q53cTjMkqH1nmHollpH8
-    availability:
-      - RUNTIME
-
-  - variable: AUTH_NAVER_SECRET
-    value: iA2VRFv1jF
-    availability:
-      - RUNTIME
 
   - variable: AUTH_APPLE_ID
     value: ai.inovaai.web
