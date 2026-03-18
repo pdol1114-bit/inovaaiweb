@@ -248,12 +248,222 @@
             "Department: InovaAI",
             "Email: support@inovaai.ai"
         ],
-        "section11Title": "11. Changes to Privacy Policy",
         "section11List": [
             "This policy may be modified according to changes in laws or service content.",
             "Important changes will be noticed in advance through in-app or website announcements.",
             "The modified policy takes effect from the date of implementation posted on the website."
         ],
         "finalNote": "This Privacy Policy was enacted on November 1, 2025, and any subsequent changes will be announced through the InovaAI website."
+    },
+    "Terms": {
+        "backToMain": "Back to Main",
+        "title": "Terms of Service",
+        "lastUpdated": "Last Updated: March 1, 2026",
+        "sections": {
+            "s1": {
+                "title": "Article 1 (Purpose)",
+                "content": "These Terms of Service (hereinafter \"Terms\") aim to stipulate the rights, duties, responsibilities, and other necessary matters between INOVAAI (hereinafter \"Company\") and the Users regarding the use of the website (inovaai.ai), the 'Sniff by hatch' application, and related services (hereinafter collectively \"Service\") provided by the Company."
+            },
+            "s2": {
+                "title": "Article 2 (Definition of Terms)",
+                "list": [
+                    "① \"Service\" refers to pet health management, hospital chart (record) integration, information provision, Artificial Intelligence (AI) based analysis, and all incidental functions provided by the Company.",
+                    "② \"User\" refers to members and non-members who use the Service provided by the Company in accordance with these Terms.",
+                    "③ \"Member\" refers to a person who has completed membership registration for the Service and can continuously use the Service provided by the Company.",
+                    "④ \"Non-member\" refers to a person who uses the Service within the range allowed by the Company without registering for membership.",
+                    "⑤ \"Content\" refers to information, text, images, videos, software, AI analysis results, reports, and all other materials provided in the Service or generated/displayed during the Service use process.",
+                    "⑥ \"Paid Service\" refers to subscriptions, functions, contents, or any other services provided by the Company for a fee.",
+                    "⑦ \"Recurring Payment (Subscription)\" refers to a type of Paid Service where the User registers a payment method and the usage fee is automatically paid at regular intervals.",
+                    "⑧ \"Third-party Service\" refers to Firebase authentication, Payment Gateway (PG), app markets (e.g., Apple App Store, Google Play), hospital/institutional systems, and other services and systems provided by third parties other than the Company.",
+                    "⑨ Terms not defined in this article shall follow relevant laws and general commercial practices."
+                ]
+            },
+            "s3": {
+                "title": "Article 3 (Effect and Guidelines of Terms)",
+                "list": [
+                    "① The Company shall post the contents of these Terms on the Service's initial screen or linked screen so that Users can easily find them.",
+                    "② A User is deemed to have agreed to these Terms by proceeding with membership registration or using the Service.",
+                    "③ The Company may establish operation policies, announcements, paid service policies (pricing/refund standards, etc.), and guidelines for Service operation, which may apply to Service use along with these Terms. However, if such contents conflict with these Terms, these Terms shall prevail (unless relevant laws provide otherwise).",
+                    "④ Matters not determined in these Terms and the interpretation of these Terms shall follow relevant laws and commercial practices."
+                ]
+            },
+            "s4": {
+                "title": "Article 4 (Amendment of Terms)",
+                "list": [
+                    "① The Company may amend these Terms within the scope not violating relevant laws.",
+                    "② When the Company amends the Terms, it shall specify the effective date and the reason for the amendment and announce it on the Service screen, etc., from [7] days before the effective date. However, for changes that are unfavorable to the User or involve important contents, additional notification may be made within the scope required by relevant laws, such as announcing from [30] days before the effective date.",
+                    "③ If the User continues to use the Service even after the effective date of the amended Terms, the User is deemed to have agreed to the amended Terms. If the User does not agree to the amended Terms, the User may stop using the Service and request membership withdrawal."
+                ]
+            },
+            "s5": {
+                "title": "Article 5 (Establishment of Use Contract and Membership Registration)",
+                "list": [
+                    "① A use contract is established when a User agrees to the Terms and applies for membership registration according to the procedure set by the Company, and the Company accepts it.",
+                    "② The Company may not accept an application for membership registration or may terminate the use contract afterward in the following cases:",
+                    "• Application made with false information",
+                    "• Application made by stealing another person's name (email/phone number, etc.)",
+                    "• Interfering with or likely to interfere with the normal operation of the Service",
+                    "• Other cases where acceptance is deemed inappropriate according to the Company's reasonable judgment",
+                    "③ Members must immediately correct their information through functions within the Service or the customer center if there are changes to their member information, and any disadvantages caused by non-correction shall be attributed to the Member."
+                ]
+            },
+            "s6": {
+                "title": "Article 6 (Use by Minors)",
+                "list": [
+                    "① If consent for processing personal information of a child under 14 is required, the Company shall obtain consent from the legal representative and go through the procedure to verify if the legal representative has consented.",
+                    "② If a minor uses (including payment) a Paid Service, consent from the legal representative may be required, and a contract not consented to by the legal representative may be canceled in accordance with relevant laws. The Company may operate necessary notification and verification procedures during the payment process."
+                ]
+            },
+            "s7": {
+                "title": "Article 7 (Service Use and Integrated Account)",
+                "list": [
+                    "① Users can use the Service by completing membership registration according to the procedure set by the Company.",
+                    "② The Company may operate an integrated account through the Firebase authentication system, etc., and Users can use the website and the app ('Sniff by hatch') operated by the Company integrally with one account.",
+                    "③ The Company may limit certain authentication methods or require additional authentication if it is deemed necessary for Service security and operation."
+                ]
+            },
+            "s8": {
+                "title": "Article 8 (Account Management and Security)",
+                "list": [
+                    "① Members must manage their account information (password, authentication method, device access, etc.) with the care of a good manager.",
+                    "② Members must not transfer, lend, or provide their account as collateral to others or let others use it.",
+                    "③ Members must immediately notify the Company if they recognize account theft or unauthorized use, and the Company may take necessary security measures.",
+                    "④ The Company is not responsible for damages caused by account theft/unauthorized use that occurred without the Company's fault. However, cases where the Company has intent or gross negligence are exceptions."
+                ]
+            },
+            "s9": {
+                "title": "Article 9 (Provision, Change, and Interruption of Service)",
+                "list": [
+                    "① The Company may provide the following services to Users:",
+                    "• Pet information registration and health management functions",
+                    "• Hospital chart (record) integration and related information display function (within possible range)",
+                    "• Pet health-related information provision and AI-based analysis/reports",
+                    "• Other services determined by the Company",
+                    "② The Company may change the content, provision method, and provision time of the Service and shall announce it in advance if the change has a significant impact on Users.",
+                    "③ The Company may temporarily limit or interrupt all or part of the Service in the following cases:",
+                    "• Maintenance, inspection, replacement, breakdown, or communication failure of facilities",
+                    "• Obstacles, policy changes, or termination of Third-party Services beyond the Company's control",
+                    "• Natural disasters, national emergencies, or other force majeure cases",
+                    "④ The Company assumes that Users understand and agree that restrictions may occur in using some functions of the Service depending on the policies and provision conditions of Third-party Services (app markets, payment, hospital systems, etc.)."
+                ]
+            },
+            "s10": {
+                "title": "Article 10 (Paid Service and Payment)",
+                "list": [
+                    "① The Company may provide some contents or functions within the Service as Paid Services, and the content, usage fee, payment method, and provision period of the Paid Service shall be displayed on the Service screen.",
+                    "② Users who wish to use a Paid Service must pay the cost through the payment methods (PG integration, app market in-app purchase, etc.) set by the Company.",
+                    "③ The Company may change the configuration, price, and provision conditions of Paid Services according to operational or technical needs and shall proceed with advance notice or consent within the scope required by relevant laws."
+                ]
+            },
+            "s11": {
+                "title": "Article 11 (Recurring Payment (Subscription) and Termination)",
+                "list": [
+                    "① The Company may provide Paid Services in a Recurring Payment (subscription) method, and the payment cycle, amount, provision content, and automatic payment status shall follow the instructions on the payment screen or within the Service.",
+                    "② If a User agrees to Recurring Payment and registers a payment method, payments may be made automatically every payment cycle.",
+                    "③ Users can apply for Recurring Payment termination at any time through the management screen within the Service, app market subscription management, or the customer center.",
+                    "④ Upon termination of Recurring Payment, the right to use the already paid period is, in principle, maintained until the end of the payment cycle (unless separate instructions are given), and payment will not proceed from the next cycle.",
+                    "⑤ Whether refund/partial refund is possible and the criteria for it shall follow Article 12 and the Paid Service policy (pricing/refund guide)."
+                ]
+            },
+            "s12": {
+                "title": "Article 12 (Subscription Withdrawal and Refund)",
+                "list": [
+                    "① Subscription withdrawal (purchase cancellation) and refund of Paid Services shall follow relevant laws and the Paid Service policy (refund criteria/procedure) announced by the Company on the Service screen.",
+                    "② Due to the nature of digital contents or services, if use (provision) begins immediately after payment, subscription withdrawal may be limited within the range allowed by relevant laws. The Company clearly displays this in the payment process and operates necessary consent procedures if there are subscription withdrawal limitations.",
+                    "③ Users who request a refund must apply through the procedure guided within the Service or the customer center, and the Company will endeavor to process valid refund requests within [X] business days. However, the actual refund timing may vary depending on the payment method/app market policies.",
+                    "④ If unauthorized use (violation of terms, refund abuse, illegal use, etc.) is confirmed, the Company may limit the refund or restrict the use."
+                ]
+            },
+            "s13": {
+                "title": "Article 13 (Cautions on Medical Info and AI Analysis Results)",
+                "warning": "⚠️ Caution:",
+                "list": [
+                    "① Pet health-related information and AI analysis results provided in the Service are for reference only and cannot replace professional medical treatment and diagnosis by a veterinarian.",
+                    "② The Company does not guarantee the accuracy, completeness, timeliness, or fitness for a particular purpose of the information provided in the Service.",
+                    "③ The Company is not responsible for the results of judgments or actions taken by Users relying on the information obtained from the Service, unless there is intent or gross negligence by the Company.",
+                    "④ If the pet's condition is critical or an emergency is suspected, please immediately visit a nearby veterinary hospital and receive treatment from a veterinarian."
+                ]
+            },
+            "s14": {
+                "title": "Article 14 (User's Duties and Prohibited Acts)",
+                "list": [
+                    "① Users must comply with relevant laws, these Terms, operation policies, and notices of the Company.",
+                    "② Users must not perform the following acts:",
+                    "• Registering false information, stealing another person's information, impersonating a third party",
+                    "• Infringing on intellectual property rights such as copyright/trademark rights of the Company or a third party",
+                    "• Interfering with the normal operation of the Service (hacking, reverse engineering, inducing abnormal traffic, exploiting vulnerabilities, automated collection (crawling), etc.)",
+                    "• Posting or transmitting illegal/harmful content",
+                    "• Using/selling/reselling/transferring the Service or Content for commercial purposes without the Company's prior consent",
+                    "• Other acts violating relevant laws or public order and morals",
+                    "③ If damages occur to the Company or a third party due to the User's prohibited acts, the User must compensate for the damages."
+                ]
+            },
+            "s15": {
+                "title": "Article 15 (Use Restriction and Contract Termination)",
+                "list": [
+                    "① If a User violates these Terms or operation policies or interferes with the normal operation of the Service, the Company may restrict use, such as warning, temporary suspension, permanent suspension, or contract termination, depending on the severity of the violation.",
+                    "② In principle, the Company shall notify in advance when taking use restriction measures, but may notify afterward in urgent or unavoidable circumstances.",
+                    "③ Users may request use contract termination (membership withdrawal) at any time through functions within the Service or the customer center.",
+                    "④ Even upon membership withdrawal, information required to be stored in accordance with relevant laws may be stored during the statutory storage period, and detailed contents follow the Privacy Policy."
+                ]
+            },
+            "s16": {
+                "title": "Article 16 (User Data and Personal Information Protection)",
+                "list": [
+                    "① Pet information, health data, hospital chart integration data, Service use records, etc. (hereinafter \"User Data\") registered by the User may be processed for Service provision, quality improvement, customer support, prevention of unauthorized use, etc.",
+                    "② The Company safely processes and protects personal information in accordance with relevant laws and the Privacy Policy.",
+                    "③ The Company may conduct statistics/analysis of User Data for Service advancement and analysis, and will endeavor to utilize it in a de-identified/anonymized or aggregated form within the possible range.",
+                    "④ If entrustment of personal information processing or provision to a third party occurs to perform tasks such as Third-party Service integration, payment processing, or customer support, the Company implements necessary measures such as notification/consent according to relevant laws, and detailed information is guided in the Privacy Policy."
+                ]
+            },
+            "s17": {
+                "title": "Article 17 (Copyright of Posts and Permission for Use)",
+                "list": [
+                    "① The copyright of posts posted or uploaded by Users within the Service belongs to the respective poster.",
+                    "② The User grants the Company a non-exclusive, free license to use (reproduce, transmit, distribute, edit, create derivative works, etc.) the posts within a reasonable range for Service operation, exposure within the Service, Service improvement, and promotion. However, if the User deletes the post or withdraws from membership, the Company will endeavor to stop using the post, except where there is an obligation to store it under relevant laws or it is necessary for Service operation.",
+                    "③ Users cannot post messages that infringe on the rights of others or violate laws, and the Company may take measures such as deleting, making private, or restricting access to posts upon receiving reports or based on reasonable judgment."
+                ]
+            },
+            "s18": {
+                "title": "Article 18 (Company's Intellectual Property Rights)",
+                "list": [
+                    "① Copyright and other intellectual property rights regarding the Service and Content included in the Service (except for User posts) belong to the Company or the legitimate right holder.",
+                    "② Users cannot use the Service or Content by reproducing, transmitting, distributing, selling, or creating derivative works without the Company's prior written consent."
+                ]
+            },
+            "s19": {
+                "title": "Article 19 (Compensation for Damages and Limitation of Liability)",
+                "list": [
+                    "① The Company and the User may claim compensation for damages in accordance with relevant laws if damages occur due to the other party's fault.",
+                    "② Regarding services provided free of charge, the Company is not responsible for damages occurred to Users unless there is intent or gross negligence by the Company.",
+                    "③ The Company is not responsible for damages occurred due to obstacles in Third-party Services, User's fault (negligence in account management, violation of terms, etc.), or force majeure, unless there is intent or gross negligence by the Company."
+                ]
+            },
+            "s20": {
+                "title": "Article 20 (Governing Law and Dispute Resolution)",
+                "list": [
+                    "① These Terms are interpreted and applied in accordance with the laws of the Republic of Korea.",
+                    "② Disputes occurring between the Company and the User shall be endeavored to be resolved through mutual consultation.",
+                    "③ If not resolved through consultation, it shall be resolved according to the procedures and jurisdiction set by relevant laws such as the Civil Procedure Act."
+                ]
+            },
+            "s21": {
+                "title": "Article 21 (Company Info and Customer Center)",
+                "intro": "The Company information is as follows:",
+                "list": [
+                    "• Trade Name: InovaAI Co., Ltd.",
+                    "• Representative: Jise Seong, Yuseok Kang",
+                    "• Business Registration Number: 479-81-03783",
+                    "• Address: Room 204, 2nd Floor, 4, Daeha 2-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do",
+                    "• Customer Center Email: support@inovaai.ai",
+                    "• Operating Hours: Weekdays 10:00~18:00, excluding holidays"
+                ],
+                "footer": "Inquiries and complaints related to Service use can be submitted through the customer center."
+            }
+        },
+        "appendix": {
+            "title": "Appendix",
+            "content": "These Terms shall take effect from [March 1, 2026]."
+        }
     }
 }
