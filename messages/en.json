@@ -465,5 +465,50 @@
             "title": "Appendix",
             "content": "These Terms shall take effect from [March 1, 2026]."
         }
+    },
+    "Common": {
+        "comingSoon": "Coming Soon",
+        "late26": "Late 2026"
+    },
+    "SniffHospital": {
+        "title": "Sniff for Hospital",
+        "heroTitle": "Professional AI Diagnostics for Veterinary Clinics",
+        "heroDesc": "Empower your clinic with Sniff's professional-grade AI analysis. Enhance diagnostic accuracy and streamline patient intake with visual health recognition.",
+        "getStarted": "Get Started for Clinics",
+        "partnerLogin": "Partner Login",
+        "featuresTitle": "Hospital Exclusive Features",
+        "featuresDesc": "Advanced diagnostic tools designed for professional veterinary environments.",
+        "feature1Title": "Advanced Imaging",
+        "feature1Desc": "High-resolution visual analysis for dermatological, ophthalmic, and dental assessments.",
+        "feature2Title": "Patient Integration",
+        "feature2Desc": "Seamlessly link AI diagnostic results with your existing Hospital Management System (HMS).",
+        "feature3Title": "Client Trust",
+        "feature3Desc": "Provide visual proof and AI-backed reports to build confidence with pet owners."
+    },
+    "CSVAutomation": {
+        "badge": "CSV Automation",
+        "heroTitle": "AI-Driven Pharmaceutical CSV Solutions",
+        "heroDesc": "Automate your Computer System Validation (CSV) workflows. Ensure GxP compliance with higher accuracy and significantly reduced manual effort.",
+        "getStarted": "Start CSV Automation",
+        "adminLogin": "Admin Login",
+        "feature1Title": "Documentation Automation",
+        "feature1Desc": "Automatically generate and manage complex CSV output documents through AI.",
+        "feature2Title": "GxP Compliance",
+        "feature2Desc": "100% compliant with guidelines from global regulatory agencies like FDA and EMA.",
+        "feature3Title": "Validation Acceleration",
+        "feature3Desc": "Cut validation time by up to 60% or more compared to manual processes."
+    },
+    "FemAi": {
+        "badge": "Industrial Innovation",
+        "heroTitle": "Engineering Precision Empowered by AI",
+        "heroDesc": "Accelerating engineering simulations by combining traditional Finite Element Method with deep learning acceleration.",
+        "getStarted": "Start Free Simulation",
+        "login": "Login",
+        "conceptTitle": "AI-Accelerated Simulation",
+        "conceptDesc": "Traditional FEM simulations are computationally expensive and time-consuming. Inova AI integrates Surrogate Models and Physics-Informed Neural Networks (PINNs) to provide near-instant results with high fidelity.",
+        "feature1Title": "Real-time Feedback",
+        "feature1Desc": "Instantaneous structural response analysis for design iteration.",
+        "feature2Title": "Inverse Design AI",
+        "feature2Desc": "Automatically find optimal structures based on desired performance parameters."
     }
 }

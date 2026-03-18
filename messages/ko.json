@@ -466,5 +466,50 @@
             "title": "부칙",
             "content": "본 약관은 [2026년 3월 1일]부터 시행합니다."
         }
+    },
+    "Common": {
+        "comingSoon": "출시 예정",
+        "late26": "2026년 말"
+    },
+    "SniffHospital": {
+        "title": "Sniff for Hospital",
+        "heroTitle": "수의사를 위한 전문 AI 진단 솔루션",
+        "heroDesc": "Sniff의 전문가급 AI 분석으로 병원 업무의 효율을 높이세요. 시각적 건강 인식을 통해 진단 정확도를 높이고 환자 접수를 간소화합니다.",
+        "getStarted": "병원용 서비스 시작하기",
+        "partnerLogin": "파트너 로그인",
+        "featuresTitle": "병원 전용 기능",
+        "featuresDesc": "전문적인 수의 환경을 위해 설계된 고급 진단 도구입니다.",
+        "feature1Title": "고급 영상 분석",
+        "feature1Desc": "피부, 안과, 치과 평가를 위한 고해상도 시각적 분석 솔루션입니다.",
+        "feature2Title": "환자 연동",
+        "feature2Desc": "AI 진단 결과를 기존 병원 관리 시스템(HMS)과 원활하게 연동하세요.",
+        "feature3Title": "보호자 신뢰",
+        "feature3Desc": "시각적 증거와 AI 기반 리포트를 통해 보호자에게 신뢰를 제공하세요."
+    },
+    "CSVAutomation": {
+        "badge": "CSV 자동화",
+        "heroTitle": "AI 기반 제약 CSV 솔루션",
+        "heroDesc": "컴퓨터 시스템 밸리데이션(CSV) 워크플로우를 자동화하세요. 더 높은 정확도와 획기적으로 줄어든 수작업으로 GxP 준수를 보장합니다.",
+        "getStarted": "CSV 자동화 시작하기",
+        "adminLogin": "관리자 로그인",
+        "feature1Title": "문서 자동화",
+        "feature1Desc": "복잡한 CSV 산출물 문서를 AI를 통해 자동으로 생성하고 관리합니다.",
+        "feature2Title": "규제 준수",
+        "feature2Desc": "FDA, EMA 등 글로벌 규제 기관의 가이드라인을 100% 준수합니다.",
+        "feature3Title": "검증 가속화",
+        "feature3Desc": "기존 수작업 대비 검증 시간을 최대 60% 이상 단축합니다."
+    },
+    "FemAi": {
+        "badge": "산업 혁신",
+        "heroTitle": "AI가 강화하는 엔지니어링 정밀도",
+        "heroDesc": "전통적인 유한요소법(FEM)과 딥러닝 가속을 결합하여 엔지니어링 시뮬레이션을 가속화합니다.",
+        "getStarted": "무료 시뮬레이션 시작하기",
+        "login": "로그인",
+        "conceptTitle": "AI 가속 시뮬레이션",
+        "conceptDesc": "전통적인 FEM 시뮬레이션은 계산 비용이 많이 들고 시간이 오래 걸립니다. Inova AI는 대리 모델(Surrogate Models)과 물리 정보 신경망(PINNs)을 통합하여 높은 정확도로 실시간에 가까운 결과를 제공합니다.",
+        "feature1Title": "실시간 피드백",
+        "feature1Desc": "설계 반복을 위한 즉각적인 구조적 응답 분석을 제공합니다.",
+        "feature2Title": "역설계 AI",
+        "feature2Desc": "원하는 성능 매개변수를 기반으로 최적의 구조를 자동으로 찾아줍니다."
     }
 }
