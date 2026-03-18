@@ -167,8 +167,9 @@
         "card": "신용/체크카드",
         "bank": "계좌이체",
         "payNow": "지금 구독하기",
-        "securePayment": "보안 결제 시스템이 적용되어 있습니다.",
-        "Privacy": {
+        "securePayment": "보안 결제 시스템이 적용되어 있습니다."
+    },
+    "Privacy": {
         "title": "개인정보처리방침",
         "companyName": "Sniff by Hatch · 이노바에이아이(InovaAI)",
         "effectiveDate": "시행일자: 2025년 11월 1일",
@@ -255,5 +256,4 @@
         ],
         "finalNote": "본 개인정보처리방침은 2025년 11월 1일에 제정되었으며, 이후 변경 사항이 있을 경우 이노바에이아이 홈페이지를 통해 공지합니다."
     }
-}
 }

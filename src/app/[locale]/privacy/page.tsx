@@ -1,19 +1,18 @@
-import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export default function PrivacyPage({
+export default async function PrivacyPage({
     params,
 }: {
-    params: { locale: string };
+    params: Promise<{ locale: string }>;
 }) {
-    const { locale } = params;
+    const { locale } = await params;
     setRequestLocale(locale);
-    const t = useTranslations("Privacy");
+    const t = await getTranslations("Privacy");
 
     return (
         <div className="bg-white min-h-screen py-20 px-4">
             <div className="container mx-auto max-w-4xl text-slate-800">
-                <header className="mb-16 border-b border-slate-100 pb-12">
+                <header className="mb-16 border-b border-slate-100 pb-12 text-center md:text-left">
                     <h1 className="text-4xl font-black mb-6 text-slate-900 tracking-tight">
                         {t("title")}
                     </h1>
@@ -36,17 +35,17 @@ export default function PrivacyPage({
                         <div className="space-y-8">
                             <div className="space-y-3">
                                 <h3 className="font-bold text-slate-800">{t("section1Subtitle1")}</h3>
-                                <ul className="list-disc list-inside pl-4 space-y-2 text-slate-600">
+                                <ul className="list-disc list-inside space-x-0 pl-1 space-y-2 text-slate-600">
                                     {(t.raw("section1List1") as string[]).map((item, i) => (
-                                        <li key={i}>{item}</li>
+                                        <li key={i} className="pl-4 -indent-4">{item}</li>
                                     ))}
                                 </ul>
                             </div>
                             <div className="space-y-3">
                                 <h3 className="font-bold text-slate-800">{t("section1Subtitle2")}</h3>
-                                <ul className="list-disc list-inside pl-4 space-y-2 text-slate-600">
+                                <ul className="list-disc list-inside space-x-0 pl-1 space-y-2 text-slate-600">
                                     {(t.raw("section1List2") as string[]).map((item, i) => (
-                                        <li key={i}>{item}</li>
+                                        <li key={i} className="pl-4 -indent-4">{item}</li>
                                     ))}
                                 </ul>
                             </div>
