@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Chrome, Apple, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { signIn } from "../../../../auth";
+import { signInWithGoogle, signInWithApple } from "@/app/actions/auth";
 import { getTranslations } from "next-intl/server";
 
 export default async function AuthPage({
@@ -40,7 +40,7 @@ export default async function AuthPage({
                     {/* Google */}
                     <form action={async () => {
                         "use server"
-                        await signIn("google", { redirectTo: `/${locale}/auth/success` })
+                        await signInWithGoogle(locale)
                     }}>
                         <Button type="submit" variant="outline" className="w-full h-12 text-base border-white/10 hover:bg-white/5 space-x-3 bg-white/5">
                             <Chrome className="h-5 w-5" />
@@ -51,7 +51,7 @@ export default async function AuthPage({
                     {/* Apple */}
                     <form action={async () => {
                         "use server"
-                        await signIn("apple", { redirectTo: `/${locale}/auth/success` })
+                        await signInWithApple(locale)
                     }}>
                         <Button type="submit" variant="outline" className="w-full h-12 text-base border-white/10 hover:bg-white/5 space-x-3 bg-white/5">
                             <Apple className="h-5 w-5" />

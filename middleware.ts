@@ -1,9 +1,17 @@
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/utils/supabase/middleware";
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './src/i18n/routing';
 
-export default createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing);
+
+export async function middleware(request: NextRequest) {
+  const response = await updateSession(request);
+  return intlMiddleware(request);
+}
 
 export const config = {
-    // Match all pathnames except internals and static files
-    matcher: ['/((?!_next|_vercel|api/|.*\\..*).*)']
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
