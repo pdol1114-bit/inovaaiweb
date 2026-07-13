@@ -4,7 +4,9 @@
         "sniffHospital": "Sniff by Hatch 병원용",
         "csvAutomation": "컴퓨터 시스템 밸리데이션",
         "femAi": "인공지능과 유한요소해석",
-        "automation": "업무자동화"
+        "automation": "업무자동화",
+        "login": "로그인",
+        "logout": "로그아웃"
     },
     "Home": {
         "heroBadge": "AI 시대를 선도하다",

@@ -4,7 +4,9 @@
         "sniffHospital": "Sniff by Hatch for Hospital",
         "csvAutomation": "Computer System Validation",
         "femAi": "FEM & AI",
-        "automation": "Workflow Automation"
+        "automation": "Workflow Automation",
+        "login": "Login",
+        "logout": "Log out"
     },
     "Home": {
         "heroBadge": "Leading the AI Era",

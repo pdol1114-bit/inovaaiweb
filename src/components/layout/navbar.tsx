@@ -6,7 +6,8 @@ import { Menu, X, Globe, LogOut, User } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSession, signOut } from "next-auth/react";
+import { createClient } from "@/utils/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 const links = [
     { href: "/sniff", labelKey: "sniff" },
@@ -21,7 +22,7 @@ export function Navbar() {
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();
-    const { data: session, status } = useSession();
+    const [user, setUser] = useState<SupabaseUser | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -33,9 +34,24 @@ export function Navbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        const supabase = createClient();
+        supabase.auth.getUser().then(({ data }) => setUser(data.user));
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+        return () => subscription.unsubscribe();
+    }, []);
+
     const toggleLanguage = (newLocale: "ko" | "en") => {
         router.replace(pathname, { locale: newLocale });
         setIsOpen(false);
+    };
+
+    const handleSignOut = async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        router.push("/");
     };
 
     return (
@@ -97,12 +113,12 @@ export function Navbar() {
 
                     {/* Auth Status */}
                     <div className="flex items-center space-x-2 border-l border-gray-100 pl-4">
-                        {status === "authenticated" ? (
+                        {user ? (
                             <div className="flex items-center space-x-3">
-                                {session.user?.image ? (
+                                {user.user_metadata?.avatar_url ? (
                                     <img
-                                        src={session.user.image}
-                                        alt={session.user.name || "User"}
+                                        src={user.user_metadata.avatar_url}
+                                        alt={user.user_metadata?.full_name || "User"}
                                         className="h-8 w-8 rounded-full border border-gray-200"
                                     />
                                 ) : (
@@ -111,12 +127,12 @@ export function Navbar() {
                                     </div>
                                 )}
                                 <span className="text-sm font-medium text-gray-700 hidden lg:block">
-                                    {session.user?.name}
+                                    {user.user_metadata?.full_name ?? user.email}
                                 </span>
                                 <button
-                                    onClick={() => signOut()}
+                                    onClick={handleSignOut}
                                     className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                    title="Logout"
+                                    title={t("logout")}
                                 >
                                     <LogOut className="h-4 w-4" />
                                 </button>
@@ -169,13 +185,13 @@ export function Navbar() {
 
                             {/* Mobile Auth Status */}
                             <div className="pt-4 mt-4 border-t border-gray-100">
-                                {status === "authenticated" ? (
+                                {user ? (
                                     <div className="flex flex-col space-y-4">
                                         <div className="flex items-center space-x-3 px-4 py-2">
-                                            {session.user?.image ? (
+                                            {user.user_metadata?.avatar_url ? (
                                                 <img
-                                                    src={session.user.image}
-                                                    alt={session.user.name || "User"}
+                                                    src={user.user_metadata.avatar_url}
+                                                    alt={user.user_metadata?.full_name || "User"}
                                                     className="h-10 w-10 rounded-full border border-gray-100"
                                                 />
                                             ) : (
@@ -184,16 +200,16 @@ export function Navbar() {
                                                 </div>
                                             )}
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-gray-900">{session.user?.name}</span>
-                                                <span className="text-xs text-gray-500">{session.user?.email}</span>
+                                                <span className="text-sm font-bold text-gray-900">{user.user_metadata?.full_name ?? user.email}</span>
+                                                <span className="text-xs text-gray-500">{user.email}</span>
                                             </div>
                                         </div>
                                         <button
-                                            onClick={() => signOut()}
+                                            onClick={handleSignOut}
                                             className="flex items-center justify-center space-x-2 px-4 py-3 text-red-600 bg-red-50 rounded-xl font-medium transition-colors"
                                         >
                                             <LogOut className="h-5 w-5" />
-                                            <span>Logout</span>
+                                            <span>{t("logout")}</span>
                                         </button>
                                     </div>
                                 ) : (

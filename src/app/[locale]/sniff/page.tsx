@@ -3,7 +3,7 @@ import { Brain, Stethoscope, Activity } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { QRBadge } from "@/components/ui/qr-badge";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { auth } from "@/../auth";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function SniffPage({
     params,
@@ -13,8 +13,9 @@ export default async function SniffPage({
     const { locale } = await params;
     setRequestLocale(locale);
     const t = await getTranslations("Sniff");
-    const session = await auth();
-    const getStartedHref = session ? "/payment" : "/pricing";
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const getStartedHref = user ? "/payment" : "/pricing";
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}
