@@ -1,0 +1,11 @@
+env:
+  - variable: NEXT_PUBLIC_SUPABASE_URL
+    value: https://hvloodegutmwxbabdsjf.supabase.co
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_SUPABASE_ANON_KEY
+    value: sb_publishable_XbrL_W6J3T2wmKX898y-hA_ZKcjDCcJ
+    availability:
+      - BUILD
+      - RUNTIME
