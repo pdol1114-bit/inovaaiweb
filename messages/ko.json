@@ -511,5 +511,32 @@
         "feature1Desc": "설계 반복을 위한 즉각적인 구조적 응답 분석을 제공합니다.",
         "feature2Title": "역설계 AI",
         "feature2Desc": "원하는 성능 매개변수를 기반으로 최적의 구조를 자동으로 찾아줍니다."
+    },
+    "Pricing": {
+        "title": "요금제",
+        "freePlanTitle": "무료 (Free)",
+        "freePrice": "₩0",
+        "freeFeature1": "AI 건강 분석 월 3회",
+        "freeFeature2": "기본 문진표",
+        "currentPlan": "현재 플랜",
+        "premiumPlanTitle": "Sniff Premium",
+        "premiumPrice": "월 3,300원 (부가세 포함)",
+        "premiumFeature1": "무제한 AI 분석",
+        "premiumFeature2": "반려동물 건강 히스토리 관리",
+        "premiumFeature3": "전문적인 수의학 문진 시뮬레이션",
+        "premiumFeature4": "질병 조기 징후 감지",
+        "subscribeButton": "구독 시작하기",
+        "disclaimer": "Premium 구독은 매월 자동으로 결제됩니다. 언제든지 해지할 수 있으며, 해지 시 다음 결제일부터 요금이 청구되지 않습니다.",
+        "refundPolicyLink": "환불정책 보기"
+    },
+    "RefundPolicy": {
+        "title": "유료서비스 이용 및 환불 정책",
+        "item1": "요금: Sniff Premium 월 3,300원(부가세 포함), 매월 자동 결제되는 정기결제(구독) 상품",
+        "item2": "청약철회(전액 환불): 결제일로부터 7일 이내이며 프리미엄 기능을 사용하지 않은 경우 전액 환불",
+        "item3": "구독 해지: 서비스 내 관리 화면 또는 고객센터(support@inovaai.ai)에서 언제든 가능. 해지 시 이미 결제된 기간이 끝날 때까지 이용 가능하며, 다음 결제일부터 청구되지 않음 (당월 부분 환불은 제공하지 않음)",
+        "item4": "환불 처리: 정당한 환불 요청은 접수일로부터 영업일 기준 3일 이내 처리. 카드사/결제수단 사정에 따라 실제 입금은 지연될 수 있음",
+        "item5": "회사 귀책 사유(서비스 장애 등)로 이용이 불가했던 기간은 이용기간 연장 또는 환불로 보상",
+        "item6": "부정이용(환불 악용 등)이 확인되는 경우 환불이 제한될 수 있음",
+        "item7": "문의: support@inovaai.ai"
     }
 }

@@ -510,5 +510,32 @@
         "feature1Desc": "Instantaneous structural response analysis for design iteration.",
         "feature2Title": "Inverse Design AI",
         "feature2Desc": "Automatically find optimal structures based on desired performance parameters."
+    },
+    "Pricing": {
+        "title": "Pricing",
+        "freePlanTitle": "Free",
+        "freePrice": "$0",
+        "freeFeature1": "3 AI health analyses per month",
+        "freeFeature2": "Basic questionnaire",
+        "currentPlan": "Current Plan",
+        "premiumPlanTitle": "Sniff Premium",
+        "premiumPrice": "$4.99/month (tax included)",
+        "premiumFeature1": "Unlimited AI analysis",
+        "premiumFeature2": "Pet health history management",
+        "premiumFeature3": "Professional veterinary questionnaire simulation",
+        "premiumFeature4": "Early disease symptom detection",
+        "subscribeButton": "Start Subscription",
+        "disclaimer": "Premium subscriptions are billed automatically every month. You can cancel at any time, and no further charges will be made from the next billing date after cancellation.",
+        "refundPolicyLink": "View Refund Policy"
+    },
+    "RefundPolicy": {
+        "title": "Paid Service Usage and Refund Policy",
+        "item1": "Pricing: Sniff Premium $4.99/month (tax included), a recurring subscription product billed automatically each month",
+        "item2": "Cooling-off (full refund): Full refund available within 7 days of payment if premium features have not been used",
+        "item3": "Subscription cancellation: Available at any time through the in-app management screen or customer support (support@inovaai.ai). After cancellation, access continues until the end of the current billing period, and no further charges will be made from the next billing date (no partial monthly refunds)",
+        "item4": "Refund processing: Valid refund requests will be processed within 3 business days of receipt. Actual refund timing may vary depending on the card issuer/payment method",
+        "item5": "If service was unavailable due to the Company's fault (e.g., service outage), compensation will be provided through service period extension or refund",
+        "item6": "Refunds may be restricted if fraudulent use (e.g., refund abuse) is confirmed",
+        "item7": "Contact: support@inovaai.ai"
     }
 }
