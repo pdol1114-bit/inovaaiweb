@@ -46,10 +46,13 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4">{t("contact")}</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
+                            <li>{t("companyName")}</li>
                             <li>{t("representative")}</li>
                             <li>{t("businessNumber")}</li>
+                            <li>{t("telecomSalesNumber")}</li>
                             <li>{t("address")}</li>
-                            <li>support@inovaai.ai</li>
+                            <li>{t("phone")}</li>
+                            <li>{t("email")}</li>
                         </ul>
                     </div>
                 </div>
@@ -61,6 +64,7 @@ export function Footer() {
                     <div className="flex space-x-6 text-xs text-gray-400">
                         <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
+                        <Link href="/refund-policy" className="hover:text-gray-600">{t("refundPolicy")}</Link>
                     </div>
                 </div>
             </div>

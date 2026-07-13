@@ -41,9 +41,14 @@
         "services": "서비스",
         "company": "회사",
         "contact": "연락처 정보",
+        "companyName": "상호: 주식회사 이노바에이아이",
         "representative": "대표자: 성지세, 강유석",
         "businessNumber": "사업자번호: 479-81-03783",
-        "address": "충청북도 음성군 맹동면 대하2길 4 2층 204호"
+        "telecomSalesNumber": "통신판매업신고번호: (신고 완료 후 기입)",
+        "address": "충청북도 음성군 맹동면 대하2길 4 2층 204호",
+        "phone": "전화: 010-8069-1218",
+        "email": "이메일: support@inovaai.ai",
+        "refundPolicy": "환불정책"
     },
     "About": {
         "heroTitle": "우리는 <span >INOVA.AI</span> 입니다",

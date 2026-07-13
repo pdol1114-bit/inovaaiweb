@@ -41,9 +41,14 @@
         "services": "Services",
         "company": "Company",
         "contact": "Contact Info",
+        "companyName": "Trade Name: InovaAI Co., Ltd.",
         "representative": "Representatives: Jise Sung, Kevin Kang",
         "businessNumber": "Business License: 479-81-03783",
-        "address": "Room 204, 2nd Floor, 4 Daeha 2-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea"
+        "telecomSalesNumber": "Telecom Sales Registration: (To be registered)",
+        "address": "Room 204, 2nd Floor, 4 Daeha 2-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea",
+        "phone": "Phone: 010-8069-1218",
+        "email": "Email: support@inovaai.ai",
+        "refundPolicy": "Refund Policy"
     },
     "About": {
         "heroTitle": "We are <span>INOVA.AI</span>",
