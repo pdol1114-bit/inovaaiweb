@@ -98,6 +98,9 @@ export default async function PrivacyPage({
                     <section className="space-y-6">
                         <h2 className="text-2xl font-black text-slate-900">{t("section5Title")}</h2>
                         <p className="text-slate-600">{t("section5Text")}</p>
+                        <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <p className="text-slate-700 font-medium">{t("section5Trustee")}</p>
+                        </div>
                     </section>
 
                     {/* Section 6 */}
