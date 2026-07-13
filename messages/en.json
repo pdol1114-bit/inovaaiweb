@@ -258,7 +258,7 @@
     "Terms": {
         "backToMain": "Back to Main",
         "title": "Terms of Service",
-        "lastUpdated": "Last Updated: March 1, 2026",
+        "lastUpdated": "Last Updated: July 13, 2026",
         "sections": {
             "s1": {
                 "title": "Article 1 (Purpose)",
@@ -274,7 +274,7 @@
                     "⑤ \"Content\" refers to information, text, images, videos, software, AI analysis results, reports, and all other materials provided in the Service or generated/displayed during the Service use process.",
                     "⑥ \"Paid Service\" refers to subscriptions, functions, contents, or any other services provided by the Company for a fee.",
                     "⑦ \"Recurring Payment (Subscription)\" refers to a type of Paid Service where the User registers a payment method and the usage fee is automatically paid at regular intervals.",
-                    "⑧ \"Third-party Service\" refers to Firebase authentication, Payment Gateway (PG), app markets (e.g., Apple App Store, Google Play), hospital/institutional systems, and other services and systems provided by third parties other than the Company.",
+                    "⑧ \"Third-party Service\" refers to the Company's designated authentication system, Payment Gateway (PG), app markets (e.g., Apple App Store, Google Play), hospital/institutional systems, and other services and systems provided by third parties other than the Company.",
                     "⑨ Terms not defined in this article shall follow relevant laws and general commercial practices."
                 ]
             },
@@ -318,7 +318,7 @@
                 "title": "Article 7 (Service Use and Integrated Account)",
                 "list": [
                     "① Users can use the Service by completing membership registration according to the procedure set by the Company.",
-                    "② The Company may operate an integrated account through the Firebase authentication system, etc., and Users can use the website and the app ('Sniff by hatch') operated by the Company integrally with one account.",
+                    "② The Company may operate an integrated account through the Company's designated authentication system, and Users can use the website and the app ('Sniff by hatch') operated by the Company integrally with one account.",
                     "③ The Company may limit certain authentication methods or require additional authentication if it is deemed necessary for Service security and operation."
                 ]
             },
@@ -370,7 +370,7 @@
                 "list": [
                     "① Subscription withdrawal (purchase cancellation) and refund of Paid Services shall follow relevant laws and the Paid Service policy (refund criteria/procedure) announced by the Company on the Service screen.",
                     "② Due to the nature of digital contents or services, if use (provision) begins immediately after payment, subscription withdrawal may be limited within the range allowed by relevant laws. The Company clearly displays this in the payment process and operates necessary consent procedures if there are subscription withdrawal limitations.",
-                    "③ Users who request a refund must apply through the procedure guided within the Service or the customer center, and the Company will endeavor to process valid refund requests within [X] business days. However, the actual refund timing may vary depending on the payment method/app market policies.",
+                    "③ Users who request a refund must apply through the procedure guided within the Service or the customer center, and the Company will endeavor to process valid refund requests within 3 business days. However, the actual refund timing may vary depending on the payment method/app market policies.",
                     "④ If unauthorized use (violation of terms, refund abuse, illegal use, etc.) is confirmed, the Company may limit the refund or restrict the use."
                 ]
             },
@@ -463,7 +463,7 @@
         },
         "appendix": {
             "title": "Appendix",
-            "content": "These Terms shall take effect from [March 1, 2026]."
+            "content": "These Terms shall take effect from [July 13, 2026]."
         }
     },
     "Common": {
