@@ -47,4 +47,7 @@ node_modules/
 # Logs
 logs
 *.log
-npm-debug.log**.p8
+npm-debug.log*
+
+# key files
+*.p8
