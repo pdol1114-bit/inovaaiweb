@@ -53,3 +53,13 @@ import하던 파일들이 남아있었기 때문. 이로 인해 Vercel 배포가
 ### 알려진 별개 이슈 (이번 범위 밖, 미수정)
 - 빌드 중 `Error: MISSING_MESSAGE: Privacy.section11Title (en)` 로그가 출력됨
   (`/en/privacy` 페이지의 사전 존재 번역 누락). 빌드 자체를 막지는 않음.
+
+## 인프라 (2026-07 확정)
+
+- 웹 배포: Firebase App Hosting (프로젝트 sniff-by-hatch-app, 백엔드 sniff-web-server, 콘솔 계정 admin@inovaai.ai)
+- 배포 트리거: main 브랜치 push 시 자동 (GitHub Actions의 hosting 워크플로우는 죽은 잔재, 추후 삭제 예정)
+- 서버 환경변수: apphosting.yaml (공개값만. 비밀값은 추후 Secret Manager)
+- 인증: Supabase (hvloodegutmwxbabdsjf). OAuth 제공자 설정 = 대시보드 Authentication → Providers, URL 설정 = URL Configuration (Site URL: https://inovaai.ai)
+- Google OAuth: GCP sniff-by-hatch-app의 sniff-backend(웹)/sniff-android
+- Apple OAuth: Team ID M7LMNHX3LH, Services ID ai.inovaai.web, Key ID 8TUCZV6WHB. secret은 6개월 만료 JWT → 만료 전 재생성 필요 (2027년 1월 초 갱신). 옛 키 9N9655A977은 2026-07-14 폐기됨
+- 롤백: Firebase 콘솔 → App Hosting → 출시 탭에서 이전 성공 빌드로
