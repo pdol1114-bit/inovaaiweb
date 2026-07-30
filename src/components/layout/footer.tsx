@@ -7,6 +7,7 @@ import {
     TELECOM_SALES_NUMBER,
     getFtcBizCommUrl,
 } from "@/lib/business-info";
+import { KBAuthMark } from "@/components/layout/KBAuthMark";
 
 export function Footer() {
     const t = useTranslations("Footer");
@@ -68,6 +69,9 @@ export function Footer() {
                             <li>{t("address")}</li>
                             <li>{t("phone")}</li>
                             <li>{t("email")}</li>
+                            <li className="pt-2">
+                                <KBAuthMark />
+                            </li>
                         </ul>
                     </div>
                 </div>
