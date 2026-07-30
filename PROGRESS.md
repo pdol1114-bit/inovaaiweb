@@ -1,5 +1,47 @@
 # PROGRESS
 
+## 2026-07-30 — 푸터 통신판매업신고번호 반영 (전자상거래법)
+
+### 배경
+통신판매업 신고증 발급 완료 (제 2026-충북음성-0248 호). 전자상거래법에 따라
+푸터의 통신판매업신고번호가 실제 값으로 표시되고, 클릭 시 공정거래위원회
+사업자정보확인 팝업으로 연결되어야 함.
+
+### 변경 내용
+- `src/lib/business-info.ts` 신규 생성: 사업자등록번호(479-81-03783),
+  통신판매업신고번호(ko/en), 공정위 팝업 URL 생성 유틸(`getFtcBizCommUrl`)을
+  한곳에서 관리하도록 분리 (하드코딩 제거).
+- `src/components/layout/footer.tsx`: 사업자등록번호/통신판매업신고번호를
+  config 값으로 렌더링하도록 변경. 통신판매업신고번호는
+  `http://www.ftc.go.kr/bizCommPop.do?wrkr_no=4798103783` 링크로 새 창 오픈.
+- `messages/ko.json`, `messages/en.json`: `Footer.businessNumber` /
+  `Footer.telecomSalesNumber`(값이 박혀있던 키) → `businessNumberLabel` /
+  `telecomSalesNumberLabel`(라벨만 갖는 키)로 분리.
+
+### 검증
+- `npx tsc --noEmit`, `npm run build` 통과.
+- 로컬 dev 서버에서 `/ko/pricing` 렌더링 확인: 통신판매업신고번호가
+  `wrkr_no=4798103783` 링크로 정상 출력됨.
+
+## 2026-07-21 — 프로젝트 폴더 용량 정리 (5.7GB → 720MB)
+
+### 원인
+- `.npmrc`에 `cache=./.npm-cache`가 설정돼 있어 npm 캐시가 프로젝트 폴더
+  안에 쌓이고 있었음 (정상은 `~/.npm`). `_cacache`만 3.7GB.
+- `.next/dev` 등 로컬 개발 빌드 산출물이 1.0GB 누적.
+- `out/` 정적 export 산출물 16MB.
+
+### 조치
+- `.npm-cache/`, `.next/`, `out/` 삭제 (전부 재생성 가능한 캐시/빌드 산출물,
+  소스코드 아님).
+- `.npmrc`에서 `cache=./.npm-cache` 줄 제거 → 이후 npm은 전역 캐시(`~/.npm`)
+  사용, 프로젝트 폴더 안에 캐시가 다시 쌓이지 않음.
+
+### 결과
+- 폴더 총 용량 5.7GB → 720MB.
+- `node_modules`(517MB), `.git`(168MB, Apple 개인키 커밋 이력 포함)은
+  정상 범위라 그대로 둠.
+
 ## 2026-07-13 — NextAuth/Firebase 잔재 제거, 빌드 에러 수정
 
 ### 상황

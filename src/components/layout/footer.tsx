@@ -1,11 +1,17 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import {
+    BUSINESS_REGISTRATION_NUMBER,
+    TELECOM_SALES_NUMBER,
+    getFtcBizCommUrl,
+} from "@/lib/business-info";
 
 export function Footer() {
     const t = useTranslations("Footer");
     const nt = useTranslations("Navbar");
+    const locale = useLocale() as keyof typeof TELECOM_SALES_NUMBER;
 
     return (
         <footer className="bg-gray-50 border-t border-gray-100 py-12 mt-auto">
@@ -48,8 +54,17 @@ export function Footer() {
                         <ul className="space-y-2 text-sm text-gray-600">
                             <li>{t("companyName")}</li>
                             <li>{t("representative")}</li>
-                            <li>{t("businessNumber")}</li>
-                            <li>{t("telecomSalesNumber")}</li>
+                            <li>{t("businessNumberLabel")} {BUSINESS_REGISTRATION_NUMBER}</li>
+                            <li>
+                                <a
+                                    href={getFtcBizCommUrl(BUSINESS_REGISTRATION_NUMBER)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-blue-600 transition-colors"
+                                >
+                                    {t("telecomSalesNumberLabel")} {TELECOM_SALES_NUMBER[locale]}
+                                </a>
+                            </li>
                             <li>{t("address")}</li>
                             <li>{t("phone")}</li>
                             <li>{t("email")}</li>
