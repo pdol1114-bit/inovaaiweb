@@ -1,6 +1,6 @@
 # PROGRESS
 
-## 2026-07-30 — 푸터 KB 에스크로 이체 인증마크 추가
+## 2026-07-30 — 결제 페이지 KB 에스크로 이체 인증마크 추가
 
 ### 변경 내용
 - `src/components/layout/KBAuthMark.tsx` 신규 생성: KB에서 제공한 원본
@@ -8,11 +8,15 @@
   변환. `document.KB_AUTHMARK_FORM` 대신 `useRef`로 폼을 참조해 제출하고,
   팝업 오픈 로직은 `onClick` 핸들러(`handlePopKBAuthMark`)로 이전. 폼 값
   (page/cc/mHValue)은 KB가 발급한 원본 값 그대로 유지 (변경 시 인증 무효화 우려).
-- `footer.tsx`: 사업자정보 블록(연락처 리스트) 하단에 `<KBAuthMark />` 배치.
+- 업데이트된 작업 지시서(WORK_ORDER_footer_business_info (1).md)에 따라
+  **푸터가 아닌 `/ko/payment` 결제 버튼 하단**에만 `<KBAuthMark />` 배치
+  (결제 직전 안전거래 인증 확인용). 카드 배경이 흰색이라 별도 wrapper 없이
+  원본 이미지 그대로 사용.
 
 ### 검증
 - `npx tsc --noEmit`, `npm run build` 통과.
-- 로컬 dev 서버에서 `/ko/pricing` 렌더링 확인: escrowcmark.gif 배지 정상 출력.
+- 로컬 dev 서버 확인: `/ko/payment`에는 escrowcmark.gif 노출, 공통 푸터에는
+  노출되지 않음.
 
 ## 2026-07-30 — 푸터 통신판매업신고번호 반영 (전자상거래법)
 

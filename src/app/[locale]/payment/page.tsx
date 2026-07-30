@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, CreditCard, ShieldCheck, ArrowRight, Zap, Star } from "lucide-react";
 import Image from "next/image";
+import { KBAuthMark } from "@/components/layout/KBAuthMark";
 
 export default async function PaymentPage({
     params,
@@ -115,6 +116,10 @@ export default async function PaymentPage({
                                     {t("payNow")}
                                     <ArrowRight className="ml-3 h-7 w-7 group-hover:translate-x-2 transition-transform" />
                                 </Button>
+
+                                <div className="flex justify-center">
+                                    <KBAuthMark />
+                                </div>
 
                                 <div className="text-center opacity-60">
                                     <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
