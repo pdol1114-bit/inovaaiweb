@@ -10,8 +10,10 @@
   (page/cc/mHValue)은 KB가 발급한 원본 값 그대로 유지 (변경 시 인증 무효화 우려).
 - 업데이트된 작업 지시서(WORK_ORDER_footer_business_info (1).md)에 따라
   **푸터가 아닌 `/ko/payment` 결제 버튼 하단**에만 `<KBAuthMark />` 배치
-  (결제 직전 안전거래 인증 확인용). 카드 배경이 흰색이라 별도 wrapper 없이
-  원본 이미지 그대로 사용.
+  (결제 직전 안전거래 인증 확인용).
+- (2).md 반영: 마크를 흰색 원형 배지(`rounded-full`, `p-3`,
+  `shadow-[0_1px_3px_rgba(0,0,0,0.08)]`)로 감싸 카드 톤과 어울리도록 처리
+  (마크 이미지 자체는 원본 그대로 유지).
 
 ### 검증
 - `npx tsc --noEmit`, `npm run build` 통과.
