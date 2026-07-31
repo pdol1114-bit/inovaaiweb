@@ -1,5 +1,35 @@
 # PROGRESS
 
+## 2026-07-31 — 배포 경로 정리 (죽은 GitHub Actions 삭제, 포트원 env 주석화)
+
+### 실제 배포 타겟 확인
+이 레포의 배포는 **Firebase App Hosting**이다.
+- 프로젝트 `sniff-by-hatch-app`(.firebaserc), 백엔드 `sniff-web-server`(firebase.json)
+- 런타임/빌드 환경변수는 `apphosting.yaml`에서 주입
+- 배포 트리거는 레포가 아니라 Firebase 콘솔의 GitHub 연결에 설정돼 있음
+- `vercel.json`, `netlify.toml`은 없음. README/과거 지시서의 "Vercel" 언급은
+  create-next-app 기본 템플릿 문구와 오기이며 실제 Vercel 설정은 존재한 적 없음.
+
+### 삭제한 워크플로
+`.github/workflows/firebase-hosting-merge.yml`,
+`.github/workflows/firebase-hosting-pull-request.yml` (Firebase CLI 자동 생성 잔재)
+
+삭제 근거:
+- 전체 82회 실행 중 성공은 초기 3회(2026-02-25)뿐, 이후 **79회 연속 실패**.
+- 실패 지점이 `npm ci && npm run build` 단계라 배포 스텝까지 가지도 못함.
+- 설령 빌드가 통과해도 이 워크플로는 **Firebase Hosting**에 배포하는데
+  `firebase.json`에 `hosting` 키 자체가 없어 배포할 대상이 없음 (구조적 no-op).
+- 실제 배포 경로(App Hosting)와 무관하므로 삭제해도 배포에 영향 없음.
+- 참고: CI 실패의 정확한 원인 로그는 비인증 API로 접근 불가(403)라 미확인.
+  로컬에서 `.env.local` 없이도 빌드는 통과하므로 환경변수 문제는 아님.
+
+### apphosting.yaml
+포트원 env 3종(`NEXT_PUBLIC_PORTONE_STORE_ID`, `NEXT_PUBLIC_PORTONE_CHANNEL_KEY`,
+`PORTONE_WEBHOOK_SECRET`)을 **주석으로만** 추가. `NEXT_PUBLIC_*`은 빌드 타임에
+번들로 인라인되므로 빈 값으로 커밋하면 그 상태로 롤아웃되어 프로덕션이 망가진 채
+굳는다. 키 발급 후 주석 해제하고 실제 값 입력할 것. 웹훅 시크릿은 평문 금지 —
+Cloud Secret Manager에 등록 후 `secret:` 참조.
+
 ## 2026-07-31 — 포트원 정기결제(빌링키) 테스트 연동
 
 ### 배경

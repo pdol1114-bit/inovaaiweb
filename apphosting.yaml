@@ -14,3 +14,28 @@ env:
     availability:
       - BUILD
       - RUNTIME
+
+# 포트원 정기결제(빌링키) — 아직 키 미발급 상태라 주석으로만 둔다.
+#
+# NEXT_PUBLIC_* 는 빌드 타임에 번들로 인라인되는 값이라, 빈 문자열로 커밋하면
+# 그 빈 값이 그대로 롤아웃되어 프로덕션 결제창이 뜨지 않는 상태로 굳는다.
+# 포트원 콘솔에서 키를 발급받은 뒤 아래 주석을 풀고 실제 값을 넣을 것.
+#
+#  - variable: NEXT_PUBLIC_PORTONE_STORE_ID
+#    value: store-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+#    availability:
+#      - BUILD
+#      - RUNTIME
+#  - variable: NEXT_PUBLIC_PORTONE_CHANNEL_KEY
+#    value: channel-key-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+#    availability:
+#      - BUILD
+#      - RUNTIME
+#
+# 웹훅 시크릿은 평문 금지 — Cloud Secret Manager에 저장 후 secret: 으로 참조한다.
+# (`firebase apphosting:secrets:set portone-webhook-secret` 로 등록)
+#
+#  - variable: PORTONE_WEBHOOK_SECRET
+#    secret: portone-webhook-secret
+#    availability:
+#      - RUNTIME
