@@ -1,8 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, CreditCard, ShieldCheck, ArrowRight, Zap, Star } from "lucide-react";
+import { CheckCircle2, CreditCard, ShieldCheck, Zap, Star } from "lucide-react";
 import Image from "next/image";
 import { KBAuthMark } from "@/components/layout/KBAuthMark";
+import { SubscribeButton } from "@/components/payment/SubscribeButton";
 
 export default async function PaymentPage({
     params,
@@ -112,10 +112,7 @@ export default async function PaymentPage({
                             </div>
 
                             <div className="mt-14 space-y-8">
-                                <Button className="w-full h-18 py-8 text-2xl font-black rounded-[32px] shadow-xl shadow-blue-600/20 bg-blue-600 hover:bg-blue-700 text-white border-0 transition-all hover:scale-[1.02] active:scale-[0.98] group">
-                                    {t("payNow")}
-                                    <ArrowRight className="ml-3 h-7 w-7 group-hover:translate-x-2 transition-transform" />
-                                </Button>
+                                <SubscribeButton />
 
                                 <div className="flex justify-center">
                                     <KBAuthMark />

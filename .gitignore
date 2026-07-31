@@ -51,3 +51,6 @@ npm-debug.log*
 
 # key files
 *.p8
+
+# ...but the key-name template is safe to commit
+!.env.example

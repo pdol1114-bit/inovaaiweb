@@ -1,5 +1,50 @@
 # PROGRESS
 
+## 2026-07-31 — 포트원 정기결제(빌링키) 테스트 연동
+
+### 배경
+KPN/하나카드 PG 심사에 "정기결제 카드 등록 + 실제 결제창 노출" 캡처가 필수.
+포트원 채널 승인 전이라도 테스트 모드로 흐름을 구현해 캡처를 확보하는 것이 목적.
+
+### 지시서와 실제 구조의 차이 (중요)
+작업지시서는 FastAPI 백엔드에 `POST /api/billing/register-key`를 만들라고
+했으나, **이 레포에는 FastAPI가 없다** (Next.js + Supabase 단일 구조, Python
+코드/의존성/프록시 설정 전무). 사용자 확인 후 **Next.js Route Handler로 구현**.
+
+### 변경 내용
+- `@portone/browser-sdk`, `@portone/server-sdk` 설치.
+- `src/lib/portone/config.ts`: storeId/channelKey를 환경변수에서 읽음
+  (하드코딩 없음). 채널키에 `test`가 포함되면 테스트 모드로 간주해 콘솔 경고.
+- `src/components/payment/SubscribeButton.tsx`: "지금 구독하기" 클릭 →
+  `PortOne.requestIssueBillingKey({ billingKeyMethod: "CARD", ... })` 호출.
+  기존 결제 페이지는 서버 컴포넌트라 버튼만 클라이언트 컴포넌트로 분리.
+  비로그인 시 `/auth`로 이동, 실패/취소 시 화면에 에러 메시지 노출(무음 실패 없음).
+- `src/app/api/billing/register-key/route.ts`: 발급된 billing_key를
+  Supabase `subscriptions`에 upsert.
+  **user_id는 요청 본문이 아니라 서버 세션에서 가져온다** — 지시서의
+  `{ user_id, billing_key }` 형태를 그대로 쓰면 타인의 user_id로 빌링키를
+  덮어쓸 수 있어(IDOR) 의도적으로 바꿈.
+- `src/app/api/webhook/portone/route.ts`: `@portone/server-sdk`의
+  `webhook.verify`로 서명 검증(raw body 기준). 시크릿 미설정 시 500.
+- `supabase/migrations/0001_subscriptions.sql`: subscriptions 테이블 + RLS
+  (본인 행만 read/insert/update).
+- `.env.example` 신규 + `.gitignore`에 `!.env.example` 예외 추가.
+
+### 검증
+- `npx tsc --noEmit`, `npm run build` 통과. `/api/billing/register-key`,
+  `/api/webhook/portone` 라우트 정상 등록 확인.
+- dev 서버: 미인증 상태 register-key 호출 → 401 `UNAUTHORIZED` (i18n 미들웨어가
+  API 경로를 가로채지 않음 확인). 웹훅은 시크릿 미설정 시 500.
+- **미검증**: 실제 포트원 결제창 노출 / 카드 등록 / 하나카드 결제창 단계는
+  포트원 콘솔 키(storeId, channelKey)가 아직 없어 확인 불가.
+  `.env.local`에 키를 채우면 바로 동작하도록 코드는 완성된 상태.
+
+### 남은 작업 (사람이 해야 함)
+1. 포트원 콘솔에서 테스트 채널 발급 → `.env.local`에 STORE_ID/CHANNEL_KEY 입력.
+2. 테스트 채널에 **하나카드 포함 여부 확인** (미포함 시 포트원에 추가 요청).
+3. Supabase에 `0001_subscriptions.sql` 적용.
+4. 결제창 흐름 캡처 (카드등록 진입 → 카드정보 입력 → 본인인증 → 등록완료).
+
 ## 2026-07-30 — 결제 페이지 KB 에스크로 이체 인증마크 추가
 
 ### 변경 내용

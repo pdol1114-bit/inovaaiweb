@@ -174,7 +174,14 @@
         "card": "Credit/Debit Card",
         "bank": "Bank Transfer",
         "payNow": "Subscribe Now",
-        "securePayment": "Secure payment system is active."
+        "securePayment": "Secure payment system is active.",
+        "cardRegistered": "Card registered",
+        "errors": {
+            "notConfigured": "Payment is not configured yet. Please contact the administrator.",
+            "issueFailed": "Card registration failed. Please try again.",
+            "saveFailed": "Your card was registered but we could not save your subscription. Please contact support.",
+            "unexpected": "Something went wrong. Please try again in a moment."
+        }
     },
     "Privacy": {
         "title": "Privacy Policy",
@@ -224,7 +231,7 @@
         "section4Footer2": "The Company complies with the terms and policies of these service providers, transmits and processes data only within the scope of service provision purposes, and takes necessary protective measures as required by law.",
         "section5Title": "5. Entrustment of Personal Information Processing",
         "section5Text": "The Company may entrust some tasks to external companies as needed for service provision. In this case, personal information protection obligations are clearly defined through entrustment contracts in accordance with the Personal Information Protection Act.",
-        "section5Trustee": "PortOne Inc. \u2014 Payment processing and payment gateway services",
+        "section5Trustee": "PortOne Inc. — Payment processing and payment gateway services",
         "section6Title": "6. Destruction Procedure and Method",
         "section6List": [
             "Personal information that has passed the retention period or reached the processing purpose is destroyed without delay according to internal policies.",
