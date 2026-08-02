@@ -1,5 +1,34 @@
 # PROGRESS
 
+## 2026-08-03 — 사업장 주소 정정 (대하2길 → 대하1길)
+
+### 배경
+사업자등록증상 정확한 주소는 "대하1길"인데 사이트에는 "대하2길"로 잘못 들어가
+있었음. PG 심사에서 사업자등록증과 홈페이지 하단 정보가 일치해야 하므로 정정.
+
+### 정정한 위치 (총 4곳, ko/en 전부)
+주소는 `src/lib/business-info.ts`에 **없었고** i18n 메시지에만 하드코딩돼 있었음:
+- `messages/ko.json` Footer.address, Terms (제14조 사업자정보 목록)
+- `messages/en.json` Footer.address, Terms (동일 위치)
+
+최종 값
+- ko: `충청북도 음성군 맹동면 대하1길 4, 2층 204호`
+- en: `Room 204, 2nd Floor, 4 Daeha 1-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea`
+
+grep 결과 `대하2길` / `Daeha 2-gil` 잔존 0건 (작업지시서 md 제외).
+
+### 함께 고친 별건 버그
+`messages/en.json`에 `Privacy.section11Title`이 누락돼 빌드 시
+`MISSING_MESSAGE: Privacy.section11Title (en)` 에러가 나고 있었음(기존 문제,
+이번 주소 수정과 무관). 본문 리스트(section11List)는 영문으로 있는데 제목만
+빠진 상태라 `11. Changes to the Privacy Policy` 추가.
+→ ko/en 전체 키 파리티 감사 결과 현재 410 / 410 으로 양방향 누락 0건.
+
+### 검증
+- `npm run build` MISSING_MESSAGE 에러 해소 확인.
+- dev 서버에서 `/ko|/en` × `pricing(푸터)·terms·privacy` 렌더 확인 —
+  주소 4곳 모두 대하1길로 출력, 영문 개인정보처리방침 11장 제목 정상 표기.
+
 ## 2026-07-31 — 배포 경로 정리 (죽은 GitHub Actions 삭제, 포트원 env 주석화)
 
 ### 실제 배포 타겟 확인
