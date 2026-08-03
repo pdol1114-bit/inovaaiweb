@@ -556,15 +556,15 @@
     },
     "RefundPolicy": {
         "title": "Paid Service Usage and Refund Policy",
-        "item1": "Pricing: Sniff Premium KRW 3,300/month (VAT included), a recurring subscription product billed automatically each month",
-        "item2": "Cooling-off (full refund): Full refund available within 7 days of payment if premium features have not been used",
-        "item3": "Subscription cancellation: Requests can be submitted at any time via customer support (support@inovaai.ai) and are accepted 24 hours a day regardless of business hours. After cancellation, access continues until the end of the billing period already paid for, and no further charges are made from the next billing date.",
-        "item4": "Refund processing: Valid refund requests will be processed within 3 business days of receipt. Actual refund timing may vary depending on the card issuer/payment method",
-        "item5": "If service was unavailable due to the Company's fault (e.g., service outage), compensation will be provided through service period extension or refund",
-        "item6": "Refunds may be restricted if fraudulent use (e.g., refund abuse) is confirmed",
-        "item7": "Pro-rata refund: If you cancel after the 7-day cooling-off period, we refund the amount paid less the value of the days already used and any penalty permitted by law. The daily rate is calculated as 'amount paid ÷ total days in the billing cycle × days used'.",
-        "item8": "Refund method: Refunds are issued by cancelling the original payment where possible; otherwise they are paid in cash equivalent, such as a bank transfer. Refunds are never issued solely as points, cash credits, or other company-issued balances.",
-        "item9": "Price changes and advance notice: If the recurring charge changes, or a free plan converts to paid, we notify you by email or in-service announcement at least 7 days before it takes effect, and you may cancel before then.",
+        "item1": "Pricing: Sniff Premium KRW 3,300/month (VAT included), a recurring subscription product billed automatically each month.",
+        "item2": "Cancelling the subscription: You may request cancellation at any time via customer support (support@inovaai.ai), which is accepted 24 hours a day regardless of business hours. After you request cancellation you keep full access until the end of the month you have already paid for; no further automatic payment is taken from the next billing date, and the subscription ends at that point. You may undo the cancellation and keep your subscription at any time before that end date.",
+        "item3": "No partial refund on early cancellation: This product is billed monthly with no minimum term and no early-termination penalty, so pro-rata refunds for cancelling mid-cycle are not provided.",
+        "item4": "Cooling-off (withdrawal of subscription): We refund in full if you request it within 7 days of your first payment and have not used the service. However, once you have started using the service (for example, by running an AI analysis), the right of withdrawal may be restricted under Article 17(2) of the Act on Consumer Protection in Electronic Commerce.",
+        "item5": "Company fault: Where the cause lies with the Company, such as a service outage or an incorrect charge, we refund regardless of the restrictions above.",
+        "item6": "Refund method: Refunds are issued by cancelling the original payment where possible; otherwise they are paid in cash equivalent, such as a bank transfer. Refunds are never issued solely as points, cash credits, or other company-issued balances.",
+        "item7": "Price changes and advance notice: If the recurring charge increases, or a free plan converts to paid, we notify you by email or in-service announcement at least 7 days before it takes effect, and you may cancel before then.",
+        "item8": "Refund processing time: Valid refund requests are processed within 3 business days of receipt. The actual credit may be delayed depending on your card issuer or payment method.",
+        "item9": "Misuse: Refunds may be restricted where misuse is confirmed, such as abuse of the refund process.",
         "item10": "Contact: support@inovaai.ai"
     }
 }
