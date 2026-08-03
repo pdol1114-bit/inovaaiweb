@@ -43,14 +43,17 @@
         "services": "Services",
         "company": "Company",
         "contact": "Contact Info",
-        "companyName": "Trade Name: InovaAI Co., Ltd.",
-        "representative": "Representatives: Jise Sung, Kevin Kang",
-        "businessNumberLabel": "Business Registration No.:",
-        "telecomSalesNumberLabel": "E-commerce License No.:",
-        "address": "Room 204, 2nd Floor, 4 Daeha 1-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do, Korea",
-        "phone": "Phone: 010-8069-1218",
-        "email": "Email: support@inovaai.ai",
         "refundPolicy": "Refund Policy"
+    },
+    "BusinessInfo": {
+        "companyName": "Trade Name:",
+        "representative": "Representative:",
+        "businessNumber": "Business Registration No.:",
+        "address": "Address:",
+        "landline": "Phone:",
+        "customerPhone": "Customer Inquiry:",
+        "email": "Email:",
+        "telecomSalesNumber": "E-commerce License No.:"
     },
     "About": {
         "heroTitle": "We are <span>INOVA.AI</span>",
@@ -181,7 +184,10 @@
             "issueFailed": "Card registration failed. Please try again.",
             "saveFailed": "Your card was registered but we could not save your subscription. Please contact support.",
             "unexpected": "Something went wrong. Please try again in a moment."
-        }
+        },
+        "refundPolicyLink": "Refund Policy",
+        "termsLink": "Terms of Service",
+        "privacyLink": "Privacy Policy"
     },
     "Privacy": {
         "title": "Privacy Policy",
@@ -231,7 +237,10 @@
         "section4Footer2": "The Company complies with the terms and policies of these service providers, transmits and processes data only within the scope of service provision purposes, and takes necessary protective measures as required by law.",
         "section5Title": "5. Entrustment of Personal Information Processing",
         "section5Text": "The Company may entrust some tasks to external companies as needed for service provision. In this case, personal information protection obligations are clearly defined through entrustment contracts in accordance with the Personal Information Protection Act.",
-        "section5Trustee": "PortOne Inc. — Payment processing and payment gateway services",
+        "section5TrusteeList": [
+            "Korea PortOne Inc. — Electronic payment gateway (PG) services, payment processing and settlement",
+            "NHN KCP Corp. — Credit card payment processing and settlement agency"
+        ],
         "section6Title": "6. Destruction Procedure and Method",
         "section6List": [
             "Personal information that has passed the retention period or reached the processing purpose is destroyed without delay according to internal policies.",
@@ -469,7 +478,7 @@
                 "intro": "The Company information is as follows:",
                 "list": [
                     "• Trade Name: InovaAI Co., Ltd.",
-                    "• Representative: Jise Seong, Yuseok Kang",
+                    "• Representative: Jise Sung",
                     "• Business Registration Number: 479-81-03783",
                     "• Address: Room 204, 2nd Floor, 4, Daeha 1-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do",
                     "• Customer Center Email: support@inovaai.ai",
@@ -547,12 +556,15 @@
     },
     "RefundPolicy": {
         "title": "Paid Service Usage and Refund Policy",
-        "item1": "Pricing: Sniff Premium $4.99/month (tax included), a recurring subscription product billed automatically each month",
+        "item1": "Pricing: Sniff Premium KRW 3,300/month (VAT included), a recurring subscription product billed automatically each month",
         "item2": "Cooling-off (full refund): Full refund available within 7 days of payment if premium features have not been used",
-        "item3": "Subscription cancellation: Available at any time through the in-app management screen or customer support (support@inovaai.ai). After cancellation, access continues until the end of the current billing period, and no further charges will be made from the next billing date (no partial monthly refunds)",
+        "item3": "Subscription cancellation: Requests can be submitted at any time via customer support (support@inovaai.ai) and are accepted 24 hours a day regardless of business hours. After cancellation, access continues until the end of the billing period already paid for, and no further charges are made from the next billing date.",
         "item4": "Refund processing: Valid refund requests will be processed within 3 business days of receipt. Actual refund timing may vary depending on the card issuer/payment method",
         "item5": "If service was unavailable due to the Company's fault (e.g., service outage), compensation will be provided through service period extension or refund",
         "item6": "Refunds may be restricted if fraudulent use (e.g., refund abuse) is confirmed",
-        "item7": "Contact: support@inovaai.ai"
+        "item7": "Pro-rata refund: If you cancel after the 7-day cooling-off period, we refund the amount paid less the value of the days already used and any penalty permitted by law. The daily rate is calculated as 'amount paid ÷ total days in the billing cycle × days used'.",
+        "item8": "Refund method: Refunds are issued by cancelling the original payment where possible; otherwise they are paid in cash equivalent, such as a bank transfer. Refunds are never issued solely as points, cash credits, or other company-issued balances.",
+        "item9": "Price changes and advance notice: If the recurring charge changes, or a free plan converts to paid, we notify you by email or in-service announcement at least 7 days before it takes effect, and you may cancel before then.",
+        "item10": "Contact: support@inovaai.ai"
     }
 }

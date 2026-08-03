@@ -29,13 +29,9 @@ export default async function RefundPolicyPage({
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 prose prose-gray max-w-none">
                         <ol className="space-y-4 text-gray-700 leading-relaxed font-sans list-decimal pl-5">
-                            <li>{t("item1")}</li>
-                            <li>{t("item2")}</li>
-                            <li>{t("item3")}</li>
-                            <li>{t("item4")}</li>
-                            <li>{t("item5")}</li>
-                            <li>{t("item6")}</li>
-                            <li>{t("item7")}</li>
+                            {Array.from({ length: 10 }, (_, i) => (
+                                <li key={i}>{t(`item${i + 1}`)}</li>
+                            ))}
                         </ol>
                     </div>
                 </div>

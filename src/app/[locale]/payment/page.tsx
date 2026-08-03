@@ -1,8 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/routing";
 import { CheckCircle2, CreditCard, ShieldCheck, Zap, Star } from "lucide-react";
 import Image from "next/image";
 import { KBAuthMark } from "@/components/layout/KBAuthMark";
 import { SubscribeButton } from "@/components/payment/SubscribeButton";
+import { BusinessInfo } from "@/components/layout/BusinessInfo";
 
 export default async function PaymentPage({
     params,
@@ -118,12 +120,20 @@ export default async function PaymentPage({
                                     <KBAuthMark />
                                 </div>
 
-                                <div className="text-center opacity-60">
-                                    <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                                        주식회사 이노바에이아이 | 대표: 성지세, 강유석<br/>
-                                        사업자등록번호: 479-81-03783
-                                    </p>
+                                <div className="flex justify-center gap-4 text-[11px] text-slate-400">
+                                    <Link href="/refund-policy" className="hover:text-blue-600 transition-colors underline underline-offset-2">
+                                        {t("refundPolicyLink")}
+                                    </Link>
+                                    <Link href="/terms" className="hover:text-blue-600 transition-colors underline underline-offset-2">
+                                        {t("termsLink")}
+                                    </Link>
+                                    <Link href="/privacy" className="hover:text-blue-600 transition-colors underline underline-offset-2">
+                                        {t("privacyLink")}
+                                    </Link>
                                 </div>
+
+                                {/* PG 심사 요건: 사업자정보는 메인 외 결제페이지에도 상시 노출 */}
+                                <BusinessInfo className="space-y-1 text-[10px] text-slate-400 font-medium leading-relaxed text-center border-t border-slate-100 pt-6" />
                             </div>
                         </div>
                     </div>
