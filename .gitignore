@@ -54,3 +54,23 @@ npm-debug.log*
 
 # ...but the key-name template is safe to commit
 !.env.example
+
+# 사업자 서류 / 민감 문서 (공개 저장소 유출 방지)
+# 사람이 매번 조심하는 대신 시스템으로 막는다.
+포트원콘솔가입/
+*사업자등록증*
+*통장사본*
+*인감증명*
+*등기부등본*
+*주주명부*
+*계약서*
+*위임장*
+*고객확인서*
+*보증보험*
+*.pdf
+*.docx
+*.pptx
+*.hwp
+
+# 작업지시서 (일회성 문서)
+WORK_ORDER_*.md
