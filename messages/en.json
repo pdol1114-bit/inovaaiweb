@@ -166,7 +166,7 @@
         "description": "Start your smart pet health management with INOVA.AI Premium service.",
         "planTitle": "Selected Plan",
         "planName": "Sniff Premium",
-        "price": "$4.99 / month",
+        "price": "KRW 3,300 / month",
         "vatNote": "Price includes all applicable taxes",
         "features": {
             "aiAnalysis": "Unlimited AI Analysis",
@@ -542,12 +542,12 @@
     "Pricing": {
         "title": "Pricing",
         "freePlanTitle": "Free",
-        "freePrice": "$0",
+        "freePrice": "KRW 0",
         "freeFeature1": "3 AI health analyses per month",
         "freeFeature2": "Basic questionnaire",
         "currentPlan": "Current Plan",
         "premiumPlanTitle": "Sniff Premium",
-        "premiumPrice": "$4.99/month (tax included)",
+        "premiumPrice": "KRW 3,300/month (VAT included)",
         "premiumFeature1": "Unlimited AI analysis",
         "premiumFeature2": "Pet health history management",
         "premiumFeature3": "Professional veterinary questionnaire simulation",

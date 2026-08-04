@@ -64,8 +64,8 @@ export default async function AuthPage({
 
                 <p className="text-center text-xs text-muted-foreground pt-4">
                     {t.rich("termsAgreement", {
-                        terms: (chunks) => <Link href="#" className="underline hover:text-white transition-colors">{chunks}</Link>,
-                        privacy: (chunks) => <Link href="#" className="underline hover:text-white transition-colors">{chunks}</Link>
+                        terms: (chunks) => <Link href={`/${locale}/terms`} className="underline hover:text-white transition-colors">{chunks}</Link>,
+                        privacy: (chunks) => <Link href={`/${locale}/privacy`} className="underline hover:text-white transition-colors">{chunks}</Link>
                     })}
                 </p>
             </div>
