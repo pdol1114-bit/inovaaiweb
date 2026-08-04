@@ -8,14 +8,15 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { filterVisibleServices } from "@/lib/upcoming-services";
 
-const links = [
+const links = filterVisibleServices([
     { href: "/sniff", labelKey: "sniff" },
     { href: "/sniff-hospital", labelKey: "sniffHospital" },
     { href: "/csv-automation", labelKey: "csvAutomation" },
     { href: "/fem-ai", labelKey: "femAi" },
     { href: "/automation", labelKey: "automation" },
-];
+]);
 
 export function Navbar() {
     const t = useTranslations("Navbar");

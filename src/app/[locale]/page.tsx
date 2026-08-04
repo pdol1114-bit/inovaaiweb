@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, ShieldCheck, Activity, Stethoscope, Settings } from "lucide-react";
 import { QRBadge } from "@/components/ui/qr-badge";
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { showUpcomingServices } from "@/lib/upcoming-services";
 
 export default async function Home({
   params,
@@ -71,9 +72,11 @@ export default async function Home({
               <p className="text-gray-600 mb-6 flex-grow">
                 {t("service2Desc")}
               </p>
-              <Link href="/sniff-hospital" className="inline-flex items-center text-sky-500 font-semibold hover:text-sky-700 transition-colors mt-auto">
-                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              {showUpcomingServices && (
+                <Link href="/sniff-hospital" className="inline-flex items-center text-sky-500 font-semibold hover:text-sky-700 transition-colors mt-auto">
+                  {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              )}
             </div>
 
             {/* Service 3: CSV Automation */}
@@ -85,9 +88,11 @@ export default async function Home({
               <p className="text-gray-600 mb-6 flex-grow">
                 {t("service3Desc")}
               </p>
-              <Link href="/csv-automation" className="inline-flex items-center text-emerald-500 font-semibold hover:text-emerald-700 transition-colors mt-auto">
-                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              {showUpcomingServices && (
+                <Link href="/csv-automation" className="inline-flex items-center text-emerald-500 font-semibold hover:text-emerald-700 transition-colors mt-auto">
+                  {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              )}
             </div>
 
             {/* Service 4: FEM & AI */}
@@ -99,9 +104,11 @@ export default async function Home({
               <p className="text-gray-600 mb-6 flex-grow">
                 {t("service4Desc")}
               </p>
-              <Link href="/fem-ai" className="inline-flex items-center text-purple-500 font-semibold hover:text-purple-700 transition-colors mt-auto">
-                {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Link>
+              {showUpcomingServices && (
+                <Link href="/fem-ai" className="inline-flex items-center text-purple-500 font-semibold hover:text-purple-700 transition-colors mt-auto">
+                  {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              )}
             </div>
 
             {/* Service 5: Workflow Automation */}

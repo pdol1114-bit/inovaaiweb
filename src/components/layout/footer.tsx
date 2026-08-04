@@ -3,6 +3,15 @@
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { BusinessInfo } from "@/components/layout/BusinessInfo";
+import { filterVisibleServices } from "@/lib/upcoming-services";
+
+const serviceLinks = filterVisibleServices([
+    { href: "/sniff", labelKey: "sniff" },
+    { href: "/sniff-hospital", labelKey: "sniffHospital" },
+    { href: "/csv-automation", labelKey: "csvAutomation" },
+    { href: "/fem-ai", labelKey: "femAi" },
+    { href: "/automation", labelKey: "automation" },
+]);
 
 export function Footer() {
     const t = useTranslations("Footer");
@@ -28,11 +37,13 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4">{t("services")}</h4>
                         <ul className="space-y-2 text-sm text-gray-600">
-                            <li><Link href="/sniff" className="hover:text-blue-600 transition-colors">{nt("sniff")}</Link></li>
-                            <li><Link href="/sniff-hospital" className="hover:text-blue-600 transition-colors">{nt("sniffHospital")}</Link></li>
-                            <li><Link href="/csv-automation" className="hover:text-blue-600 transition-colors">{nt("csvAutomation")}</Link></li>
-                            <li><Link href="/fem-ai" className="hover:text-blue-600 transition-colors">{nt("femAi")}</Link></li>
-                            <li><Link href="/automation" className="hover:text-blue-600 transition-colors">{nt("automation")}</Link></li>
+                            {serviceLinks.map((link) => (
+                                <li key={link.href}>
+                                    <Link href={link.href} className="hover:text-blue-600 transition-colors">
+                                        {nt(link.labelKey)}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 

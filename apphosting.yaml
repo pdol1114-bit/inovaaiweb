@@ -39,3 +39,19 @@ env:
 #    secret: portone-webhook-secret
 #    availability:
 #      - RUNTIME
+#
+#  - variable: PORTONE_API_SECRET
+#    secret: portone-api-secret
+#    availability:
+#      - RUNTIME
+
+# 출시 전 서비스(sniff-hospital, csv-automation, fem-ai) 메뉴 노출 토글.
+# 미설정이 곧 '숨김'이라 지금은 주석으로 두는 것으로 충분하다.
+# KCP 심사가 끝나면 아래 주석을 풀고 value를 "true"로 두면 메뉴가 복구된다.
+# NEXT_PUBLIC_* 이므로 빌드 타임에 인라인된다 — 빈 문자열로 넣지 말 것.
+#
+#  - variable: NEXT_PUBLIC_SHOW_UPCOMING_SERVICES
+#    value: "true"
+#    availability:
+#      - BUILD
+#      - RUNTIME
