@@ -1,6 +1,58 @@
 
 # PROGRESS
 
+## 2026-08-04 — 배포 중단 원인 규명 및 복구 (락파일 깨짐)
+
+### 증상
+프로덕션(inovaai.ai)에 08-03 이후 커밋이 하나도 반영되지 않음.
+$4.99 가격, "대표: 성지세, 강유석" 등 구버전 내용이 그대로 노출.
+
+### 진단
+프로덕션 HTML의 마커(`Daeha 2-gil`, `Representatives:` 복수형, KB 배지 wrapper 유무)로
+배포 시점을 **99adf89(07-30 빌드 004)** 로 특정. Cloud Run 리비전 목록도
+`sniff-web-server-build-2026-07-30-004`가 마지막.
+
+App Hosting REST API로 롤아웃 133건을 조회한 결과 **07-31 이후 전부 FAILED**
+(마지막 성공 rollout-2026-07-30-004). Cloud Build 로그:
+
+```
+npm ci can only install packages when your package.json and package-lock.json are in sync.
+Missing: @swc/helpers@0.5.23 from lock file
+```
+
+### 근본 원인
+`next-intl`이 끌어오는 `@swc/core@1.15.43`의 peerDependency가
+`@swc/helpers >=0.5.17`인데, 락파일에는 next가 고정한 `0.5.15`만 있고
+peer를 충족하는 항목이 없었다. 07-31 포트원 SDK 설치(`npm install @portone/...`)
+당시 npm이 `"added 2 packages, removed 1 package"`를 출력했는데 그 removed가
+`@swc/helpers`였고, package.json diff만 확인하고 락파일을 검증하지 않아 놓쳤다.
+
+로컬 npm 11.8은 이 peer 불충족을 허용해 `npm ci`·빌드가 모두 통과했고,
+빌더의 npm(Node 20 이미지)은 엄격해서 실패했다 — 로컬에서 재현되지 않은 이유.
+
+### 조치
+`package-lock.json` 전체 재생성(`rm package-lock.json && npm install`).
+`node_modules/next-intl/node_modules/@swc/helpers@0.5.23` 항목이 추가되어
+빌더가 요구하던 상태가 됐다. 백업 락파일에 `npm install --package-lock-only`를
+돌리는 최소 수정도 시도했으나 같은 이유로 항목이 추가되지 않아 재생성을 택했다.
+
+부작용: 범위(^) 내 패치·마이너 상승 — next-intl 4.13.2→4.13.5,
+@supabase/ssr 0.12.1→0.12.4, supabase-js 2.110.3→2.112.0, tailwindcss 4.3.2→4.3.3.
+next·react·react-dom·포트원 SDK는 변동 없음. package.json은 무변경.
+
+### 함께 처리
+- `Pricing.freePrice`: `₩0`/`KRW 0` → `무료`/`Free` (지시)
+- 가격 하드코딩 전수 검사: .tsx/.ts 0건, messages 달러 표기 0건
+- 대표자: 저장소는 이미 "대표: 성지세" 단독. 남은 "강유석" 2건은
+  **저작권자**(등록 C-2026-013694)와 **개인정보보호책임자**로 대표자와 무관해 유지.
+
+### 검증
+- 로컬 프로덕션 빌드(`npm start`)로 ko/en 28개 페이지 fetch → 달러 표기 **0건**.
+- `/ko|/en/payment` 사업자정보 5개 항목(상호·대표·사업자등록번호·주소·통신판매업신고번호)
+  + 고객문의·이메일 노출. 전화번호는 070 미개통으로 조건부 숨김. 구버전 블록 0건.
+- `rm -rf node_modules && npm ci` → 정상, 빌드·타입체크 통과, 키 파리티 446/446.
+
+
 ## 2026-08-04 — 심사 대비 정리 (/product 삭제, 출시 전 서비스 메뉴 숨김)
 
 ### 1. /product 라우트 삭제

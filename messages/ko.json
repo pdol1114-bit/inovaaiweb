@@ -542,7 +542,7 @@
     "Pricing": {
         "title": "요금제",
         "freePlanTitle": "무료 (Free)",
-        "freePrice": "₩0",
+        "freePrice": "무료",
         "freeFeature1": "AI 건강 분석 월 3회",
         "freeFeature2": "기본 문진표",
         "currentPlan": "현재 플랜",
