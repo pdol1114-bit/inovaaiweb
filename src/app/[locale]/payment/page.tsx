@@ -5,6 +5,8 @@ import Image from "next/image";
 import { KBAuthMark } from "@/components/layout/KBAuthMark";
 import { SubscribeButton } from "@/components/payment/SubscribeButton";
 import { BusinessInfo } from "@/components/layout/BusinessInfo";
+import { createClient } from "@/utils/supabase/server";
+import { getSubscriptionForUser } from "@/lib/subscription";
 
 export default async function PaymentPage({
     params,
@@ -14,6 +16,15 @@ export default async function PaymentPage({
     const { locale } = await params;
     setRequestLocale(locale);
     const t = await getTranslations("Payment");
+
+    // 이미 구독 중이면 결제 대신 구독 관리로 안내한다 (해지 경로 접근성).
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+    const subscription = user ? await getSubscriptionForUser(supabase, user.id) : null;
+    const hasActiveSubscription =
+        subscription?.status === "active" || subscription?.status === "cancel_scheduled";
 
     const features = [
         t("features.aiAnalysis"),
@@ -114,7 +125,16 @@ export default async function PaymentPage({
                             </div>
 
                             <div className="mt-14 space-y-8">
-                                <SubscribeButton />
+                                {hasActiveSubscription ? (
+                                    <Link
+                                        href="/account/subscription"
+                                        className="flex items-center justify-center w-full h-18 py-8 text-2xl font-black rounded-[32px] shadow-xl shadow-blue-600/20 bg-blue-600 hover:bg-blue-700 text-white transition-all"
+                                    >
+                                        {t("manageSubscription")}
+                                    </Link>
+                                ) : (
+                                    <SubscribeButton />
+                                )}
 
                                 <div className="flex justify-center">
                                     <KBAuthMark />

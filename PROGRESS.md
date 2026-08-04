@@ -1,4 +1,63 @@
+
 # PROGRESS
+
+## 2026-08-04 — 구독 관리 페이지 및 해지 기능 구현
+
+### 배경
+웹에 해지 수단이 없어 KCP 부가합의서 제6조의2 2항 미충족, 이용약관 제11조 ③의
+"서비스 내 관리 화면"과 구현 불일치, 등록은 웹/해지는 이메일이라는 다크패턴
+소지가 있었음.
+
+### 빌링키 삭제 시점 — 종료일까지 유지하기로 결정
+포트원 V2 SDK(`payment.billingKey.deleteBillingKey`)에는 **예약 삭제가 없다.**
+해지 신청 즉시 삭제하면 해지 취소 시 카드 재등록이 필요해져 요건("종료일 전까지
+언제든 해지 취소")과 충돌한다. 따라서:
+- 해지 신청 시점: 빌링키 **보관**, status만 `cancel_scheduled`
+- 이용 종료일 도달 시: 빌링키 삭제 + status `canceled` + billing_key null
+자동청구 스케줄러가 아직 없어 보관 자체로 인한 과금 위험은 없다.
+**추후 정기청구 잡을 만들 때 반드시 `cancel_scheduled`를 건너뛰어야 한다.**
+
+### 스케줄러 없이 상태 전이 처리
+크론 인프라가 없어 **접근 시점 체크**로 구현했다. `lib/subscription.ts`의
+`getSubscriptionForUser()`가 구독을 읽을 때마다 `cancel_scheduled`이고
+`service_end_date`가 지났으면 그 자리에서 `canceled`로 전환하고 빌링키를 지운다.
+구독 페이지·해지·해지취소 API 모두 이 함수를 거치므로 어느 경로로 들어와도
+동일하게 정리된다. 한계: 아무도 접근하지 않으면 DB상 전이가 지연된다(과금은
+없으므로 실질 영향 없음). 추후 크론 도입 시 같은 함수를 재사용하면 된다.
+
+### 추가/변경 파일
+- `supabase/migrations/0002_subscription_cancellation.sql`:
+  canceled_at, service_end_date, started_at, card_brand, card_number_masked 추가.
+  status CHECK 제약(active/cancel_scheduled/canceled) + 부분 인덱스.
+- `src/lib/portone/server.ts`: 포트원 서버 클라이언트, 빌링키 삭제/카드정보 조회.
+  API Secret 미설정 시 null 반환해 호출부에서 구분 처리.
+- `src/lib/subscription.ts`: 구독 조회 + 만료 정리 공용 로직.
+- `src/app/api/billing/cancel-subscription/route.ts`,
+  `.../resume-subscription/route.ts`: 두 핸들러 모두 **인자를 받지 않는다**
+  (`export async function POST()`). 요청 본문을 읽을 수 없으므로 body로
+  타인 user_id를 넘기는 공격이 구조적으로 불가능하다.
+- `src/app/[locale]/account/subscription/page.tsx` + `components/account/
+  SubscriptionManager.tsx`: 상태별 분기, 확인 모달, 해지 취소.
+- `register-key`: next_billing_date(+1개월)·카드정보·started_at 저장하도록 보강.
+- 진입 경로 3곳: 네비바(데스크톱·모바일, 로그인 시), 결제페이지(구독 중이면
+  결제 버튼 대신 [구독 관리하기]), 푸터.
+- 환불정책 item2: 해지 경로를 웹 [구독 관리] 우선 + 이메일 병기로 갱신.
+
+### 다크패턴 방지
+확인 1회만, 설문·리텐션 오퍼 없음, [돌아가기]/[해지 신청] 두 버튼을 같은 크기·
+같은 비중으로 배치, 해지 진입점을 네비바·결제페이지·푸터 3곳에 노출.
+
+### 검증
+- 빌드·타입체크 통과, ko/en 키 파리티 446/446, 4개 라우트 등록 확인.
+- 미인증 cancel/resume → 401. body에 타인 user_id 넣어도 401(본문 자체를 읽지 않음).
+- 미로그인 `/ko/account/subscription` → 307 `/ko/auth` 리다이렉트.
+- **미검증**: 로그인 상태의 실제 해지→예약→취소 흐름과 DB 상태 전이.
+  마이그레이션 0002 미적용 + 포트원 API Secret 미발급이라 실행 불가.
+
+### 이용약관 정합성
+제11조 ③("서비스 내 관리 화면 또는 앱마켓 구독 관리, 또는 고객센터")이 이제
+실제 구현과 일치. 제11조 ④(결제주기 종료일까지 이용권한 유지, 다음 주기부터
+미결제)도 이번 구현과 정확히 일치해 수정 불필요.
 
 ## 2026-08-03 — 환불정책 재작성 (당월 이용 후 종료 / 일할 환불 없음)
 

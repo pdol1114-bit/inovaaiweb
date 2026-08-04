@@ -58,6 +58,7 @@ export function Footer() {
                         <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
                         <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
                         <Link href="/refund-policy" className="hover:text-gray-600">{t("refundPolicy")}</Link>
+                        <Link href="/account/subscription" className="hover:text-gray-600">{t("manageSubscription")}</Link>
                     </div>
                 </div>
             </div>

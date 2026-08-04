@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { getBillingKeyCardInfo } from "@/lib/portone/server";
 
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -22,13 +23,26 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "INVALID_BILLING_KEY" }, { status: 400 });
     }
 
+    const card = await getBillingKeyCardInfo(billingKey);
+
+    const now = new Date();
+    const nextBillingDate = new Date(now);
+    nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+
     const { error } = await supabase.from("subscriptions").upsert(
         {
             user_id: user.id,
             billing_key: billingKey,
             plan: "sniff_premium",
             status: "active",
-            updated_at: new Date().toISOString(),
+            started_at: now.toISOString(),
+            next_billing_date: nextBillingDate.toISOString(),
+            // 재구독인 경우 이전 해지 예약 흔적을 지운다.
+            canceled_at: null,
+            service_end_date: null,
+            card_brand: card.brand,
+            card_number_masked: card.numberMasked,
+            updated_at: now.toISOString(),
         },
         { onConflict: "user_id" }
     );

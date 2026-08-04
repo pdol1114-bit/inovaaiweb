@@ -43,7 +43,8 @@
         "services": "Services",
         "company": "Company",
         "contact": "Contact Info",
-        "refundPolicy": "Refund Policy"
+        "refundPolicy": "Refund Policy",
+        "manageSubscription": "Manage subscription"
     },
     "BusinessInfo": {
         "companyName": "Trade Name:",
@@ -187,7 +188,8 @@
         },
         "refundPolicyLink": "Refund Policy",
         "termsLink": "Terms of Service",
-        "privacyLink": "Privacy Policy"
+        "privacyLink": "Privacy Policy",
+        "manageSubscription": "Manage subscription"
     },
     "Privacy": {
         "title": "Privacy Policy",
@@ -557,7 +559,7 @@
     "RefundPolicy": {
         "title": "Paid Service Usage and Refund Policy",
         "item1": "Pricing: Sniff Premium KRW 3,300/month (VAT included), a recurring subscription product billed automatically each month.",
-        "item2": "Cancelling the subscription: You may request cancellation at any time via customer support (support@inovaai.ai), which is accepted 24 hours a day regardless of business hours. After you request cancellation you keep full access until the end of the month you have already paid for; no further automatic payment is taken from the next billing date, and the subscription ends at that point. You may undo the cancellation and keep your subscription at any time before that end date.",
+        "item2": "Cancelling the subscription: You can cancel yourself at any time from the Manage Subscription page after signing in, and requests are also accepted via customer support (support@inovaai.ai) 24 hours a day regardless of business hours. After you request cancellation you keep full access until the end of the month you have already paid for; no further automatic payment is taken from the next billing date, and the subscription ends at that point. You may undo the cancellation from the Manage Subscription page any time before that end date.",
         "item3": "No partial refund on early cancellation: This product is billed monthly with no minimum term and no early-termination penalty, so pro-rata refunds for cancelling mid-cycle are not provided.",
         "item4": "Cooling-off (withdrawal of subscription): We refund in full if you request it within 7 days of your first payment and have not used the service. However, once you have started using the service (for example, by running an AI analysis), the right of withdrawal may be restricted under Article 17(2) of the Act on Consumer Protection in Electronic Commerce.",
         "item5": "Company fault: Where the cause lies with the Company, such as a service outage or an incorrect charge, we refund regardless of the restrictions above.",
@@ -566,5 +568,35 @@
         "item8": "Refund processing time: Valid refund requests are processed within 3 business days of receipt. The actual credit may be delayed depending on your card issuer or payment method.",
         "item9": "Misuse: Refunds may be restricted where misuse is confirmed, such as abuse of the refund process.",
         "item10": "Contact: support@inovaai.ai"
+    },
+    "Subscription": {
+        "title": "Manage Subscription",
+        "backToMain": "Back to Main",
+        "planName": "Sniff Premium",
+        "planPrice": "KRW 3,300/month (VAT included)",
+        "plan": "Plan",
+        "nextBillingDate": "Next billing date",
+        "serviceEndDate": "Access ends on",
+        "startedAt": "Subscribed since",
+        "card": "Registered card",
+        "statusActive": "Active",
+        "statusCancelScheduled": "Cancellation scheduled",
+        "cancelSubscription": "Cancel subscription",
+        "resume": "Undo cancellation",
+        "cancelScheduledNotice": "Your cancellation is scheduled. You can keep using the service until {date}.",
+        "confirmTitle": "Cancel your subscription?",
+        "confirmBody": "You can keep using Sniff Premium until {date}, and no automatic payment will be taken after that.",
+        "confirmNoRefund": "Pro-rata refunds for cancelling mid-cycle are not provided.",
+        "confirmResumable": "You can undo this cancellation any time before the end date.",
+        "confirmBack": "Go back",
+        "confirmCancel": "Cancel subscription",
+        "noSubscription": "You don't have an active plan.",
+        "goToPayment": "Start a subscription",
+        "ended": "Your subscription has ended.",
+        "resubscribe": "Subscribe again",
+        "manageLink": "Manage subscription",
+        "errors": {
+            "failed": "We couldn't process your request. Please try again in a moment."
+        }
     }
 }

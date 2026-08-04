@@ -19,6 +19,7 @@ const links = [
 
 export function Navbar() {
     const t = useTranslations("Navbar");
+    const st = useTranslations("Subscription");
     const locale = useLocale();
     const router = useRouter();
     const pathname = usePathname();
@@ -129,6 +130,12 @@ export function Navbar() {
                                 <span className="text-sm font-medium text-gray-700 hidden lg:block">
                                     {user.user_metadata?.full_name ?? user.email}
                                 </span>
+                                <Link
+                                    href="/account/subscription"
+                                    className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
+                                >
+                                    {st("manageLink")}
+                                </Link>
                                 <button
                                     onClick={handleSignOut}
                                     className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -204,6 +211,13 @@ export function Navbar() {
                                                 <span className="text-xs text-gray-500">{user.email}</span>
                                             </div>
                                         </div>
+                                        <Link
+                                            href="/account/subscription"
+                                            className="flex items-center justify-center px-4 py-3 text-gray-700 bg-gray-50 rounded-xl font-medium transition-colors"
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            {st("manageLink")}
+                                        </Link>
                                         <button
                                             onClick={handleSignOut}
                                             className="flex items-center justify-center space-x-2 px-4 py-3 text-red-600 bg-red-50 rounded-xl font-medium transition-colors"
