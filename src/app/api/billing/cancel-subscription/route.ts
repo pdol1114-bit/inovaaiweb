@@ -37,7 +37,7 @@ export async function POST() {
     }
 
     const { data, error } = await supabase
-        .from("subscriptions")
+        .from("web_subscriptions")
         .update({
             status: "cancel_scheduled",
             canceled_at: new Date().toISOString(),

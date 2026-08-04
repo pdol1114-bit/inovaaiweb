@@ -44,7 +44,7 @@ async function settleIfExpired(
     }
 
     const { data, error } = await supabase
-        .from("subscriptions")
+        .from("web_subscriptions")
         .update({
             status: "canceled",
             billing_key: null,
@@ -65,7 +65,7 @@ export async function getSubscriptionForUser(
     userId: string
 ): Promise<Subscription | null> {
     const { data, error } = await supabase
-        .from("subscriptions")
+        .from("web_subscriptions")
         .select(COLUMNS)
         .eq("user_id", userId)
         .maybeSingle();

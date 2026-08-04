@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     const nextBillingDate = new Date(now);
     nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
-    const { error } = await supabase.from("subscriptions").upsert(
+    const { error } = await supabase.from("web_subscriptions").upsert(
         {
             user_id: user.id,
             billing_key: billingKey,

@@ -1,6 +1,44 @@
 
 # PROGRESS
 
+## 2026-08-05 — 웹 정기결제를 web_subscriptions 로 분리
+
+### 배경
+`public.subscriptions` 는 Sniff 앱 구독 게이트가 이미 쓰던 테이블이었다
+(provider / product_id / external_subscription_id 등 앱스토어용 컬럼, 실사용 2건).
+0001은 `create table if not exists` 라 no-op 이었고, 0002만 앱 테이블에
+컬럼 5개·인덱스 1개·status CHECK 제약을 추가해 오염시켰다. CHECK 제약은
+앱이 'expired'·'trial' 등을 쓰면 앱 구독 처리를 깨뜨릴 수 있어 수동 드롭 완료.
+
+### 같은 테이블을 쓸 수 없었던 이유
+1. `register-key` 의 upsert(onConflict: user_id)가 앱 구독 행을 덮어씀
+2. 기존 유니크는 `(user_id) WHERE status='active'` 부분 유니크라
+   `onConflict: "user_id"` 가 대상 제약을 못 찾아 런타임 실패
+3. 앱·웹 구독 공존 시 `.maybeSingle()` 이 다중 행에서 깨짐
+
+### 조치
+- `0003_web_subscriptions.sql` 신설: 웹 전용 `public.web_subscriptions`.
+  user_id **단독** 유니크(부분 유니크 아님)로 upsert 정상 동작 보장,
+  status CHECK(active/cancel_scheduled/canceled), RLS 3정책, 해지예약 부분 인덱스.
+- `0004_revert_subscriptions_pollution.sql` 작성(**실행 보류**): 0002가 앱 테이블에
+  남긴 컬럼·인덱스 제거. 앱 백엔드가 해당 컬럼을 이미 쓸 가능성이 있어 상단에
+  경고와 확인 방법을 명시했고 승인 전까지 실행하지 않는다.
+- 코드 5곳을 `web_subscriptions` 로 전환 (`from("subscriptions")` 잔존 0건).
+- 0001·0002 상단에 "의도대로 적용되지 않았음 / 실행하지 말 것" 헤더 추가.
+
+### 앱 구독과의 관계 (4번 조사)
+웹에는 **구독 여부로 기능을 잠그는 로직이 없다.** `getSubscriptionForUser` 사용처는
+결제페이지(버튼 분기), 구독관리 페이지(상태 표시), 해지·해지취소 API뿐이고
+AI 분석 등 실제 프리미엄 기능은 앱(별도 레포)에 있다. 따라서 두 테이블을 OR로
+확인할 필요가 현재는 없다. 다만 웹에 프리미엄 기능이 생기면 그 시점에
+앱 구독(subscriptions)과 웹 구독(web_subscriptions)을 함께 봐야 한다.
+
+### 검증
+- 빌드·타입체크 통과, `from("subscriptions")` 0건.
+- **테이블 부재 상태에서도 안전**: 0003 실행 전 배포되어도 조회 실패가 null 로
+  처리되어 `/ko|/en/payment`, `/account/subscription` 모두 200, 결제 버튼 정상 노출.
+
+
 ## 2026-08-04 — 070 유선전화 반영 (심사 필수 6개 항목 완비)
 
 `lib/business-info.ts`의 `LANDLINE`에 `070-4136-7975` 입력, TODO 주석 제거.
