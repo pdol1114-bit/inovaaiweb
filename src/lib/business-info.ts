@@ -23,10 +23,8 @@ export const BUSINESS_ADDRESS = {
 /**
  * PG 심사 요건상 사업자정보의 전화번호는 유선전화여야 한다 (휴대폰번호 불가).
  * 값이 비어 있으면 사업자정보 블록에서 해당 줄이 렌더링되지 않는다.
- *
- * TODO: 070 인터넷전화 개통 후 입력
  */
-export const LANDLINE = "";
+export const LANDLINE = "070-4136-7975";
 
 /** 고객문의용 휴대폰. 위 유선번호 요건과는 별개로 계속 노출한다. */
 export const CUSTOMER_PHONE = "010-8069-1218";
