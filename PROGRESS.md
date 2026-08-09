@@ -1,6 +1,56 @@
 
 # PROGRESS
 
+## 2026-08-09 — KCP 테스트 결제창 호출 검증 및 배포 (PG 심사용)
+
+### 배경
+포트원 안내상 PG사·카드사 입점심사를 통과하려면 결제페이지와 결제모듈 호출이
+실제로 구현돼 있어야 하고, 심사관이 접근 가능한 URL이 필요하다.
+
+### 연동 모드 판별 방식 교체
+기존 `isPortOneTestMode()` 는 `channelKey.includes("test")` 로 판별했는데,
+PortOne V2의 채널 키는 `channel-key-{UUID}` 고정 형식이라 test/live 구분자가
+아예 없다. 항상 부정확한 검사였고, 실제로 테스트 채널을 "LIVE — 실제 결제됨"
+으로 잘못 표시하고 있었다.
+
+`NEXT_PUBLIC_PORTONE_MODE` 환경변수로 명시하도록 교체했다. **미설정 시 실결제로
+간주**한다 — 값을 빠뜨렸을 때 실결제 채널이 "TEST"로 보이는 쪽이 그 반대보다
+위험하기 때문이다.
+
+### 변경 내용
+- `src/app/[locale]/test-payment/page.tsx` 신규. storeId·channelKey·연동 모드·
+  결제 금액(1,000원)을 화면에 그대로 노출해 어떤 채널로 호출되는지 눈으로 확인 가능.
+  심사 통과 후 제거할 임시 페이지라 다국어 키는 추가하지 않고 한국어 문자열 직접 사용.
+- `src/lib/portone/config.ts` — 위 모드 판별 교체.
+- `apphosting.yaml` — 통째로 주석 처리돼 있던 포트원 블록에서 `STORE_ID`,
+  `CHANNEL_KEY`, `MODE=test` 주석 해제. 이 셋이 없으면 배포된 페이지에서 결제창이
+  뜨지 않는다. `PORTONE_API_SECRET`·`PORTONE_WEBHOOK_SECRET` 은 Secret Manager
+  등록 전이라 주석 유지 (참조만 풀면 배포가 실패한다).
+
+### 검증
+- `npm run build` 통과. `/ko/test-payment`, `/en/test-payment` SSG 프리렌더.
+- 로컬 + **프로덕션(inovaai.ai)** 양쪽에서 Playwright(headless Chromium)로
+  실제 버튼 클릭까지 확인:
+  - `https://inovaai.ai/ko/test-payment` → HTTP 200
+  - 모드 표시 `TEST`, 금액 `1,000원`
+  - 결제창 iframe: `pg/kcp-v2/payment/general/...` (KCP V2 연동 확인)
+  - 결제창 iframe: `testspay.kcp.co.kr/cardMethod.do` — **KCP 테스트 서버**
+    (실서버 `smpay` 아님). 실제 출금 없음.
+  - 결제창 헤더 `[ TEST ] NHN KCP`, 카드사 선택·약관 동의 정상 렌더
+  - 콘솔 에러 0건
+- 배포는 main push 후 약 100초 만에 롤아웃 완료.
+
+### 미검증 / 남은 작업
+- **카드번호 입력 이후 결제 승인은 진행하지 않았다.** 승인까지 가면 웹훅 →
+  `web_subscriptions` 반영 경로가 엮이는데 그쪽은 아직 미검증이다.
+- `PORTONE_API_SECRET`, `PORTONE_WEBHOOK_SECRET` 미발급/미등록.
+  승인 이후 웹훅 검증과 `src/lib/portone/server.ts` 의 빌링키·카드정보 조회는
+  이 값들이 있어야 동작한다.
+- 실연동 전환 시 `apphosting.yaml` 의 `CHANNEL_KEY` 와 `MODE` 를 **함께** 바꿔야
+  한다. 하나만 바꾸면 표시와 실제가 어긋난다.
+- `/test-payment` 는 심사 통과 후 제거 예정. robots.txt·sitemap 이 없고 이 페이지로
+  향하는 내부 링크도 없어 크롤링 노출 위험은 낮지만, 오래 둘 거면 noindex 검토.
+
 ## 2026-08-05 — 웹 정기결제를 web_subscriptions 로 분리
 
 ### 배경
