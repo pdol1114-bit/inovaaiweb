@@ -1,6 +1,49 @@
 
 # PROGRESS
 
+## 2026-08-15 — 포트원 실연동(live) 채널 전환 및 결제페이지 심사 요건 보완
+
+### 변경 내용
+- `apphosting.yaml` — `NEXT_PUBLIC_PORTONE_CHANNEL_KEY` 를 실연동 채널(sniff_Web)
+  키로, `NEXT_PUBLIC_PORTONE_MODE` 를 `test` → `live` 로 **함께** 교체.
+  storeId 는 채널 상위 개념이라 변경 없음. KCP SITE KEY 는 포트원 콘솔에만
+  입력하며 저장소에 넣지 않는다 (`NEXT_PUBLIC_*` 금지).
+- `/test-payment` 라우트 삭제. 주문명 "PG 심사용 테스트 결제" / 금액 1,000원이라
+  심사원이 URL을 발견하면 반려 사유가 되고, 실연동 전환 후에는 존재 자체가 실제
+  과금 위험이다. 프로덕션 코드에 이 경로로 향하는 링크는 없었다.
+- 결제페이지에 자동갱신 고지 문구 추가 (13px / slate-700, 결제 버튼 바로 위).
+  해지 경로를 `/account/subscription` 링크로 연결. 구독 상태와 무관하게 노출된다.
+- KB에스크로 인증마크 제거. 디지털 콘텐츠 구독은 에스크로 의무 대상이 아니고,
+  링크가 `href="#"` 로 죽어 있었다. 추가로 마크 이미지가 `http://img1.kbstar.com`
+  평문 HTTP라 HTTPS 페이지에서 mixed content 로 차단되는 상태였다.
+  `KBAuthMark.tsx` 파일 자체는 미사용 상태로 남겨 뒀다 (되돌리기 쉽게).
+- `/sniff` 히어로에 "Premium 구독하기" CTA 추가 → `/payment` 직행.
+  기존 "시작하기" 는 비로그인 시 `/pricing` 으로 우회해서, 등록 사이트주소
+  (inovaai.ai/ko)에서 결제페이지까지 4단계였다. 기존 동선은 건드리지 않았다.
+
+### 검증 (프로덕션 inovaai.ai, 배포 후)
+- 실연동 채널키가 배포된 클라이언트 번들에 인라인됨. 구 테스트 채널키
+  (`...c79f4965...`)는 서빙되는 청크에서 완전히 사라짐.
+- `/ko/test-payment` → **HTTP 404** (삭제 확인).
+- 자동갱신 문구: 데스크톱(1440px)·모바일(iPhone 13) 양쪽 노출 확인.
+  computed `font-size: 13px`, 결제 버튼보다 위에 위치, "구독 관리" 링크 동작.
+- ko/en 메시지 키 파리티 일치, `MISSING_MESSAGE` 0건.
+- KB에스크로 마크 마크업 잔재 0건.
+
+### 미검증 / 남은 작업
+- **결제창 URL·상점명(체크사항 5번)은 확인하지 못했다.** `/test-payment` 삭제
+  후 결제창을 여는 유일한 경로가 `/payment` 의 "지금 구독하기" 인데,
+  `SubscribeButton` 이 비로그인 사용자를 `/auth` 로 보낸다 (Playwright 로 실제
+  클릭해 `https://inovaai.ai/ko/auth` 리다이렉트 확인). 심사용 계정
+  (`review@inovaai.ai`) 로 로그인해야 결제창까지 도달 가능 —
+  계정 생성은 사용자가 직접 수행 예정.
+  확인할 것: 결제창 호스트가 `testspay.kcp.co.kr` 가 **아닐 것**,
+  상점명이 `이노바에이아이_자동결제` 일 것.
+- 실결제·환불 테스트는 수행하지 않았다 (사용자가 직접 수행).
+- `PORTONE_API_SECRET`, `PORTONE_WEBHOOK_SECRET` 여전히 미발급/미등록.
+  PG-API 인증서·개인키·정기자동결제 그룹아이디 미발급이라 현재 구현 가능한
+  범위는 빌링키 발급(카드 등록)까지다.
+
 ## 2026-08-09 — KCP 테스트 결제창 호출 검증 및 배포 (PG 심사용)
 
 ### 배경
