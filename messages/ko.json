@@ -125,6 +125,7 @@
         "heroTitle2": "AI 기반 건강 분석",
         "heroDesc": "Sniff by Hatch는 고급 시각 인식 AI를 사용하여 반려동물의 건강을 모니터링합니다. 간단히 사진을 찍어 즉각적인 건강 상태 정보를 확인하세요.",
         "getStarted": "시작하기",
+        "subscribePremium": "Premium 구독하기",
         "login": "로그인",
         "downloadApp": "Sniff 앱 다운로드",
         "howItWorksTitle": "작동 방식",
@@ -189,7 +190,8 @@
         "refundPolicyLink": "환불정책",
         "termsLink": "이용약관",
         "privacyLink": "개인정보처리방침",
-        "manageSubscription": "구독 관리"
+        "manageSubscription": "구독 관리",
+        "recurringNotice": "매월 같은 날 ₩3,300(부가세 포함)이 등록하신 카드로 자동 결제됩니다. 언제든 <manage>구독 관리</manage>에서 해지할 수 있으며, 해지 시 다음 결제일부터 청구되지 않습니다."
     },
     "Privacy": {
         "title": "개인정보처리방침",

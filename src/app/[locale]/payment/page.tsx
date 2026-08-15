@@ -2,7 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { CheckCircle2, CreditCard, ShieldCheck, Zap, Star } from "lucide-react";
 import Image from "next/image";
-import { KBAuthMark } from "@/components/layout/KBAuthMark";
 import { SubscribeButton } from "@/components/payment/SubscribeButton";
 import { BusinessInfo } from "@/components/layout/BusinessInfo";
 import { createClient } from "@/utils/supabase/server";
@@ -125,6 +124,21 @@ export default async function PaymentPage({
                             </div>
 
                             <div className="mt-14 space-y-8">
+                                {/* 카드사 등록심사 요건: 자동갱신 조건·해지 경로를 결제 버튼 바로 위에 고지한다.
+                                    심사 대상 문구이므로 흐리게 처리하지 말 것 (13px / slate-700 유지). */}
+                                <p className="text-[13px] leading-relaxed text-slate-700 font-medium">
+                                    {t.rich("recurringNotice", {
+                                        manage: (chunks) => (
+                                            <Link
+                                                href="/account/subscription"
+                                                className="text-blue-600 font-bold underline underline-offset-2 hover:text-blue-700"
+                                            >
+                                                {chunks}
+                                            </Link>
+                                        ),
+                                    })}
+                                </p>
+
                                 {hasActiveSubscription ? (
                                     <Link
                                         href="/account/subscription"
@@ -135,10 +149,6 @@ export default async function PaymentPage({
                                 ) : (
                                     <SubscribeButton />
                                 )}
-
-                                <div className="flex justify-center">
-                                    <KBAuthMark />
-                                </div>
 
                                 <div className="flex justify-center gap-4 text-[11px] text-slate-400">
                                     <Link href="/refund-policy" className="hover:text-blue-600 transition-colors underline underline-offset-2">

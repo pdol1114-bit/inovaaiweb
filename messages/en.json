@@ -125,6 +125,7 @@
         "heroTitle2": "for Your Beloved Pets",
         "heroDesc": "Sniff by Hatch uses advanced visual recognition AI to monitor your pet's health. Simply take a photo and get instant insights into their well-being.",
         "getStarted": "Get Started",
+        "subscribePremium": "Subscribe to Premium",
         "login": "Login",
         "downloadApp": "Download the Sniff App",
         "howItWorksTitle": "How it Works",
@@ -189,7 +190,8 @@
         "refundPolicyLink": "Refund Policy",
         "termsLink": "Terms of Service",
         "privacyLink": "Privacy Policy",
-        "manageSubscription": "Manage subscription"
+        "manageSubscription": "Manage subscription",
+        "recurringNotice": "KRW 3,300 (VAT included) will be charged automatically to your registered card on the same day each month. You can cancel anytime under <manage>Manage subscription</manage>; once cancelled, you will not be billed from the next billing date."
     },
     "Privacy": {
         "title": "Privacy Policy",

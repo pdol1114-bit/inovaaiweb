@@ -37,6 +37,11 @@ export default async function SniffPage({
                         <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
                             <Link href={getStartedHref}>{t("getStarted")}</Link>
                         </Button>
+                        {/* 카드사 등록심사 요건: 등록 사이트주소(inovaai.ai/ko)에서 결제페이지까지
+                            도달하는 경로가 필요하다. 로그인 여부와 무관하게 /payment로 직행한다. */}
+                        <Button size="lg" className="rounded-full bg-blue-600 text-white hover:bg-blue-700 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
+                            <Link href="/payment">{t("subscribePremium")}</Link>
+                        </Button>
                         <Button size="lg" variant="outline" className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 px-8 h-12 text-base" asChild>
                             <Link href="/auth">{t("login")}</Link>
                         </Button>
