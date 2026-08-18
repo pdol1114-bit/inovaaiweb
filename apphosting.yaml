@@ -19,6 +19,14 @@ env:
 # 실연동 채널(sniff_Web)로 전환했다. 카드사 등록심사 체크사항 5번("테스트
 # 결제창인 경우 심사 불가")을 통과하려면 실 결제창이 호출되어야 한다.
 #
+# 빌링키 발급 시 "batchPaymentGroupId를 가져오는데 실패하였습니다" 오류가 났고,
+# 원인은 채널의 정기자동결제 그룹아이디 미설정이었다. KCP 상점관리자에서 그룹을
+# 등록하고 PG-API 인증서·개인키를 콘솔에 등록하는 과정에서 채널이 재생성돼
+# 채널키가 바뀌었다 (2026-08-18 교체).
+#
+# 사이트코드·정기자동결제 그룹아이디·PG-API 인증서·개인키·개인키 비밀번호는
+# 모두 포트원 콘솔에만 저장한다. 저장소·환경변수에 넣지 않는다.
+#
 # 아래 두 값은 NEXT_PUBLIC_* 로 브라우저 번들에 인라인되는 공개 식별자다
 # (비밀값 아님). 실제 비밀값은 PORTONE_API_SECRET 뿐이고 Secret Manager에 둔다.
 # KCP SITE KEY는 포트원 콘솔에만 입력하며 이 저장소에 들어오지 않는다.
@@ -29,7 +37,7 @@ env:
       - BUILD
       - RUNTIME
   - variable: NEXT_PUBLIC_PORTONE_CHANNEL_KEY
-    value: channel-key-c8189a61-c04d-4781-a4bd-012ecce1efce
+    value: channel-key-52702dc1-bfd8-4967-b99f-02c1ac8f0d73
     availability:
       - BUILD
       - RUNTIME
