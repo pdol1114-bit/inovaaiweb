@@ -61,8 +61,11 @@ export function SubscribeButton() {
             // On the redirect flow the browser navigates away and never reaches here.
             if (!response) return;
 
+            // PortOne V2 는 실패해도 throw 하지 않고 code/message 를 담은 객체를 반환한다.
+            // PG 에러 원문은 개발자 콘솔로만 보내고, 화면에는 일반 문구를 노출한다.
             if (response.code != null) {
-                setError(response.message ?? t("errors.issueFailed"));
+                console.error("[PAY FAIL]", response.code, response.message);
+                setError(t("errors.issueFailed"));
                 return;
             }
 
