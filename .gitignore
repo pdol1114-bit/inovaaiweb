@@ -67,6 +67,17 @@ npm-debug.log*
 *위임장*
 *고객확인서*
 *보증보험*
+
+# PG 인증서 / 개인키 (PortOne 콘솔에만 저장한다. 저장소에 절대 두지 않는다)
+# *.pem 은 압축을 푼 파일만 막는다 — 컨테이너(.zip 등)도 함께 막아야 한다.
+*KCP_AUTH*
+*PRIKEY*
+*인증서*
+*.p12
+*.pfx
+*.jks
+*.keystore
+
 *.pdf
 *.docx
 *.pptx
