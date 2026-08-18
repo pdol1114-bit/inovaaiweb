@@ -24,6 +24,11 @@ export function SubscribeButton() {
     const handleSubscribe = async () => {
         setError(null);
 
+        // TODO(제거): 채널키 주입 경로 진단용 임시 로그. 배포 검증 후 삭제한다.
+        // config.ts 상수를 찍는다 — 실제로 SDK 에 넘어가는 값이어야 진단이 된다.
+        console.log("[PAY] channelKey:", PORTONE_CHANNEL_KEY);
+        console.log("[PAY] storeId:", PORTONE_STORE_ID);
+
         if (!isPortOneConfigured()) {
             setError(t("errors.notConfigured"));
             return;
