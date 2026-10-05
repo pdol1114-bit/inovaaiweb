@@ -8,7 +8,6 @@
  * 바꾸기만 하면 메뉴가 그대로 복구된다.
  */
 export const UPCOMING_SERVICE_PATHS = [
-    "/sniff-hospital",
     "/csv-automation",
     "/fem-ai",
 ] as const;
