@@ -140,7 +140,7 @@
         "feature1Title": "Vision + LLM AI",
         "feature1Desc": "Our AI analyzes visual cues from photos (skin, teeth, wounds) and combines them with symptom history for accurate assessments.",
         "feature2Title": "Vet-Verified",
-        "feature2Desc": "Developed with leading veterinarians to ensure medical relevance. Critical cases are flagged for immediate professional care.",
+        "feature2Desc": "Developed based on the clinical database of Greenbel Animal Medical Center and verified by practicing veterinarians to ensure medical relevance. Critical cases are flagged for immediate professional care.",
         "feature3Title": "Proactive Monitoring",
         "feature3Desc": "Track your pet's health timeline. Detect subtle changes early before they become serious issues."
     },
