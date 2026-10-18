@@ -1,6 +1,35 @@
 
 # PROGRESS
 
+## 2026-10-19 — 결제 장애 대응과 코드 보완 3건
+
+### 장애 (2026-10-19 08:03·08:05 KST)
+"지금 구독하기" → "예기치 못한 오류". register-key 500,
+`failed to create pending payment: Invalid API key`. Secret Manager
+`supabase-service-role-key` 버전 2가 정상 JWT(219자)를 **두 번 이어 붙인 438자**였다.
+Kevin 이 버전 4(219자, role=service_role, ref=hvloodegutmwxbabdsjf)를 등록하고 롤아웃
+(리비전 build-2026-10-18-003, 키 버전 4 참조). 08:28:57 첫 실결제 정상 처리
+(web_payments paid, web_subscriptions active, 다음 결제일 2026-11-19 KST).
+결제 호출 전 단계라 출금은 없었고, 빌링키 2개가 포트원에 남았다.
+
+### 보완
+| 커밋 | 내용 |
+|---|---|
+| 020efa1 | 결제 호출 전 단계 예외 시 잠금 해제 + 새 빌링키 삭제 (IN_PROGRESS·검증 통신 오류는 삭제 안 함) |
+| 3386155 | `PreChargeError` → 500 `PRECHARGE_FAILED`, 결제 이후 예외는 `SERVER_ERROR`. 화면 "결제가 진행되지 않았습니다" |
+| (이 커밋) | `GET /api/health/billing` — 시크릿 유효성 점검 |
+
+### 배포 후 점검 (매 롤아웃마다)
+```sh
+curl -s https://inovaai.ai/api/health/billing
+# 기대: {"ok":true,"checks":{"supabaseAdmin":true,"paymentsTable":true,"portoneApi":true,"portoneWebhookSecret":true}}
+```
+- 하나라도 false 면 503. 원인은 Cloud Run 로그 `[health/billing]` 에서 확인.
+- `supabaseAdmin` false: service role 키 무효 (이번 장애 유형). 길이 219 확인:
+  `gcloud secrets versions access latest --secret supabase-service-role-key --project sniff-by-hatch-app | tr -d '\n' | wc -c`
+- 결과는 인스턴스별 60초 캐시. 시크릿 교체 직후에는 새 롤아웃 + 1분 뒤 확인.
+- 시크릿을 새 버전으로 등록해도 기존 리비전은 이전 버전에 고정돼 있으므로 롤아웃이 필요하다.
+
 ## 2026-10-18 — 결제 Phase 2: 카드 등록 시 즉시 청구
 
 ### 변경 내용 (커밋별)
