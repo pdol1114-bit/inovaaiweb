@@ -1,6 +1,76 @@
 
 # PROGRESS
 
+## 2026-10-19 — 결제 Phase 3: 포트원 웹훅 처리
+
+### 변경 내용 (커밋별)
+| 커밋 | 파일 | 내용 |
+|---|---|---|
+| 9d144b1 | `supabase/migrations/0008_web_webhook_events.sql` | 처리 완료 웹훅 기록 테이블 + 이중 청구 방지 인덱스에 partial_cancelled 포함. **미적용** |
+| 08ce48c | `src/lib/billing/settlement.ts`, `initial-charge.ts` | pending 확정 공통 로직 분리 (일시 오류 throw). 요청 경로는 잡아서 202 |
+| 80bf7cf | `src/lib/billing/webhook.ts`, `src/app/api/webhook/portone/route.ts` | 웹훅 처리 |
+| 4f9d32d | `src/app/api/health/billing/route.ts` | 웹훅 시크릿을 base64 디코딩 가능 여부까지 점검 |
+
+### 웹훅 흐름
+1. 서명 검증 (raw body, webhook-id/timestamp/signature 헤더, 타임스탬프 허용 범위) → 실패 400
+2. `web_webhook_events` 에 같은 webhook-id 가 있으면 → 200 (처리 없음)
+3. Transaction.Paid / Failed / Cancelled / PartialCancelled 외 → 200 (기록 없음)
+4. `web_payments` 에 없는 paymentId → ignored 기록 + 200
+5. 포트원 결제 재조회 → 실제 상태 × DB 행 상태로 처리 → 기록 + 200
+6. 일시 오류(DB, 포트원 조회) → 기록 없이 500 (포트원 재전송)
+
+| 실제 상태 | 행 상태 | 처리 | result |
+|---|---|---|---|
+| PAID | pending | 검증 후 paid + 구독 활성화 (Phase 2 의 202 마무리) | processed |
+| PAID | paid | 없음 | processed |
+| PAID | failed·cancelled | 자동 처리 안 함 | needs_review |
+| FAILED | pending | failed + 새 빌링키 삭제 | processed |
+| CANCELLED | paid·partial_cancelled | 아래 전액 취소 | processed |
+| PARTIAL_CANCELLED | paid | partial_cancelled 기록만, 구독 변경 없음 | processed |
+| 미확정(READY 등) | pending | 없음 | ignored |
+
+전액 취소: 결제 행 cancelled. 그 결제가 해당 구독의 최신 paid 결제이고 period_end 가
+현재보다 뒤일 때만 구독 즉시 종료 — status=canceled, service_end_date=canceled_at=포트원
+취소 시각, next_billing_date=null, 빌링키 삭제(실패 시 500 → 재전송 때 재시도). 과거 회차는 기록만.
+
+멱등성: 처리 "후" 기록. 처리 로직은 모든 갱신에 기존 상태 조건을 걸어 동시 중복 처리도 안전.
+
+로그 형식 (시크릿·빌링키 미출력):
+```
+[webhook/portone] id=<webhook-id> type=Transaction.Cancelled paymentId=spi… result=processed detail=CANCELLED_SUBSCRIPTION_ENDED
+```
+
+### 검증
+- `npm run build` 통과. ko/en 키 파리티 일치(파트 A).
+- 로컬 `next start` + 테스트용 임의 시크릿으로 서명한 요청:
+  헤더 없음·서명 불일치·10분 전 타임스탬프 → 400 (MISSING_REQUIRED_HEADERS / NO_MATCHING_SIGNATURE /
+  TIMESTAMP_TOO_OLD), BillingKey.Issued → 200 ignored, Transaction.Paid(로컬 DB 키 없음) → 500 TEMPORARY_FAILURE.
+- **미검증**: DB 를 거치는 처리 경로 전체 (로컬 service role 없음, DB 쓰기 금지). 아래 실전 테스트로 확인.
+
+### Kevin 체크리스트 — 순서대로
+1. **0008 적용**: Supabase SQL Editor 에서 `0008_web_webhook_events.sql` 실행
+2. **push** → 롤아웃 성공 확인
+3. **health 점검**: `curl -s https://inovaai.ai/api/health/billing` → `"ok":true`, 네 항목 모두 true
+   (`portoneWebhookSecret` false 면 시크릿이 base64 가 아님 → 콘솔 값 재등록 + 롤아웃)
+4. **웹훅 URL 등록**: 포트원 콘솔 > 결제 연동 > 웹훅. 주소 `https://inovaai.ai/api/webhook/portone`,
+   버전 2024-04-25. 콘솔의 웹훅 시크릿이 Secret Manager `portone-webhook-secret` 과 같은 값인지 확인
+5. **호출 테스트**: 콘솔 "호출 테스트" → 기대값 **HTTP 200, 로그 result=ignored**
+   (detail=UNKNOWN_PAYMENT 또는 UNHANDLED_TYPE)
+6. **테스트 결제 취소** (spi8aa9dde378114cd8b8363ff137e6b7ab, 포트원 콘솔에서 전액 취소)
+7. **결과 확인** — 기대값:
+   - web_payments: status=cancelled, failure_reason=PAYMENT_CANCELLED
+   - web_subscriptions: status=canceled, service_end_date = canceled_at = 취소 시각, next_billing_date=null, billing_key=null
+   - 포트원 콘솔: 해당 빌링키 삭제됨
+   - 로그: `type=Transaction.Cancelled paymentId=spi8aa9… result=processed detail=CANCELLED_SUBSCRIPTION_ENDED`
+   - web_webhook_events: 해당 webhook-id 행 result=processed
+   ```sh
+   gcloud logging read 'resource.labels.service_name="sniff-web-server" AND textPayload:"webhook/portone"' \
+     --project sniff-by-hatch-app --freshness=30m --format='value(timestamp,textPayload)'
+   ```
+8. **DB 정리**: 테스트 계정의 web_subscriptions·web_payments·web_webhook_events 행 삭제
+
+결과가 다르면(500 반복, needs_review 등) 로그의 detail 을 확인하고 정리 전에 보고할 것.
+
 ## 2026-10-19 — 결제 장애 대응과 코드 보완 3건
 
 ### 장애 (2026-10-19 08:03·08:05 KST)
@@ -17,7 +87,7 @@ Kevin 이 버전 4(219자, role=service_role, ref=hvloodegutmwxbabdsjf)를 등�
 |---|---|
 | 020efa1 | 결제 호출 전 단계 예외 시 잠금 해제 + 새 빌링키 삭제 (IN_PROGRESS·검증 통신 오류는 삭제 안 함) |
 | 3386155 | `PreChargeError` → 500 `PRECHARGE_FAILED`, 결제 이후 예외는 `SERVER_ERROR`. 화면 "결제가 진행되지 않았습니다" |
-| (이 커밋) | `GET /api/health/billing` — 시크릿 유효성 점검 |
+| 36310d1 | `GET /api/health/billing` — 시크릿 유효성 점검 |
 
 ### 배포 후 점검 (매 롤아웃마다)
 ```sh
