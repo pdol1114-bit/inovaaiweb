@@ -12,3 +12,9 @@ import "server-only";
  * Phase 1 에서는 정의만 한다. 결제 호출부 연결은 Phase 2.
  */
 export const SNIFF_PREMIUM_MONTHLY_PRICE = 3300;
+
+/** web_subscriptions.plan 값 */
+export const SNIFF_PREMIUM_PLAN = "sniff_premium";
+
+/** 포트원·PG 결제 건의 주문명 (카드사 승인 내역에 표시될 수 있다) */
+export const SNIFF_PREMIUM_ORDER_NAME = "Sniff Premium 월 구독";
