@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { deleteBillingKey } from "@/lib/portone/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 export type SubscriptionStatus = "active" | "cancel_scheduled" | "canceled";
 
@@ -25,10 +26,13 @@ const COLUMNS =
  *
  * 이 프로젝트에는 크론·스케줄러 인프라가 없으므로 접근 시점(구독 조회 시)에 확인한다.
  * 종료일까지 미뤄둔 빌링키 삭제도 이 시점에 수행한다.
+ *
+ * userId 는 호출자가 세션에서 얻은 값이다. 쓰기는 RLS 를 우회하는 서버 권한
+ * 클라이언트로 하므로 user_id 조건으로 대상을 직접 한정한다.
  */
 async function settleIfExpired(
-    supabase: SupabaseClient,
-    subscription: Subscription
+    subscription: Subscription,
+    userId: string
 ): Promise<Subscription> {
     if (subscription.status !== "cancel_scheduled") return subscription;
     if (!subscription.service_end_date) return subscription;
@@ -43,20 +47,30 @@ async function settleIfExpired(
         }
     }
 
-    const { data, error } = await supabase
-        .from("web_subscriptions")
-        .update({
-            status: "canceled",
-            billing_key: null,
-            updated_at: new Date().toISOString(),
-        })
-        .eq("id", subscription.id)
-        .eq("status", "cancel_scheduled")
-        .select(COLUMNS)
-        .maybeSingle();
+    const fallback: Subscription = { ...subscription, status: "canceled", billing_key: null };
 
-    if (error || !data) return { ...subscription, status: "canceled", billing_key: null };
-    return data as Subscription;
+    try {
+        const admin = createAdminClient();
+        const { data, error } = await admin
+            .from("web_subscriptions")
+            .update({
+                status: "canceled",
+                billing_key: null,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", subscription.id)
+            .eq("user_id", userId)
+            .eq("status", "cancel_scheduled")
+            .select(COLUMNS)
+            .maybeSingle();
+
+        if (error || !data) return fallback;
+        return data as Subscription;
+    } catch (e) {
+        // 서버 권한 키 미설정 등. 기존과 같이 화면에는 종료 상태로 보여주고 다음 접근에서 다시 시도한다.
+        console.error("[subscription] failed to settle expired subscription", e);
+        return fallback;
+    }
 }
 
 /** 로그인한 사용자의 구독을 조회한다. 종료일이 지났으면 먼저 정리한다. */
@@ -71,5 +85,5 @@ export async function getSubscriptionForUser(
         .maybeSingle();
 
     if (error || !data) return null;
-    return settleIfExpired(supabase, data as Subscription);
+    return settleIfExpired(data as Subscription, userId);
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { getSubscriptionForUser } from "@/lib/subscription";
 
 /**
@@ -36,7 +37,9 @@ export async function POST() {
         return NextResponse.json({ error: "NO_END_DATE" }, { status: 500 });
     }
 
-    const { data, error } = await supabase
+    // 쓰기는 서버 권한 클라이언트로만 한다. RLS 를 우회하므로 아래 user_id 조건이 대상 한정의 전부다.
+    const admin = createAdminClient();
+    const { data, error } = await admin
         .from("web_subscriptions")
         .update({
             status: "cancel_scheduled",

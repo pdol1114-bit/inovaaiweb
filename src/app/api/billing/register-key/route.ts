@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { getBillingKeyCardInfo } from "@/lib/portone/server";
 
 export async function POST(request: Request) {
@@ -29,7 +30,10 @@ export async function POST(request: Request) {
     const nextBillingDate = new Date(now);
     nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
-    const { error } = await supabase.from("web_subscriptions").upsert(
+    // 쓰기는 서버 권한 클라이언트로만 한다 (RLS 쓰기 정책 제거 대비).
+    // RLS 를 우회하므로 대상은 세션에서 얻은 user.id 로만 정한다.
+    const admin = createAdminClient();
+    const { error } = await admin.from("web_subscriptions").upsert(
         {
             user_id: user.id,
             billing_key: billingKey,
