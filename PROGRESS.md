@@ -1,6 +1,83 @@
 
 # PROGRESS
 
+## 2026-10-18 — 결제 Phase 2: 카드 등록 시 즉시 청구
+
+### 변경 내용 (커밋별)
+| 커밋 | 파일 | 내용 |
+|---|---|---|
+| 3d7345d | `middleware.ts`, `src/utils/supabase/middleware.ts` | 갱신된 세션 쿠키와 SDK 캐시 방지 헤더(Cache-Control/Expires/Pragma)를 intl 응답에 반영. `/api` 제외 매처 유지 |
+| 3cdbee7 | `src/lib/billing/period.ts`, `scripts/verify-billing-period.mts` | KST 기준 월 결제일 계산. 기준일(started_at)에서 매번 계산해 말일 보정 후 원래 일자로 복귀 |
+| 3b94746 | `src/lib/billing/initial-charge.ts`, `src/lib/portone/server.ts`, `src/lib/billing/constants.ts`, register-key 라우트, `0007_web_payments_pending_lock.sql` | 빌링키 검증 → 잠금 → 재확인 → 즉시 청구 → 결제 조회로 확정 → 활성화/정리 |
+| 81a207a | `src/components/payment/registerBillingKey.ts`, `SubscribeButton.tsx` | 모바일 redirectUrl 복귀 쿼리 처리. 데스크톱과 같은 헬퍼 사용 |
+| 13553cd | `SubscribeButton.tsx`, `messages/ko.json`, `messages/en.json` | 결제 중·완료·확인 중·실패 상태 문구. 자동 갱신 고지의 "매월 같은 날" → 말일 보정 반영 |
+
+### register-key 흐름
+1. 세션 사용자 확인 (user_id 는 세션에서만)
+2. 포트원 빌링키 조회: `status === "ISSUED"` 이고 `customer.id === user.id` (SubscribeButton 이 이미
+   customerId 에 user.id 를 넣고 있어 수정 불필요)
+3. `web_payments` 에 pending 행 insert = 사용자 잠금
+4. 잠금 후 구독 재확인. 409 는 `active`, 또는 `cancel_scheduled` 이면서 종료일 전(해지취소 안내).
+   종료일 지난 해지예약은 만료로 보고 진행. 409 시 잠금 행 삭제, 현재 구독 키와 다른 새 빌링키 삭제
+5. `SNIFF_PREMIUM_MONTHLY_PRICE` 로 빌링키 결제 → **결과와 무관하게** 결제 조회로 확정
+   (PAID + 금액 + KRW + 빌링키 + 고객 ID 모두 일치해야 성공)
+6. 성공: 구독 upsert(active, started_at=포트원 paidAt, next_billing_date=+1개월, 해지 흔적 초기화) →
+   결제 행 paid(paid_at, period_start/end, subscription_id) → 이전 빌링키 삭제
+7. 실패 확정: 결제 행 failed(failure_reason), 새 빌링키 삭제, 구독 미변경 → 402
+8. 결과 불명(통신 오류, PAY_PENDING, 검증 불일치, 활성화 DB 오류): pending 유지, 빌링키 유지 → 202
+
+### 이중 청구 방지
+1. 0007: `web_payments(user_id) where status = 'pending'` 부분 unique. 동시 요청 중 하나만 통과(23505 → 409)
+2. 잠금 후 구독 재확인: 먼저 끝난 요청이 이미 활성화한 경우 차단
+3. 시도별 고정 paymentId: 같은 ID 재요청은 포트원이 `ALREADY_PAID` 로 거절
+- 5분 넘은 pending 은 다음 요청 때 포트원 결제 조회로 paid(활성화)/failed 로 정리한 뒤 잠금 해제.
+  포트원에 결제 건이 없으면 5분 경과 시점에 failed 로 확정.
+
+### paymentId 규칙
+`spi` + 하이픈 없는 UUID v4 = 35자, 영숫자만. 포트원 KCP 문서 확인 결과 paymentId 는
+"KCP의 경우 최대 40자", "한글, 특수문자 미지원". 승인안의 `spi_` 에서 밑줄을 뺐다.
+Phase 4 정기청구는 `spr` 접두사로 구분 예정.
+
+### 검증
+- `npm run build` 통과 (exit 0). 클라이언트 번들(`.next/static`)에 service role·API secret·
+  결제 호출·금액 상수 참조 0건.
+- `node scripts/verify-billing-period.mts` 9개 통과 (1/31 평년·윤년, 2/29, 3/31, 12/31,
+  KST 새벽 경계 2건, 다음 결제일 복귀, 첫 기간). Node 의 MODULE_TYPELESS 경고는 무해.
+- 로컬 `next start` + curl: `/` → 307 `/ko`, `/ko|en/payment` 200, 고지 문구 노출,
+  비로그인 register-key 401, `/api` 로케일 리다이렉트 없음, 페이지 응답에 `Cache-Control: private, no-store`.
+- 브라우저(headless Chromium, iPhone 13 에뮬레이션):
+  - 실패 코드 복귀 → "카드 등록에 실패했습니다" 표시, 쿼리 제거, register-key 미호출
+  - 성공 쿼리 복귀(가짜 빌링키, 비로그인) → register-key 1회 호출 → 401 → `/ko/auth` 이동
+  - 페이지 에러 0건
+- **미검증**: 실제 빌링키 결제·결제 조회·빌링키 삭제 (실결제 금지). 로그인 상태 세션 쿠키 갱신.
+  0007 SQL 실행.
+
+### 알려진 한계 / 확인 필요
+- **KCP 빌링키 결제의 고객 정보 필수 항목 미확정.** 문서 요약상 이름·전화번호·이메일이
+  필수일 수 있다. 현재는 customer.id, email, OAuth 메타데이터의 이름(있을 때)만 보낸다.
+  첫 실결제에서 PG 오류가 나면 결제 행 failure_reason 을 확인할 것.
+- 결과 불명(202) 후 포트원에 결제 건이 없어 5분 뒤 failed 로 정리되는 경우, 그 시도의
+  빌링키는 정리 경로에서 알 수 없어 포트원에 남는다 (드묾).
+- 검증 불일치(PAID 인데 금액·키·고객 불일치)는 자동 처리하지 않고 pending 으로 남겨
+  사용자가 잠긴다. 서버 로그 "manual review needed" 로 확인 후 수동 조치.
+- 첫 결제 성공 시 구독관리 링크로 이동하는 화면을 보여준다. 결제 페이지 자체는 새로고침
+  전까지 갱신되지 않는다 (의도).
+
+### 배포 순서 (Kevin)
+1. Supabase SQL Editor 에서 `0006_web_payments.sql` 적용
+2. 이어서 `0007_web_payments_pending_lock.sql` 적용
+3. 테스트 계정 행(web_subscriptions) 삭제
+4. push → 롤아웃 성공 확인
+5. 실카드로 결제 1건 확인 → 웹 `/account/subscription` 표시, `web_payments` paid 행,
+   포트원 콘솔 결제 내역 확인 → 필요 시 콘솔에서 결제 취소(환불)
+6. Phase 1 의 `0005` 는 아직이면 5 확인 후 적용
+
+0006·0007 적용 전에 배포되면 pending insert 가 실패해 결제 호출 없이 500 으로 끝난다
+(출금 없음).
+
+### Phase 3 이후로 넘긴 것
+웹훅 처리·멱등성, 월별 자동청구 스케줄러, 미납 처리, 만료 처리 스케줄러화.
+
 ## 2026-10-18 — 결제 Phase 1: 서버 권한 기반과 데이터 구조
 
 ### 시크릿 (Secret Manager)
