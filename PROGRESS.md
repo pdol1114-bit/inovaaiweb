@@ -1,6 +1,109 @@
 
 # PROGRESS
 
+## 결제 현황 점검 (2026-10-18)
+
+읽기 전용 점검. 코드·스키마·패키지 변경 없음, 실결제/테스트결제 호출 없음.
+Supabase 실DB는 조회하지 않았고 마이그레이션 파일과 코드 기준으로 판단했다.
+
+### 직전 상태 요약
+- 마지막 PROGRESS 항목(2026-08-15): 포트원 실연동(live) 채널 전환, `/test-payment` 삭제,
+  자동갱신 고지 추가. 구현 범위는 "빌링키 발급(카드 등록)까지".
+- PROGRESS 미기록 커밋(2026-08-18): 정기자동결제 그룹아이디 미설정 오류
+  ("batchPaymentGroupId를 가져오는데 실패") 해결 과정에서 채널 재생성 → 채널키 교체,
+  PG 에러 원문 화면 노출 제거, `/api` 를 i18n 미들웨어에서 제외(404 수정),
+  PG 인증서 gitignore 패턴 추가. 이후(10월) 커밋은 결제와 무관.
+- `PORTONE_API_SECRET`, `PORTONE_WEBHOOK_SECRET` 은 `apphosting.yaml` 에서 여전히 주석 상태.
+
+### 결제 관련 파일
+| 파일 | 역할 |
+|---|---|
+| `src/components/payment/SubscribeButton.tsx` | 브라우저 SDK `requestIssueBillingKey` 호출 → `/api/billing/register-key` POST |
+| `src/app/api/billing/register-key/route.ts` | 세션 user_id 로 `web_subscriptions` upsert (status=active, next_billing_date=+1개월) |
+| `src/app/api/billing/cancel-subscription/route.ts` | active → cancel_scheduled, service_end_date=next_billing_date |
+| `src/app/api/billing/resume-subscription/route.ts` | cancel_scheduled → active |
+| `src/app/api/webhook/portone/route.ts` | 웹훅 서명 검증 후 type 로그만 남기고 200 |
+| `src/lib/portone/config.ts` | storeId/channelKey/모드 환경변수 읽기 |
+| `src/lib/portone/server.ts` | 서버 SDK 클라이언트, 빌링키 삭제, 카드정보 조회 |
+| `src/lib/subscription.ts` | 구독 조회 + 조회 시점에 만료된 해지예약을 canceled 로 정리(빌링키 삭제) |
+| `src/app/[locale]/payment/page.tsx` | 결제 페이지. 구독 중이면 구독관리 링크로 대체 |
+| `src/app/[locale]/account/subscription/page.tsx`, `src/components/account/SubscriptionManager.tsx` | 구독관리(해지/해지취소) UI |
+| `middleware.ts`, `src/utils/supabase/middleware.ts` | 세션 갱신 + next-intl. `/api/` 는 매처에서 제외 |
+| `supabase/migrations/0001~0004`, `supabase/inspect_subscriptions.sql` | 0003 만 유효. 0001·0002 실행 금지, 0004 실행 보류 |
+| 진입 링크 | `sniff`, `pricing`, `auth/success`, navbar, footer → `/payment`, `/account/subscription` |
+
+### 항목별 판정
+| 항목 | 판정 | 근거 |
+|---|---|---|
+| 빌링키 발급(register-key) | 부분 구현 | `SubscribeButton.tsx:48-76`, `register-key/route.ts:5-56`. iframe(데스크톱) 흐름만 처리. 모바일 리다이렉트 복귀(`redirectUrl`, `SubscribeButton.tsx:58`)의 쿼리 파라미터를 받는 코드가 어디에도 없음. 빌링키 유효성·소유자 서버 검증 없음 |
+| 발급 직후 첫 결제(즉시 청구) | 없음 | `payWithBillingKey` 호출 0건. 카드 등록만으로 status=active 가 됨(`register-key/route.ts:37`) |
+| 3,300원 금액 상수 | 없음(표시 문구만) | `messages/ko.json:170,194,552,563,578`, `en.json` 동일 줄. 코드 상수 없음 |
+| 결제 이력 테이블·저장 | 없음 | 테이블·코드 모두 0건 |
+| 월별 자동청구 스케줄러 | 없음 | cron/Scheduler/`createPaymentSchedule` 0건. `subscription.ts:26` 주석에 "스케줄러 인프라 없음" 명시 |
+| 웹훅 수신 | 부분 구현 | `webhook/portone/route.ts:12-27` 서명 검증은 구현. 이벤트 처리·DB 반영 없음(`:29-31`). 시크릿 미등록으로 현재 운영에선 항상 500(`:5-9`) |
+| 웹훅 멱등성 | 없음 | 웹훅 ID 저장·중복 체크 없음 |
+| 해지(cancel_scheduled)·기간 유지 | 구현됨(조건부) | `cancel-subscription/route.ts:33-51`, `subscription.ts:29-60`. 단 컬럼명은 `current_period_end` 가 아니라 `next_billing_date`/`service_end_date`. 만료 정리는 사용자가 페이지에 접근할 때만 일어남 |
+| 미납 시 구독 차단 | 없음 | 미납 상태값(past_due 등) 없음. 웹에는 구독으로 잠그는 기능 자체가 없음(2026-08-05 기록) |
+
+### Supabase 참조
+- 테이블: `public.web_subscriptions` 하나뿐 (`register-key:32`, `cancel:40`, `resume:32`, `subscription.ts:47,68`). RPC 호출 0건.
+- 컬럼(0003): id, user_id(unique), billing_key, plan(default 'sniff_premium'), status,
+  next_billing_date, service_end_date, canceled_at, started_at, card_brand,
+  card_number_masked, created_at, updated_at.
+- status CHECK: `active`, `cancel_scheduled`, `canceled`.
+- RLS: 본인 행 select/insert/update 3정책. delete 정책 없음.
+- `public.subscriptions` 는 앱 전용. 웹 코드 참조 0건. 0002 오염 컬럼은 0004 승인 대기.
+
+### apphosting.yaml 환경변수 (이름만)
+| 변수 | 상태 | availability |
+|---|---|---|
+| NEXT_PUBLIC_SUPABASE_URL | 활성, value | BUILD, RUNTIME |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | 활성, value | BUILD, RUNTIME |
+| NEXT_PUBLIC_SITE_URL | 활성, value | BUILD, RUNTIME |
+| NEXT_PUBLIC_PORTONE_STORE_ID | 활성, value | BUILD, RUNTIME |
+| NEXT_PUBLIC_PORTONE_CHANNEL_KEY | 활성, value | BUILD, RUNTIME |
+| NEXT_PUBLIC_PORTONE_MODE | 활성, value | BUILD, RUNTIME |
+| PORTONE_WEBHOOK_SECRET | 주석, secret 참조 | RUNTIME |
+| PORTONE_API_SECRET | 주석, secret 참조 | RUNTIME |
+| NEXT_PUBLIC_SHOW_UPCOMING_SERVICES | 주석, value | BUILD, RUNTIME |
+
+Supabase service role 키는 어디에도 없다.
+
+### 발견한 문제점
+1. **카드 등록만으로 active.** 첫 결제 없이 status=active, next_billing_date=+1개월이 되고,
+   그 날짜에 청구할 주체도 없다. 사실상 무료 구독이 생성된다.
+2. **RLS 가 사용자에게 구독 행 직접 쓰기를 허용.** anon 키로 브라우저에서 status·
+   next_billing_date·billing_key 를 임의로 insert/update 할 수 있다. 웹에 프리미엄 게이트가
+   생기거나 앱이 이 테이블을 보기 시작하면 결제 우회 경로가 된다.
+3. **모바일 리다이렉트 흐름 미처리.** 모바일 결제창은 `redirectUrl` 로 돌아오며 결과를
+   쿼리로 넘기는데, 결제 페이지가 이를 읽지 않아 빌링키가 저장되지 않는다.
+4. **register-key 가 빌링키를 검증하지 않음.** 아무 문자열이나 보내도 active 로 저장된다.
+   카드정보 조회는 실패해도 통과(`server.ts:51-55`), API 시크릿 미설정이면 조회 자체를 건너뜀.
+5. **서버 권한 경로 부재.** 웹훅·스케줄러는 사용자 세션이 없어 현재 RLS 로는 DB 를 쓸 수 없다.
+   service role 키(Secret Manager)가 필요하다.
+6. **만료 처리가 접근 의존.** 해지예약 사용자가 다시 방문하지 않으면 canceled 전환과
+   빌링키 삭제가 영원히 일어나지 않는다.
+7. **next_billing_date 월말 오버플로.** `setMonth(+1)` 은 1/31 → 3/3 처럼 밀린다
+   (`register-key/route.ts:29-30`).
+8. **미들웨어가 갱신된 세션 쿠키를 버림.** `middleware.ts:9-10` 에서 `updateSession` 응답을
+   무시하고 intl 응답만 반환한다. 토큰 갱신 쿠키가 브라우저에 안 내려가 간헐적 로그아웃
+   원인이 될 수 있다. 결제 API 의 401 로 이어질 수 있다.
+9. **재구독 시 기존 빌링키 미삭제.** upsert 로 덮어써 이전 빌링키가 포트원에 남는다.
+
+### 구현 우선순위 제안
+1. 서버 전용 Supabase 클라이언트(service role, Secret Manager) 추가. RLS 의 insert/update
+   정책을 제거해 구독 행 쓰기를 서버로 한정.
+2. `PORTONE_API_SECRET`·`PORTONE_WEBHOOK_SECRET` Secret Manager 등록 후 apphosting.yaml 주석 해제.
+3. 금액·주문명 서버 상수(3,300 KRW) 정의, 결제 이력 테이블(payment_id unique, status, amount,
+   paid_at, failure_reason) 신설.
+4. register-key 재설계: 빌링키 조회로 소유자(customerId) 검증 → 즉시 `payWithBillingKey` 3,300원 →
+   결제 조회로 PAID 확인 후에만 active, 기간 설정. 모바일 리다이렉트 복귀 처리 포함.
+5. 웹훅 처리: 이벤트 ID 기반 멱등 테이블, 결제 상태는 웹훅 본문이 아니라 API 재조회로 확정.
+6. 월별 청구: 포트원 결제예약(`createPaymentSchedule`)으로 다음 회차 예약하는 방식과
+   Cloud Scheduler → 내부 청구 엔드포인트 방식 중 선택. 해지 시 예약 취소 연동.
+7. 미납 처리: status 에 past_due 추가, 재시도 횟수·유예기간 정책 결정 후 차단.
+8. 만료 처리를 스케줄러로 이전, 월말 날짜 계산 수정, 미들웨어 쿠키 버그 수정.
+
 ## 2026-08-15 — 포트원 실연동(live) 채널 전환 및 결제페이지 심사 요건 보완
 
 ### 변경 내용
