@@ -1,6 +1,38 @@
 
 # PROGRESS
 
+## 2026-10-18 — 결제 Phase 1: 서버 권한 기반과 데이터 구조
+
+### 시크릿 (Secret Manager)
+`apphosting.yaml` 에서 아래 세 개를 RUNTIME 전용 `secret:` 참조로 둔다.
+값은 Kevin 이 직접 등록한다. 저장소·채팅·셸 히스토리에 값을 남기지 말 것.
+
+| 환경변수 | Secret Manager 이름 | 값 출처 |
+|---|---|---|
+| SUPABASE_SERVICE_ROLE_KEY | supabase-service-role-key | Supabase 대시보드 > Project Settings > API > service_role |
+| PORTONE_API_SECRET | portone-api-secret | 포트원 콘솔 > 결제 연동 > 연동 정보 > V2 API Secret |
+| PORTONE_WEBHOOK_SECRET | portone-webhook-secret | 포트원 콘솔 > 결제 연동 > 웹훅 > 웹훅 시크릿 |
+
+등록 (값은 프롬프트에서 입력. 명령줄 인자로 넘기지 말 것):
+```sh
+firebase apphosting:secrets:set supabase-service-role-key --project sniff-by-hatch-app
+firebase apphosting:secrets:set portone-api-secret --project sniff-by-hatch-app
+firebase apphosting:secrets:set portone-webhook-secret --project sniff-by-hatch-app
+```
+
+`secrets:set` 이 백엔드 접근 권한 부여를 묻지 않았거나 거절했다면:
+```sh
+firebase apphosting:secrets:grantaccess supabase-service-role-key,portone-api-secret,portone-webhook-secret \
+  --backend sniff-web-server --project sniff-by-hatch-app
+```
+
+확인:
+```sh
+firebase apphosting:secrets:describe supabase-service-role-key --project sniff-by-hatch-app
+```
+
+참조된 시크릿이 하나라도 없거나 접근 권한이 없으면 롤아웃이 실패한다.
+
 ## 결제 현황 점검 (2026-10-18)
 
 읽기 전용 점검. 코드·스키마·패키지 변경 없음, 실결제/테스트결제 호출 없음.

@@ -54,18 +54,30 @@ env:
       - BUILD
       - RUNTIME
 #
-# 웹훅 시크릿은 평문 금지 — Cloud Secret Manager에 저장 후 secret: 으로 참조한다.
-# (`firebase apphosting:secrets:set portone-webhook-secret` 로 등록)
+# 서버 전용 시크릿 — 평문 금지. Cloud Secret Manager에 저장 후 secret: 으로 참조한다.
+# 등록·접근권한 부여 명령은 PROGRESS.md "결제 Phase 1" 참조.
 #
-#  - variable: PORTONE_WEBHOOK_SECRET
-#    secret: portone-webhook-secret
-#    availability:
-#      - RUNTIME
+# !! 여기 참조된 시크릿이 Secret Manager에 없거나 백엔드(sniff-web-server)에
+#    접근 권한이 없으면 롤아웃이 실패한다. 세 개 모두 등록한 뒤에 push 할 것.
+# !! RUNTIME 전용. BUILD 에 넣거나 NEXT_PUBLIC_ 으로 바꾸지 말 것.
 #
-#  - variable: PORTONE_API_SECRET
-#    secret: portone-api-secret
-#    availability:
-#      - RUNTIME
+# Supabase service role — RLS 를 우회한다. src/utils/supabase/admin.ts 에서만 사용.
+  - variable: SUPABASE_SERVICE_ROLE_KEY
+    secret: supabase-service-role-key
+    availability:
+      - RUNTIME
+
+# 포트원 웹훅 서명 검증 (src/app/api/webhook/portone/route.ts)
+  - variable: PORTONE_WEBHOOK_SECRET
+    secret: portone-webhook-secret
+    availability:
+      - RUNTIME
+
+# 포트원 V2 API Secret — 빌링키 조회·삭제 (src/lib/portone/server.ts)
+  - variable: PORTONE_API_SECRET
+    secret: portone-api-secret
+    availability:
+      - RUNTIME
 
 # 출시 전 서비스(sniff-hospital, csv-automation, fem-ai) 메뉴 노출 토글.
 # 미설정이 곧 '숨김'이라 지금은 주석으로 두는 것으로 충분하다.
