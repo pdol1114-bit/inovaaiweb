@@ -33,6 +33,56 @@ firebase apphosting:secrets:describe supabase-service-role-key --project sniff-b
 
 참조된 시크릿이 하나라도 없거나 접근 권한이 없으면 롤아웃이 실패한다.
 
+### 변경 내용 (커밋별)
+| 커밋 | 파일 | 내용 |
+|---|---|---|
+| 620e8c3 | `src/utils/supabase/admin.ts`, `.env.example` | service role 서버 전용 클라이언트. `server-only`, 호출 시점에 키 확인 |
+| 468b27b | `apphosting.yaml`, `PROGRESS.md` | 시크릿 3개 RUNTIME 전용 secret 참조 |
+| c1989b2 | register-key·cancel·resume 라우트, `src/lib/subscription.ts` | `web_subscriptions` 쓰기 4곳을 admin 클라이언트로. 읽기·세션 확인은 그대로 |
+| b42a605 | `supabase/migrations/0005_…`, `0006_web_payments.sql` | RLS 쓰기 정책 제거, 결제 이력 테이블. **미적용** |
+| 12e531b | `src/lib/billing/constants.ts` | `SNIFF_PREMIUM_MONTHLY_PRICE = 3300` (VAT 포함), 미연결 |
+
+판단 기록:
+- admin 클라이언트는 RLS 를 우회하므로 만료 정리 update 에 `.eq("user_id", userId)` 를 추가했다.
+  다른 세 곳은 이미 user_id 로 한정돼 있었다.
+- 만료 정리에서 admin 클라이언트 생성이 실패하면(키 미설정) 예외를 잡아 기존 실패 경로와
+  같은 결과(화면상 canceled)를 돌려준다. 결제·구독관리 페이지가 500 이 되지 않게 하려는 것.
+  register-key·cancel·resume 은 키가 없으면 500 이 되고, 클라이언트는 기존 실패 문구를 보여준다.
+- 트리거 함수는 리포에 기존 것이 없어 `public.web_set_updated_at()` 으로 새로 만들었다.
+  실DB 에 앱 쪽 `set_updated_at` 류가 있을 수 있어 덮어쓰지 않도록 웹 전용 이름을 썼다.
+- `web_payments.user_id` 는 FK 없음(계정 삭제 후 결제 기록 보존). `subscription_id` 는
+  `on delete set null` 이라 구독 행이 cascade 로 지워져도 결제 행은 남는다.
+- 이중 청구 방지는 `(subscription_id, period_start) where status in ('pending','paid')` 부분 unique.
+
+### 검증
+- `npm run build` 통과 (exit 0). billing 3개·webhook 라우트, payment·account/subscription 페이지 정상 등록.
+- `.next/static`(클라이언트 번들)에 `SUPABASE_SERVICE_ROLE_KEY`·`createAdminClient`·
+  `SNIFF_PREMIUM_MONTHLY_PRICE` 참조 0건. 서버 청크에만 존재.
+- `npx tsc --noEmit` 은 `.next/dev/types/validator.ts` 의 삭제된 `test-payment` 참조 1건만
+  보고 (로컬 dev 캐시 잔재, 이번 변경과 무관. 다음 `npm run dev` 때 재생성됨).
+- **미검증**: 마이그레이션 SQL 은 실행해 보지 않았다 (로컬 Postgres 없음, Docker 데몬 꺼짐).
+  Supabase SQL Editor 적용 시 오류가 나면 트랜잭션(begin/commit)이라 전체가 롤백된다.
+- **미검증**: 실제 service role 키로의 쓰기 동작. 시크릿 등록·배포 후 확인 필요.
+
+### 배포 순서 (Kevin) — 순서를 지킬 것
+1. 포트원 콘솔에서 V2 API Secret, 웹훅 시크릿 발급
+2. 시크릿 3개 Secret Manager 등록 + 백엔드 접근 권한 부여 (위 명령어)
+3. `0006_web_payments.sql` 적용 (독립적이라 언제든 가능)
+4. push → 롤아웃 성공 확인 → 카드 등록·해지·해지취소 동작 확인
+5. `0005_web_subscriptions_lock_writes.sql` 적용
+
+주의:
+- 2 전에 push 하면 롤아웃이 실패한다 (참조된 시크릿 부재).
+- 4 전에 0005 를 적용하면 현재 프로덕션 코드의 카드 등록·해지가 RLS 에 막힌다.
+- 시크릿이 들어가면 코드 변경 없이 동작이 달라지는 곳: 카드정보(카드사·마스킹 번호) 조회가
+  실제 호출되고, 해지 만료 시 빌링키가 포트원에서 실제 삭제되며, 웹훅이 500 대신
+  서명 검증 후 200 을 반환한다. 4 단계 확인 때 함께 볼 것.
+- 웹훅은 아직 로그만 남긴다 (처리는 Phase 2).
+
+### Phase 2 로 넘긴 것
+즉시 청구, 빌링키 소유자 검증, 모바일 리다이렉트 복귀, 웹훅 처리·멱등성, 월별 청구,
+미납 처리, 만료 처리 스케줄러화, 월말 날짜 계산, 미들웨어 세션 쿠키 버그.
+
 ## 결제 현황 점검 (2026-10-18)
 
 읽기 전용 점검. 코드·스키마·패키지 변경 없음, 실결제/테스트결제 호출 없음.
