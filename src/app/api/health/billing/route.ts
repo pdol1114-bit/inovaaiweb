@@ -21,7 +21,7 @@ type Checks = {
     paymentsTable: boolean;
     /** 포트원 API Secret 로드 + 인증 통과 */
     portoneApi: boolean;
-    /** 포트원 웹훅 시크릿 로드 */
+    /** 포트원 웹훅 시크릿 로드 + base64 디코딩 가능 (SDK verify 가 요구) */
     portoneWebhookSecret: boolean;
 };
 
@@ -31,12 +31,23 @@ const PROBE_PAYMENT_ID = "healthcheckprobe0000000000000000";
 
 let cached: { at: number; checks: Checks } | null = null;
 
+/** SDK 와 같은 규칙: "whsec_" 접두 제거 후 base64 디코딩이 되고 비어 있지 않아야 한다. */
+function isDecodableWebhookSecret(secret: string | undefined): boolean {
+    if (!secret) return false;
+    const body = secret.startsWith("whsec_") ? secret.slice("whsec_".length) : secret;
+    try {
+        return atob(body).length > 0;
+    } catch {
+        return false;
+    }
+}
+
 async function runChecks(): Promise<Checks> {
     const checks: Checks = {
         supabaseAdmin: false,
         paymentsTable: false,
         portoneApi: false,
-        portoneWebhookSecret: !!process.env.PORTONE_WEBHOOK_SECRET,
+        portoneWebhookSecret: isDecodableWebhookSecret(process.env.PORTONE_WEBHOOK_SECRET),
     };
 
     try {
