@@ -6,8 +6,23 @@ import { routing } from './src/i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request);
-  return intlMiddleware(request);
+  // 1) Supabase 세션 갱신. 갱신된 토큰은 request.cookies 에도 반영되므로
+  //    이어지는 intl 미들웨어와 서버 컴포넌트는 새 토큰을 본다.
+  const sessionResponse = await updateSession(request);
+
+  // 2) 로케일 처리(리다이렉트·리라이트 포함)는 intl 미들웨어 응답을 그대로 쓴다.
+  const response = intlMiddleware(request);
+
+  // 3) 갱신된 세션 쿠키와 캐시 방지 헤더를 최종 응답에 옮겨 싣는다.
+  //    이전에는 sessionResponse 를 버려서 브라우저에 새 토큰이 내려가지 않았다.
+  sessionResponse.cookies.getAll().forEach((cookie) => response.cookies.set(cookie));
+  sessionResponse.headers.forEach((value, key) => {
+    if (key.toLowerCase() === "cache-control" || key.toLowerCase() === "expires" || key.toLowerCase() === "pragma") {
+      response.headers.set(key, value);
+    }
+  });
+
+  return response;
 }
 
 export const config = {
