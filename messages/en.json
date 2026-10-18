@@ -188,7 +188,8 @@
             "alreadySubscribed": "You are already subscribed to Sniff Premium.",
             "cancelScheduled": "Your subscription is scheduled to be cancelled. You can resume it under Manage subscription.",
             "inProgress": "A payment is already in progress. Please check its status under Manage subscription in a moment.",
-            "invalidCard": "We could not verify your card registration. Please try again."
+            "invalidCard": "We could not verify your card registration. Please try again.",
+            "notCharged": "No payment was made and you have not been charged. Please try again in a moment."
         },
         "status": {
             "charging": "Charging your first month. Please keep this window open.",

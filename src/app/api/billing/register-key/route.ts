@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getPortOneClient } from "@/lib/portone/server";
-import { chargeInitialSubscription } from "@/lib/billing/initial-charge";
+import { chargeInitialSubscription, PreChargeError } from "@/lib/billing/initial-charge";
 
 /**
  * 카드 등록(빌링키 발급) 직후 호출. 빌링키를 검증하고 첫 달 요금을 즉시 청구한 뒤,
@@ -15,7 +15,8 @@ import { chargeInitialSubscription } from "@/lib/billing/initial-charge";
  *  402 PAYMENT_FAILED                    결제 실패 (새 빌링키는 삭제됨)
  *  403 BILLING_KEY_OWNER_MISMATCH
  *  409 ALREADY_SUBSCRIBED | CANCEL_SCHEDULED | IN_PROGRESS
- *  500 NOT_CONFIGURED | SERVER_ERROR
+ *  500 NOT_CONFIGURED | PRECHARGE_FAILED   결제 호출 전 실패 (출금 없음, 새 빌링키 정리됨)
+ *  500 SERVER_ERROR                       결제 단계 이후 예기치 못한 오류
  */
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -66,7 +67,11 @@ export async function POST(request: Request) {
                 return NextResponse.json({ error: result.reason }, { status: 409 });
         }
     } catch (e) {
-        console.error("[billing/register-key] unexpected error", e);
+        if (e instanceof PreChargeError) {
+            console.error("[billing/register-key] PRECHARGE_FAILED (no charge was requested)", e, e.cause);
+            return NextResponse.json({ error: "PRECHARGE_FAILED" }, { status: 500 });
+        }
+        console.error("[billing/register-key] SERVER_ERROR (after charge stage)", e);
         return NextResponse.json({ error: "SERVER_ERROR" }, { status: 500 });
     }
 }

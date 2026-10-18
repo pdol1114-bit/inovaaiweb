@@ -45,6 +45,17 @@ export function newInitialPaymentId(): string {
     return `spi${randomUUID().replace(/-/g, "")}`;
 }
 
+/**
+ * 결제 호출 전 단계에서 실패했다 — 포트원 결제는 요청되지 않았고 출금도 없다.
+ * 라우트는 이를 500 PRECHARGE_FAILED 로, 결제 단계 이후의 예외는 SERVER_ERROR 로 구분한다.
+ */
+export class PreChargeError extends Error {
+    constructor(cause: unknown) {
+        super(`PRECHARGE_FAILED: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+        this.name = "PreChargeError";
+    }
+}
+
 export type InitialChargeResult =
     | { status: "paid"; nextBillingDate: string }
     | { status: "processing" }
@@ -75,7 +86,13 @@ export async function chargeInitialSubscription(params: {
     const { user, billingKey } = params;
 
     // 1) 빌링키 검증: 발급 완료 + 고객 ID = 세션 사용자
-    const verification = await verifyIssuedBillingKey(billingKey, user.id);
+    let verification: Awaited<ReturnType<typeof verifyIssuedBillingKey>>;
+    try {
+        verification = await verifyIssuedBillingKey(billingKey, user.id);
+    } catch (e) {
+        // 포트원 통신 오류 등. 소유자를 확인하지 못한 키이므로 삭제하지 않는다.
+        throw new PreChargeError(e);
+    }
     if (!verification.ok) {
         return { status: "invalid_billing_key", reason: verification.reason };
     }
@@ -107,7 +124,7 @@ export async function chargeInitialSubscription(params: {
     } catch (e) {
         if (admin && paymentId) await releaseUnusedLock(admin, user.id, paymentId);
         await deleteKeySafely(billingKey, "결제 전 단계 실패");
-        throw e;
+        throw new PreChargeError(e);
     }
 
     // 4) 빌링키 결제

@@ -29,7 +29,8 @@ type ErrorKey =
     | "alreadySubscribed"
     | "cancelScheduled"
     | "inProgress"
-    | "invalidCard";
+    | "invalidCard"
+    | "notCharged";
 
 type Phase =
     | { kind: "idle" }
@@ -45,6 +46,7 @@ const ERROR_BY_OUTCOME: Partial<Record<RegisterOutcome["kind"], ErrorKey>> = {
     cancelScheduled: "cancelScheduled",
     inProgress: "inProgress",
     invalidCard: "invalidCard",
+    notCharged: "notCharged",
     error: "unexpected",
 };
 

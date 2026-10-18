@@ -14,6 +14,7 @@ export type RegisterOutcome =
     | { kind: "inProgress" }
     | { kind: "invalidCard" }
     | { kind: "unauthorized" }
+    | { kind: "notCharged" } // 결제 호출 전 실패 (출금 없음)
     | { kind: "error" };
 
 export async function registerBillingKey(billingKey: string): Promise<RegisterOutcome> {
@@ -45,7 +46,9 @@ export async function registerBillingKey(billingKey: string): Promise<RegisterOu
         return { kind: "inProgress" };
     }
     if (res.status === 400 || res.status === 403) return { kind: "invalidCard" };
-    // 5xx 는 결제 전 단계(설정·DB) 실패이거나, 결제 후 예기치 못한 오류일 수 있다.
+    // 결제 호출 전 단계 실패는 서버가 따로 표시한다 (출금 없음).
+    if (body.error === "PRECHARGE_FAILED" || body.error === "NOT_CONFIGURED") return { kind: "notCharged" };
+    // 그 밖의 5xx 는 결제 단계 이후의 예기치 못한 오류일 수 있다.
     return { kind: "error" };
 }
 
