@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as PortOne from "@portone/browser-sdk/v2";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
@@ -13,6 +13,12 @@ import {
     isPortOneConfigured,
     isPortOneTestMode,
 } from "@/lib/portone/config";
+import {
+    registerBillingKey,
+    readBillingKeyRedirect,
+    clearBillingKeyRedirectParams,
+    type RegisterOutcome,
+} from "@/components/payment/registerBillingKey";
 
 export function SubscribeButton() {
     const t = useTranslations("Payment");
@@ -20,6 +26,54 @@ export function SubscribeButton() {
     const [isPending, setIsPending] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isRegistered, setIsRegistered] = useState(false);
+    const redirectHandled = useRef(false);
+
+    // 데스크톱 응답과 모바일 복귀가 공유하는 결과 처리
+    const applyOutcome = (outcome: RegisterOutcome) => {
+        if (outcome.kind === "paid") {
+            setIsRegistered(true);
+            return;
+        }
+        if (outcome.kind === "unauthorized") {
+            router.push("/auth");
+            return;
+        }
+        setError(outcome.kind === "error" ? t("errors.unexpected") : t("errors.saveFailed"));
+    };
+
+    const handleRedirect = async (redirect: NonNullable<ReturnType<typeof readBillingKeyRedirect>>) => {
+        if (redirect.kind === "failure") {
+            // PG 에러 원문은 개발자 콘솔로만 보낸다.
+            console.error("[PAY FAIL]", redirect.code, redirect.message);
+            setError(t("errors.issueFailed"));
+            return;
+        }
+
+        setIsPending(true);
+        try {
+            applyOutcome(await registerBillingKey(redirect.billingKey));
+        } catch {
+            setError(t("errors.unexpected"));
+        } finally {
+            setIsPending(false);
+        }
+    };
+
+    // 모바일: 결제창이 redirectUrl(이 페이지)로 돌려보내며 결과를 쿼리로 붙인다.
+    // 데스크톱과 같은 registerBillingKey 흐름을 그대로 탄다.
+    useEffect(() => {
+        if (redirectHandled.current) return;
+        redirectHandled.current = true;
+
+        const redirect = readBillingKeyRedirect(window.location.search);
+        if (!redirect) return;
+        clearBillingKeyRedirectParams();
+        // 주소창 쿼리는 외부 상태라 hydration 이후 effect 에서만 읽을 수 있다 (SSR 불일치 방지).
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void handleRedirect(redirect);
+        // 마운트 시 1회만 실행한다.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleSubscribe = async () => {
         setError(null);
@@ -69,18 +123,7 @@ export function SubscribeButton() {
                 return;
             }
 
-            const res = await fetch("/api/billing/register-key", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ billing_key: response.billingKey }),
-            });
-
-            if (!res.ok) {
-                setError(t("errors.saveFailed"));
-                return;
-            }
-
-            setIsRegistered(true);
+            applyOutcome(await registerBillingKey(response.billingKey));
         } catch (e) {
             console.error("[PortOne] billing key issuance failed", e);
             setError(t("errors.unexpected"));
