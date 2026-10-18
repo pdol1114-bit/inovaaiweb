@@ -180,18 +180,30 @@
         "bank": "Bank Transfer",
         "payNow": "Subscribe Now",
         "securePayment": "Secure payment system is active.",
-        "cardRegistered": "Card registered",
         "errors": {
             "notConfigured": "Payment is not configured yet. Please contact the administrator.",
             "issueFailed": "Card registration failed. Please try again.",
-            "saveFailed": "Your card was registered but we could not save your subscription. Please contact support.",
-            "unexpected": "Something went wrong. Please try again in a moment."
+            "unexpected": "Something went wrong. Please try again in a moment.",
+            "paymentFailed": "Payment failed. You have not been charged and your subscription has not started. Please check your card details and register again.",
+            "alreadySubscribed": "You are already subscribed to Sniff Premium.",
+            "cancelScheduled": "Your subscription is scheduled to be cancelled. You can resume it under Manage subscription.",
+            "inProgress": "A payment is already in progress. Please check its status under Manage subscription in a moment.",
+            "invalidCard": "We could not verify your card registration. Please try again."
+        },
+        "status": {
+            "charging": "Charging your first month. Please keep this window open.",
+            "paidTitle": "Your subscription has started",
+            "paidBody": "Your first month has been charged. Your next billing date is {date}.",
+            "paidBodyNoDate": "Your first month has been charged.",
+            "processingTitle": "Confirming your payment",
+            "processingBody": "Please check the status under Manage subscription in a moment. To avoid a duplicate charge, do not try again right away.",
+            "goToManage": "Go to Manage subscription"
         },
         "refundPolicyLink": "Refund Policy",
         "termsLink": "Terms of Service",
         "privacyLink": "Privacy Policy",
         "manageSubscription": "Manage subscription",
-        "recurringNotice": "KRW 3,300 (VAT included) will be charged automatically to your registered card on the same day each month. You can cancel anytime under <manage>Manage subscription</manage>; once cancelled, you will not be billed from the next billing date."
+        "recurringNotice": "KRW 3,300 (VAT included) will be charged automatically to your registered card each month on the same date as your first payment. In months without that date, you will be charged on the last day of the month (e.g. if billed on the 31st, a 30-day month is billed on the 30th). You can cancel anytime under <manage>Manage subscription</manage>; once cancelled, you will not be billed from the next billing date."
     },
     "Privacy": {
         "title": "Privacy Policy",
