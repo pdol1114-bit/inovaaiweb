@@ -80,22 +80,34 @@ export async function chargeInitialSubscription(params: {
         return { status: "invalid_billing_key", reason: verification.reason };
     }
 
-    const admin = createAdminClient();
+    // 2~3) 결제 호출 전 단계. 여기서 예외가 나면 결제는 일어나지 않았으므로
+    //      잡은 잠금을 풀고, 검증까지 끝난 새 빌링키를 삭제한 뒤 다시 던진다.
+    //      (IN_PROGRESS 는 예외가 아니라 반환값이라 삭제하지 않는다 — 먼저 진행 중인
+    //       요청이 같은 빌링키로 결제하고 있을 수 있다.)
+    let admin: SupabaseClient | null = null;
+    let paymentId: string | null = null;
+    try {
+        admin = createAdminClient();
 
-    // 2) 사용자 잠금 (pending 행)
-    const lock = await acquirePendingLock(admin, user.id);
-    if (!lock.ok) return { status: "conflict", reason: "IN_PROGRESS" };
-    const paymentId = lock.paymentId;
+        // 2) 사용자 잠금 (pending 행)
+        const lock = await acquirePendingLock(admin, user.id);
+        if (!lock.ok) return { status: "conflict", reason: "IN_PROGRESS" };
+        paymentId = lock.paymentId;
 
-    // 3) 잠금 후 구독 상태 재확인
-    const blocking = await findBlockingSubscription(admin, user.id);
-    if (blocking) {
-        await releaseUnusedLock(admin, user.id, paymentId);
-        // 이미 구독 중인 카드와 다른 새 빌링키는 쓸 곳이 없으므로 정리한다.
-        if (blocking.billingKey !== billingKey) {
-            await deleteKeySafely(billingKey, "중복 카드 등록");
+        // 3) 잠금 후 구독 상태 재확인
+        const blocking = await findBlockingSubscription(admin, user.id);
+        if (blocking) {
+            await releaseUnusedLock(admin, user.id, paymentId);
+            // 이미 구독 중인 카드와 다른 새 빌링키는 쓸 곳이 없으므로 정리한다.
+            if (blocking.billingKey !== billingKey) {
+                await deleteKeySafely(billingKey, "중복 카드 등록");
+            }
+            return { status: "conflict", reason: blocking.reason };
         }
-        return { status: "conflict", reason: blocking.reason };
+    } catch (e) {
+        if (admin && paymentId) await releaseUnusedLock(admin, user.id, paymentId);
+        await deleteKeySafely(billingKey, "결제 전 단계 실패");
+        throw e;
     }
 
     // 4) 빌링키 결제
