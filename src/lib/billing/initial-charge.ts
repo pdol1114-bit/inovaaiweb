@@ -2,22 +2,13 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createAdminClient } from "@/utils/supabase/admin";
+import { SNIFF_PREMIUM_MONTHLY_PRICE, SNIFF_PREMIUM_ORDER_NAME } from "@/lib/billing/constants";
 import {
-    SNIFF_PREMIUM_MONTHLY_PRICE,
-    SNIFF_PREMIUM_ORDER_NAME,
-    SNIFF_PREMIUM_PLAN,
-} from "@/lib/billing/constants";
-import { addBillingMonths } from "@/lib/billing/period";
-import {
-    deleteBillingKey,
-    findPayment,
-    getBillingKeyCardInfo,
-    requestBillingKeyCharge,
-    verifyIssuedBillingKey,
-    type CardInfo,
-    type ChargeRequestResult,
-    type Payment,
-} from "@/lib/portone/server";
+    deleteKeySafely,
+    resolvePendingPayment,
+    type SettleContext,
+} from "@/lib/billing/settlement";
+import { requestBillingKeyCharge, verifyIssuedBillingKey } from "@/lib/portone/server";
 
 /**
  * 카드 등록 직후 첫 결제(즉시 청구).
@@ -63,21 +54,7 @@ export type InitialChargeResult =
     | { status: "invalid_billing_key"; reason: "NOT_FOUND" | "NOT_ISSUED" | "CUSTOMER_MISMATCH" }
     | { status: "conflict"; reason: "ALREADY_SUBSCRIBED" | "CANCEL_SCHEDULED" | "IN_PROGRESS" };
 
-type Outcome =
-    | { kind: "paid"; nextBillingDate: string }
-    | { kind: "failed" }
-    | { kind: "pending" };
-
-type SettleContext = {
-    userId: string;
-    paymentId: string;
-    /** 이번 요청이 결제에 쓴 빌링키. 오래된 pending 정리 시에는 결제 조회 결과에서 얻는다. */
-    billingKey?: string;
-    card?: CardInfo;
-    requestResult?: ChargeRequestResult;
-    /** 5분 넘은 pending 정리인지. 결제 건이 없으면 실패로 확정할 수 있다. */
-    isStale: boolean;
-};
+type Outcome = { kind: "paid"; nextBillingDate: string } | { kind: "failed" } | { kind: "pending" };
 
 export async function chargeInitialSubscription(params: {
     user: User;
@@ -248,194 +225,18 @@ async function releaseUnusedLock(admin: SupabaseClient, userId: string, paymentI
 
 // ---------------------------------------------------------------------------
 
-async function settleAttempt(admin: SupabaseClient, ctx: SettleContext): Promise<Outcome> {
-    let payment: Payment | null;
-    try {
-        payment = await findPayment(ctx.paymentId);
-    } catch (e) {
-        console.error("[billing/initial] payment lookup failed; leaving pending", ctx.paymentId, e);
-        return { kind: "pending" };
-    }
-
-    if (payment === null) {
-        // 포트원에 결제 건이 없다. 요청이 명시적으로 거절됐거나, 5분이 지났다면 실패로 확정.
-        // 방금 보낸 요청의 결과가 불명이면 아직 처리 중일 수 있어 pending 으로 둔다.
-        if (ctx.requestResult?.kind === "rejected" || ctx.isStale) {
-            const reason =
-                ctx.requestResult && ctx.requestResult.kind !== "accepted"
-                    ? ctx.requestResult.reason
-                    : "PAYMENT_NOT_FOUND";
-            await markFinished(admin, ctx, "failed", reason);
-            if (ctx.billingKey) await deleteOrphanKey(admin, ctx.userId, ctx.billingKey);
-            return { kind: "failed" };
-        }
-        return { kind: "pending" };
-    }
-
-    const billingKey = ctx.billingKey ?? ("billingKey" in payment ? payment.billingKey : undefined);
-
-    switch (payment.status) {
-        case "PAID": {
-            const amountOk = payment.amount.total === SNIFF_PREMIUM_MONTHLY_PRICE;
-            const currencyOk = payment.currency === "KRW";
-            const keyOk = !!billingKey && payment.billingKey === billingKey;
-            const customerOk = payment.customer?.id === ctx.userId;
-            if (!amountOk || !currencyOk || !keyOk || !customerOk) {
-                // 출금은 됐는데 기대와 다르다. 자동으로 활성화·실패 처리하지 않고 수동 확인 대상으로 남긴다.
-                console.error("[billing/initial] PAID payment failed verification; manual review needed", {
-                    paymentId: ctx.paymentId,
-                    amountOk,
-                    currencyOk,
-                    keyOk,
-                    customerOk,
-                });
-                return { kind: "pending" };
-            }
-            try {
-                const nextBillingDate = await activateSubscription(admin, {
-                    userId: ctx.userId,
-                    paymentId: ctx.paymentId,
-                    billingKey: billingKey!,
-                    paidAt: new Date(payment.paidAt),
-                    card: ctx.card,
-                });
-                return { kind: "paid", nextBillingDate };
-            } catch (e) {
-                // 출금은 확정됐는데 DB 반영이 실패했다. 사용자에게 오류 대신 '확인 중'을 보여주고,
-                // pending 으로 남은 결제 행은 5분 뒤 정리 경로에서 활성화를 다시 시도한다.
-                console.error("[billing/initial] PAID but activation failed; will retry on stale settle", ctx.paymentId, e);
-                return { kind: "pending" };
-            }
-        }
-        case "FAILED": {
-            const f = payment.failure;
-            const reason =
-                [f?.pgCode, f?.pgMessage ?? f?.reason].filter(Boolean).join(": ").slice(0, 500) ||
-                "PAYMENT_FAILED";
-            await markFinished(admin, ctx, "failed", reason);
-            if (billingKey) await deleteOrphanKey(admin, ctx.userId, billingKey);
-            return { kind: "failed" };
-        }
-        case "CANCELLED":
-        case "PARTIAL_CANCELLED": {
-            await markFinished(
-                admin,
-                ctx,
-                payment.status === "CANCELLED" ? "cancelled" : "partial_cancelled",
-                `PAYMENT_${payment.status}`
-            );
-            if (billingKey) await deleteOrphanKey(admin, ctx.userId, billingKey);
-            return { kind: "failed" };
-        }
-        default:
-            // READY / PAY_PENDING / 알 수 없는 상태: 아직 확정되지 않음
-            return { kind: "pending" };
-    }
-}
-
 /**
- * 결제 확정 후 구독 활성화. 같은 결제로 다시 호출돼도 결과가 같다(멱등).
- *
- * 순서: 구독 upsert → 결제 행 paid. 중간에 실패하면 결제 행이 pending 으로 남아
- * 5분 뒤 정리 경로가 이 함수를 다시 호출한다. 반대 순서면 paid 인데 구독이 없는
- * 상태가 복구되지 않는다.
+ * 요청 경로용 확정. 공통 확정 로직의 일시 오류를 잡아 pending('확인 중')으로 바꾼다.
+ * pending 으로 남은 결제 행은 5분 뒤 정리 경로나 웹훅이 다시 확정한다.
  */
-async function activateSubscription(
-    admin: SupabaseClient,
-    p: { userId: string; paymentId: string; billingKey: string; paidAt: Date; card?: CardInfo }
-): Promise<string> {
-    const { data: previous } = await admin
-        .from("web_subscriptions")
-        .select("billing_key")
-        .eq("user_id", p.userId)
-        .maybeSingle();
-    const previousKey = (previous?.billing_key as string | null | undefined) ?? null;
-
-    const card = p.card ?? (await getBillingKeyCardInfo(p.billingKey));
-    const startedAt = p.paidAt.toISOString();
-    const nextBillingDate = addBillingMonths(p.paidAt, 1).toISOString();
-
-    // 재구독 시 이전 구독의 기간 정보가 남지 않도록 생애주기 컬럼을 전부 명시한다.
-    const { data: subscription, error: upsertError } = await admin
-        .from("web_subscriptions")
-        .upsert(
-            {
-                user_id: p.userId,
-                billing_key: p.billingKey,
-                plan: SNIFF_PREMIUM_PLAN,
-                status: "active",
-                started_at: startedAt,
-                next_billing_date: nextBillingDate,
-                canceled_at: null,
-                service_end_date: null,
-                card_brand: card.brand,
-                card_number_masked: card.numberMasked,
-                updated_at: new Date().toISOString(),
-            },
-            { onConflict: "user_id" }
-        )
-        .select("id")
-        .single();
-    if (upsertError || !subscription) {
-        // 결제 행은 pending 으로 남고 다음 요청의 정리 경로에서 재시도된다.
-        throw new Error(`[billing/initial] failed to activate subscription: ${upsertError?.message}`);
-    }
-
-    const { error: paymentError } = await admin
-        .from("web_payments")
-        .update({
-            status: "paid",
-            paid_at: startedAt,
-            period_start: startedAt,
-            period_end: nextBillingDate,
-            subscription_id: subscription.id,
-            failure_reason: null,
-        })
-        .eq("payment_id", p.paymentId)
-        .eq("user_id", p.userId)
-        .eq("status", "pending");
-    if (paymentError) {
-        console.error("[billing/initial] subscription active but payment row not marked paid", p.paymentId, paymentError);
-    }
-
-    if (previousKey && previousKey !== p.billingKey) {
-        await deleteKeySafely(previousKey, "결제수단 교체");
-    }
-
-    return nextBillingDate;
-}
-
-async function markFinished(
-    admin: SupabaseClient,
-    ctx: SettleContext,
-    status: "failed" | "cancelled" | "partial_cancelled",
-    reason: string
-) {
-    const { error } = await admin
-        .from("web_payments")
-        .update({ status, failure_reason: reason.slice(0, 500) })
-        .eq("payment_id", ctx.paymentId)
-        .eq("user_id", ctx.userId)
-        .eq("status", "pending");
-    if (error) console.error("[billing/initial] failed to mark payment", status, ctx.paymentId, error);
-}
-
-/** 실패한 결제의 새 빌링키 삭제. 현재 구독이 쓰는 키면 지우지 않는다. */
-async function deleteOrphanKey(admin: SupabaseClient, userId: string, billingKey: string) {
-    const { data } = await admin
-        .from("web_subscriptions")
-        .select("billing_key")
-        .eq("user_id", userId)
-        .maybeSingle();
-    if (data?.billing_key === billingKey) return;
-    await deleteKeySafely(billingKey, "첫 결제 실패");
-}
-
-async function deleteKeySafely(billingKey: string, reason: string) {
+async function settleAttempt(admin: SupabaseClient, ctx: SettleContext): Promise<Outcome> {
     try {
-        await deleteBillingKey(billingKey, reason);
+        const outcome = await resolvePendingPayment(admin, ctx);
+        if (outcome.kind === "needs_review") return { kind: "pending" };
+        return outcome;
     } catch (e) {
-        console.error("[billing/initial] billing key deletion failed", reason, e);
+        console.error("[billing/initial] settle failed; leaving pending", ctx.paymentId, e);
+        return { kind: "pending" };
     }
 }
 
