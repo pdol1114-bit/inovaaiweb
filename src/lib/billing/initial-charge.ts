@@ -189,6 +189,9 @@ async function acquirePendingLock(
  * - active
  * - cancel_scheduled 이면서 이용 종료일이 아직 안 지남 (해지취소로 안내)
  * cancel_scheduled 이면서 종료일이 지났으면 만료로 보고 결제를 진행한다.
+ * past_due(미납)도 만료와 같이 취급해 첫 결제로 재구독시킨다. 성공 시 기준일·결제일을
+ * 새로 쓰고 재시도 상태를 지우며, 미납 회차는 청구하지 않는다 (settlement.activateSubscription).
+ * 배치 재시도와의 경합은 사용자 pending 잠금(0007)과 배치 쪽 잠금 후 재확인이 막는다.
  */
 async function findBlockingSubscription(
     admin: SupabaseClient,
@@ -204,6 +207,7 @@ async function findBlockingSubscription(
 
     const billingKey = (data.billing_key as string | null) ?? null;
     if (data.status === "active") return { reason: "ALREADY_SUBSCRIBED", billingKey };
+    if (data.status === "past_due") return null;
     if (data.status === "cancel_scheduled") {
         const end = data.service_end_date ? new Date(data.service_end_date as string) : null;
         // 종료일이 없으면 판단할 수 없으므로 보수적으로 막는다.
