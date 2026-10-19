@@ -79,6 +79,12 @@ env:
     availability:
       - RUNTIME
 
+# 일일 정기결제 배치 인증 (POST /api/cron/billing, Authorization: Bearer). 32자 이상 무작위 값.
+  - variable: BILLING_CRON_SECRET
+    secret: billing-cron-secret
+    availability:
+      - RUNTIME
+
 # 출시 전 서비스(sniff-hospital, csv-automation, fem-ai) 메뉴 노출 토글.
 # 미설정이 곧 '숨김'이라 지금은 주석으로 두는 것으로 충분하다.
 # KCP 심사가 끝나면 아래 주석을 풀고 value를 "true"로 두면 메뉴가 복구된다.

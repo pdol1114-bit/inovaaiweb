@@ -23,6 +23,8 @@ type Checks = {
     portoneApi: boolean;
     /** 포트원 웹훅 시크릿 로드 + base64 디코딩 가능 (SDK verify 가 요구) */
     portoneWebhookSecret: boolean;
+    /** 정기결제 배치 시크릿 로드 (32자 이상) */
+    billingCronSecret: boolean;
 };
 
 const CACHE_MS = 60 * 1000;
@@ -48,6 +50,7 @@ async function runChecks(): Promise<Checks> {
         paymentsTable: false,
         portoneApi: false,
         portoneWebhookSecret: isDecodableWebhookSecret(process.env.PORTONE_WEBHOOK_SECRET),
+        billingCronSecret: (process.env.BILLING_CRON_SECRET?.length ?? 0) >= 32,
     };
 
     try {
