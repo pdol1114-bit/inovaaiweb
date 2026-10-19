@@ -610,6 +610,17 @@
         "ended": "구독이 종료되었습니다.",
         "resubscribe": "다시 구독하기",
         "manageLink": "구독 관리",
+        "statusPastDue": "결제 실패",
+        "dueDate": "미납 결제일",
+        "nextRetryAt": "다음 결제 재시도",
+        "graceEndsAt": "이용 가능 기한",
+        "pastDueNotice": "{due} 정기결제가 실패했습니다. {retry}에 등록된 카드로 다시 결제를 시도하며, {grace}까지는 Sniff Premium을 계속 이용하실 수 있습니다. 그때까지 결제되지 않으면 구독이 종료됩니다.",
+        "pastDueNoticeNoRetry": "{due} 정기결제가 실패했습니다. {grace}까지 결제되지 않으면 구독이 종료됩니다.",
+        "pastDueRepay": "새 카드로 다시 결제하면 바로 정상 이용하실 수 있습니다.",
+        "payWithNewCard": "새 카드로 다시 결제하기",
+        "confirmTitlePastDue": "지금 구독을 해지하시겠습니까?",
+        "confirmBodyPastDue": "결제 실패 상태에서 해지하면 즉시 종료되며, 이후 Sniff Premium을 이용하실 수 없습니다. 실패한 회차의 요금은 청구되지 않습니다.",
+        "confirmCancelNow": "지금 해지",
         "errors": {
             "failed": "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."
         }

@@ -610,6 +610,17 @@
         "ended": "Your subscription has ended.",
         "resubscribe": "Subscribe again",
         "manageLink": "Manage subscription",
+        "statusPastDue": "Payment failed",
+        "dueDate": "Unpaid billing date",
+        "nextRetryAt": "Next payment retry",
+        "graceEndsAt": "Access until",
+        "pastDueNotice": "Your payment on {due} failed. We will retry your registered card on {retry}, and you can keep using Sniff Premium until {grace}. If the payment does not go through by then, your subscription will end.",
+        "pastDueNoticeNoRetry": "Your payment on {due} failed. If the payment does not go through by {grace}, your subscription will end.",
+        "pastDueRepay": "Pay again with a new card to restore full access right away.",
+        "payWithNewCard": "Pay again with a new card",
+        "confirmTitlePastDue": "Cancel your subscription now?",
+        "confirmBodyPastDue": "Cancelling while a payment has failed ends your subscription immediately, and you will no longer have access to Sniff Premium. The failed payment will not be charged.",
+        "confirmCancelNow": "Cancel now",
         "errors": {
             "failed": "We couldn't process your request. Please try again in a moment."
         }

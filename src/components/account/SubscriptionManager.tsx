@@ -14,6 +14,8 @@ function formatDate(value: string | null, locale: string): string {
         year: "numeric",
         month: "long",
         day: "numeric",
+        // 결제일·재시도·유예 일정은 KST 기준이다.
+        timeZone: "Asia/Seoul",
     }).format(new Date(value));
 }
 
@@ -64,19 +66,30 @@ export function SubscriptionManager({
     }
 
     const isCancelScheduled = subscription.status === "cancel_scheduled";
+    const isPastDue = subscription.status === "past_due";
     const endDate = formatDate(
         isCancelScheduled ? subscription.service_end_date : subscription.next_billing_date,
         locale
     );
+    const graceDate = formatDate(subscription.grace_ends_at, locale);
+    const retryDate = subscription.next_retry_at ? formatDate(subscription.next_retry_at, locale) : null;
 
-    const rows: { label: string; value: string }[] = [
-        { label: t("plan"), value: `${t("planName")} · ${t("planPrice")}` },
-        {
-            label: isCancelScheduled ? t("serviceEndDate") : t("nextBillingDate"),
-            value: endDate,
-        },
-        { label: t("startedAt"), value: formatDate(subscription.started_at, locale) },
-    ];
+    const rows: { label: string; value: string }[] = isPastDue
+        ? [
+              { label: t("plan"), value: `${t("planName")} · ${t("planPrice")}` },
+              { label: t("dueDate"), value: endDate },
+              ...(retryDate ? [{ label: t("nextRetryAt"), value: retryDate }] : []),
+              { label: t("graceEndsAt"), value: graceDate },
+              { label: t("startedAt"), value: formatDate(subscription.started_at, locale) },
+          ]
+        : [
+              { label: t("plan"), value: `${t("planName")} · ${t("planPrice")}` },
+              {
+                  label: isCancelScheduled ? t("serviceEndDate") : t("nextBillingDate"),
+                  value: endDate,
+              },
+              { label: t("startedAt"), value: formatDate(subscription.started_at, locale) },
+          ];
 
     if (subscription.card_brand || subscription.card_number_masked) {
         rows.push({
@@ -94,12 +107,18 @@ export function SubscriptionManager({
                     <h2 className="text-xl font-bold text-gray-900">{t("planName")}</h2>
                     <span
                         className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            isCancelScheduled
-                                ? "bg-amber-50 text-amber-700"
-                                : "bg-green-50 text-green-700"
+                            isPastDue
+                                ? "bg-red-50 text-red-700"
+                                : isCancelScheduled
+                                  ? "bg-amber-50 text-amber-700"
+                                  : "bg-green-50 text-green-700"
                         }`}
                     >
-                        {isCancelScheduled ? t("statusCancelScheduled") : t("statusActive")}
+                        {isPastDue
+                            ? t("statusPastDue")
+                            : isCancelScheduled
+                              ? t("statusCancelScheduled")
+                              : t("statusActive")}
                     </span>
                 </div>
 
@@ -111,6 +130,23 @@ export function SubscriptionManager({
                         </div>
                     ))}
                 </dl>
+
+                {isPastDue && (
+                    <div role="alert" className="rounded-xl bg-red-50 border border-red-100 p-4 space-y-3">
+                        <p className="text-sm text-red-900">
+                            {retryDate
+                                ? t("pastDueNotice", { due: endDate, retry: retryDate, grace: graceDate })
+                                : t("pastDueNoticeNoRetry", { due: endDate, grace: graceDate })}
+                        </p>
+                        <p className="text-sm font-medium text-red-900">{t("pastDueRepay")}</p>
+                        <Link
+                            href="/payment"
+                            className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-colors"
+                        >
+                            {t("payWithNewCard")}
+                        </Link>
+                    </div>
+                )}
 
                 {isCancelScheduled ? (
                     <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 flex items-center justify-between gap-4 flex-wrap">
@@ -153,12 +189,18 @@ export function SubscriptionManager({
                 >
                     <div className="bg-white rounded-2xl max-w-md w-full p-8 space-y-6 shadow-xl">
                         <h3 id="cancel-dialog-title" className="text-xl font-bold text-gray-900">
-                            {t("confirmTitle")}
+                            {isPastDue ? t("confirmTitlePastDue") : t("confirmTitle")}
                         </h3>
                         <div className="space-y-3 text-sm text-gray-600 leading-relaxed">
-                            <p>{t("confirmBody", { date: endDate })}</p>
-                            <p>{t("confirmNoRefund")}</p>
-                            <p>{t("confirmResumable")}</p>
+                            {isPastDue ? (
+                                <p>{t("confirmBodyPastDue")}</p>
+                            ) : (
+                                <>
+                                    <p>{t("confirmBody", { date: endDate })}</p>
+                                    <p>{t("confirmNoRefund")}</p>
+                                    <p>{t("confirmResumable")}</p>
+                                </>
+                            )}
                         </div>
                         {/* 두 버튼을 같은 비중으로 노출한다 (다크패턴 방지) */}
                         <div className="flex gap-3">
@@ -176,6 +218,8 @@ export function SubscriptionManager({
                             >
                                 {isPending ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : isPastDue ? (
+                                    t("confirmCancelNow")
                                 ) : (
                                     t("confirmCancel")
                                 )}
