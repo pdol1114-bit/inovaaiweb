@@ -227,7 +227,7 @@ async function advanceRecurringSubscription(
         new Date(p.periodStart)
     ).toISOString();
 
-    const { error: subError } = await admin
+    const { data: advanced, error: subError } = await admin
         .from("web_subscriptions")
         .update({
             status: "active",
@@ -240,8 +240,29 @@ async function advanceRecurringSubscription(
         .eq("id", p.subscriptionId)
         .eq("user_id", p.userId)
         .eq("next_billing_date", p.periodStart)
-        .in("status", ["active", "past_due"]);
+        .in("status", ["active", "past_due"])
+        .select("id");
     if (subError) throw new Error(`[billing/settle] failed to advance subscription: ${subError.message}`);
+    if (!advanced || advanced.length === 0) {
+        // 이미 같은 값으로 넘어간 재호출이면 정상. 그 밖(해지·재구독과 경합)은 출금됐는데 구독이
+        // 넘어가지 않은 상태라 수동 확인이 필요하다.
+        const { data: current } = await admin
+            .from("web_subscriptions")
+            .select("status, next_billing_date")
+            .eq("id", p.subscriptionId)
+            .maybeSingle();
+        const alreadyAdvanced =
+            current?.status === "active" &&
+            current.next_billing_date &&
+            new Date(current.next_billing_date as string).getTime() === new Date(nextBillingDate).getTime();
+        if (!alreadyAdvanced) {
+            console.error("[billing/settle] needs_review: recurring PAID but subscription not advanceable", {
+                paymentId: p.paymentId,
+                subscriptionId: p.subscriptionId,
+                status: current?.status ?? null,
+            });
+        }
+    }
 
     const { error: paymentError } = await admin
         .from("web_payments")
