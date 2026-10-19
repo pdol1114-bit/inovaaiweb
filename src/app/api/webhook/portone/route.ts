@@ -32,6 +32,12 @@ export async function POST(request: Request) {
             console.error("[webhook/portone] verification failed", e.reason);
             return NextResponse.json({ error: "INVALID_SIGNATURE" }, { status: 400 });
         }
+        if (e instanceof PortOneWebhook.InvalidInputError) {
+            // 시크릿이 base64 로 디코딩되지 않는 등 설정 오류. 서명 문제가 아니므로 500 을 유지해
+            // 시크릿을 고친 뒤 포트원 재전송으로 복구되게 한다. (2026-10-19 이중 붙여넣기 장애)
+            console.error("[webhook/portone] WEBHOOK_SECRET_INVALID", e.message);
+            return NextResponse.json({ error: "WEBHOOK_SECRET_INVALID" }, { status: 500 });
+        }
         throw e;
     }
 
