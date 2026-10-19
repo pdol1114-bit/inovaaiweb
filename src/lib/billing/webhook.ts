@@ -26,6 +26,7 @@ export type WebhookOutcome = {
 
 type PaymentRow = {
     payment_id: string;
+    kind: "initial" | "recurring";
     user_id: string;
     subscription_id: string | null;
     status: "pending" | "paid" | "failed" | "cancelled" | "partial_cancelled";
@@ -39,7 +40,7 @@ export async function processPaymentWebhook(
 ): Promise<WebhookOutcome> {
     const { data: row, error } = await admin
         .from("web_payments")
-        .select("payment_id, user_id, subscription_id, status, period_start, period_end")
+        .select("payment_id, kind, user_id, subscription_id, status, period_start, period_end")
         .eq("payment_id", paymentId)
         .maybeSingle();
     if (error) throw new Error(`[webhook] failed to read payment row: ${error.message}`);
@@ -68,6 +69,10 @@ async function applyPaymentState(
             paymentId: row.payment_id,
             isStale: false,
             payment,
+            recurring:
+                row.kind === "recurring" && row.subscription_id && row.period_start
+                    ? { subscriptionId: row.subscription_id, periodStart: row.period_start }
+                    : undefined,
         });
         if (outcome.kind === "needs_review") return { result: "needs_review", detail: outcome.reason };
         if (outcome.kind === "pending") return { result: "ignored", detail: "STILL_PENDING" };
@@ -150,7 +155,7 @@ async function applyFullCancellation(
             .maybeSingle();
         if (subError) throw new Error(`[webhook] failed to read subscription: ${subError.message}`);
 
-        if (sub && (sub.status === "active" || sub.status === "cancel_scheduled")) {
+        if (sub && (sub.status === "active" || sub.status === "cancel_scheduled" || sub.status === "past_due")) {
             // 빌링키를 먼저 지운다. 실패하면 throw → 500 → 재전송 때 다시 시도한다
             // (구독을 먼저 바꾸면 billing_key 가 비어 재시도에서 지울 키를 잃는다).
             if (sub.billing_key) await deleteBillingKey(sub.billing_key as string, "결제 전액 취소");
@@ -163,11 +168,12 @@ async function applyFullCancellation(
                     service_end_date: cancelledAtIso,
                     next_billing_date: null,
                     billing_key: null,
+                    next_retry_at: null,
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", sub.id)
                 .eq("user_id", row.user_id)
-                .in("status", ["active", "cancel_scheduled"]);
+                .in("status", ["active", "cancel_scheduled", "past_due"]);
             if (updateError) throw new Error(`[webhook] failed to cancel subscription: ${updateError.message}`);
         }
     }

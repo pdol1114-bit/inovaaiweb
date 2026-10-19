@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { deleteBillingKey } from "@/lib/portone/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 
-export type SubscriptionStatus = "active" | "cancel_scheduled" | "canceled";
+export type SubscriptionStatus = "active" | "cancel_scheduled" | "past_due" | "canceled";
 
 export type Subscription = {
     id: string;
@@ -16,21 +16,24 @@ export type Subscription = {
     started_at: string | null;
     card_brand: string | null;
     card_number_masked: string | null;
+    failed_attempts: number;
+    next_retry_at: string | null;
+    grace_ends_at: string | null;
 };
 
 const COLUMNS =
-    "id, user_id, billing_key, plan, status, next_billing_date, service_end_date, canceled_at, started_at, card_brand, card_number_masked";
+    "id, user_id, billing_key, plan, status, next_billing_date, service_end_date, canceled_at, started_at, card_brand, card_number_masked, failed_attempts, next_retry_at, grace_ends_at";
 
 /**
  * 이용 종료일이 지난 해지 예약 건을 'canceled'로 전환한다.
  *
- * 이 프로젝트에는 크론·스케줄러 인프라가 없으므로 접근 시점(구독 조회 시)에 확인한다.
+ * 일일 배치(/api/cron/billing)가 정리하고, 배치 전에 접근하면 조회 시점에도 정리한다.
  * 종료일까지 미뤄둔 빌링키 삭제도 이 시점에 수행한다.
  *
  * userId 는 호출자가 세션에서 얻은 값이다. 쓰기는 RLS 를 우회하는 서버 권한
  * 클라이언트로 하므로 user_id 조건으로 대상을 직접 한정한다.
  */
-async function settleIfExpired(
+export async function settleIfExpired(
     subscription: Subscription,
     userId: string
 ): Promise<Subscription> {

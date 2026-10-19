@@ -1,7 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { SNIFF_PREMIUM_MONTHLY_PRICE, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
-import { addBillingMonths } from "@/lib/billing/period";
+import { addBillingMonths, nextBillingDateAfter } from "@/lib/billing/period";
 import {
     deleteBillingKey,
     findPayment,
@@ -38,6 +38,11 @@ export type SettleContext = {
     isStale: boolean;
     /** 이미 조회한 결제가 있으면 다시 조회하지 않는다 (웹훅 경로). */
     payment?: Payment | null;
+    /**
+     * 정기 청구(kind=recurring) 건. 확정 시 기준일(started_at)은 유지하고 next_billing_date 만
+     * 다음 회차로 넘긴다. 없으면 첫 결제로 보고 구독을 새로 활성화한다.
+     */
+    recurring?: { subscriptionId: string; periodStart: string };
 };
 
 export async function resolvePendingPayment(
@@ -55,7 +60,7 @@ export async function resolvePendingPayment(
                     ? ctx.requestResult.reason
                     : "PAYMENT_NOT_FOUND";
             await markFinished(admin, ctx, "failed", reason);
-            if (ctx.billingKey) await deleteOrphanKey(admin, ctx.userId, ctx.billingKey);
+            if (ctx.billingKey && !ctx.recurring) await deleteOrphanKey(admin, ctx.userId, ctx.billingKey);
             return { kind: "failed" };
         }
         return { kind: "pending" };
@@ -75,13 +80,21 @@ export async function resolvePendingPayment(
                 console.error("[billing/settle] manual review needed", ctx.paymentId, reason);
                 return { kind: "needs_review", reason };
             }
-            const nextBillingDate = await activateSubscription(admin, {
-                userId: ctx.userId,
-                paymentId: ctx.paymentId,
-                billingKey: billingKey!,
-                paidAt: new Date(payment.paidAt),
-                card: ctx.card,
-            });
+            const nextBillingDate = ctx.recurring
+                ? await advanceRecurringSubscription(admin, {
+                      userId: ctx.userId,
+                      paymentId: ctx.paymentId,
+                      subscriptionId: ctx.recurring.subscriptionId,
+                      periodStart: ctx.recurring.periodStart,
+                      paidAt: new Date(payment.paidAt),
+                  })
+                : await activateSubscription(admin, {
+                      userId: ctx.userId,
+                      paymentId: ctx.paymentId,
+                      billingKey: billingKey!,
+                      paidAt: new Date(payment.paidAt),
+                      card: ctx.card,
+                  });
             return { kind: "paid", nextBillingDate };
         }
         case "FAILED": {
@@ -90,7 +103,8 @@ export async function resolvePendingPayment(
                 [f?.pgCode, f?.pgMessage ?? f?.reason].filter(Boolean).join(": ").slice(0, 500) ||
                 "PAYMENT_FAILED";
             await markFinished(admin, ctx, "failed", reason);
-            if (billingKey) await deleteOrphanKey(admin, ctx.userId, billingKey);
+            // 정기 청구 실패는 구독의 현재 빌링키로 재시도하므로 지우지 않는다.
+            if (billingKey && !ctx.recurring) await deleteOrphanKey(admin, ctx.userId, billingKey);
             return { kind: "failed" };
         }
         case "CANCELLED":
@@ -101,7 +115,7 @@ export async function resolvePendingPayment(
                 payment.status === "CANCELLED" ? "cancelled" : "partial_cancelled",
                 `PAYMENT_${payment.status}`
             );
-            if (billingKey) await deleteOrphanKey(admin, ctx.userId, billingKey);
+            if (billingKey && !ctx.recurring) await deleteOrphanKey(admin, ctx.userId, billingKey);
             return { kind: "failed" };
         }
         default:
@@ -146,6 +160,10 @@ async function activateSubscription(
                 next_billing_date: nextBillingDate,
                 canceled_at: null,
                 service_end_date: null,
+                // 미납(past_due) 중 재구독한 경우 재시도 상태를 지운다. 미납 회차는 청구하지 않는다.
+                failed_attempts: 0,
+                next_retry_at: null,
+                grace_ends_at: null,
                 card_brand: card.brand,
                 card_number_masked: card.numberMasked,
                 updated_at: new Date().toISOString(),
@@ -179,6 +197,64 @@ async function activateSubscription(
     if (previousKey && previousKey !== p.billingKey) {
         await deleteKeySafely(previousKey, "결제수단 교체");
     }
+
+    return nextBillingDate;
+}
+
+/**
+ * 정기 청구 확정. 기준일(started_at)은 유지하고 next_billing_date 를 다음 회차로 넘긴다.
+ * 재시도(past_due) 중 성공해도 재시도한 날이 아니라 기준일 기준으로 계산한다.
+ *
+ * 구독 갱신 조건: next_billing_date = 이번 회차 결제일(periodStart), status ∈ (active, past_due).
+ * 같은 결제로 다시 호출되면 이미 넘어간 구독은 조건에 걸리지 않아 회차가 두 번 넘어가지 않는다.
+ * 순서: 구독 → 결제 행 (activateSubscription 과 같은 이유).
+ */
+async function advanceRecurringSubscription(
+    admin: SupabaseClient,
+    p: { userId: string; paymentId: string; subscriptionId: string; periodStart: string; paidAt: Date }
+): Promise<string> {
+    const { data: sub, error: readError } = await admin
+        .from("web_subscriptions")
+        .select("started_at")
+        .eq("id", p.subscriptionId)
+        .eq("user_id", p.userId)
+        .maybeSingle();
+    if (readError) throw new Error(`[billing/settle] failed to read subscription: ${readError.message}`);
+    if (!sub?.started_at) throw new Error("[billing/settle] recurring payment without subscription anchor");
+
+    const nextBillingDate = nextBillingDateAfter(
+        new Date(sub.started_at as string),
+        new Date(p.periodStart)
+    ).toISOString();
+
+    const { error: subError } = await admin
+        .from("web_subscriptions")
+        .update({
+            status: "active",
+            next_billing_date: nextBillingDate,
+            failed_attempts: 0,
+            next_retry_at: null,
+            grace_ends_at: null,
+            updated_at: new Date().toISOString(),
+        })
+        .eq("id", p.subscriptionId)
+        .eq("user_id", p.userId)
+        .eq("next_billing_date", p.periodStart)
+        .in("status", ["active", "past_due"]);
+    if (subError) throw new Error(`[billing/settle] failed to advance subscription: ${subError.message}`);
+
+    const { error: paymentError } = await admin
+        .from("web_payments")
+        .update({
+            status: "paid",
+            paid_at: p.paidAt.toISOString(),
+            period_end: nextBillingDate,
+            failure_reason: null,
+        })
+        .eq("payment_id", p.paymentId)
+        .eq("user_id", p.userId)
+        .eq("status", "pending");
+    if (paymentError) throw new Error(`[billing/settle] recurring payment row not marked paid: ${paymentError.message}`);
 
     return nextBillingDate;
 }
