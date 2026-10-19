@@ -1,6 +1,36 @@
 
 # PROGRESS
 
+## 2026-10-19 — Phase 5: 발신 설정 반영 (allowlist)
+
+### 설정 기록
+- `apphosting.yaml`의 MAIL_* 5개 주석 해제, 모두 availability=RUNTIME 전용으로 직접 수정.
+  - MAIL_FROM: `Sniff <support@inovaai.ai>`
+  - MAIL_REPLY_TO: `support@inovaai.ai`
+  - MAIL_SUPPORT_EMAIL: `support@inovaai.ai`
+  - MAIL_MODE: `allowlist`
+  - MAIL_ALLOWLIST: `sniffreview2026@gmail.com`
+- 기존 `RESEND_API_KEY` → Secret Manager `resend-api-key`, RUNTIME 전용 참조 존재 확인. 변경 없음.
+- 사용자 전달 완료 상태: **0010 운영 적용 완료**, **resend-api-key 등록·grantaccess 완료**.
+  시크릿 기대 길이 **36**, 끝 개행 없음 확인 완료 (사용자 확인; 이번 작업에서 값 조회·출력하지 않음).
+- **Resend 도메인 inovaai.ai 인증 진행 중**. push 전 Resend에서 Verified 완료 여부를 확인할 것.
+- 메일 설정 외 apphosting 설정·소스 코드 변경 없음. push·롤아웃·운영 시험 미실행.
+
+### 검증·커밋
+- `npm run build`, `npx tsc --noEmit`: **모두 통과 (exit 0)**.
+- `git diff --check` 통과. 기존 `js-yaml`을 사용하는 일회성 `node` 정적 검사로 YAML 파싱,
+  MAIL_* 5개 값과 이 설정 기록 일치, RUNTIME 전용, 기존 시크릿 참조 유지, MAIL_* 외 설정 무변경을 확인했다.
+  변경 파일은 2개뿐이며 주소는 이 설정 기록과 apphosting.yaml에만 추가했다.
+- 변경 파일은 `apphosting.yaml`, `PROGRESS.md` 두 개만 명시해 로컬 커밋 1개 생성.
+
+### push 전 범위 확인 (실행 금지, 목록 확인만)
+- `git fetch origin`, `git log --reverse --oneline origin/main..HEAD`,
+  `git rev-list --left-right --count origin/main...HEAD`로 origin 대비 범위 확인.
+- 작업 전 origin/main 대비 뒤처짐 0·앞섬 8개. 이번 설정 커밋 포함 시 9개 전체가 push 대상이다:
+  `47fbbd2`, `f0d48d6`, `29c8384`, `795f75f`, `6c02127`, `0c7419e`, `17579c9`, `30f32fe`, 이번 설정 커밋.
+- push 직전 도메인 Verified, allowlist 모드·수신 범위, 위 9개 배포 범위를 확인하고 별도 push 승인을 받을 것.
+  운영 시험은 배포 후 별도 승인된 절차에서만 수행한다.
+
 ## 2026-10-19 — Phase 5 후속: 401·403 설정 오류 대기 처리
 
 - 사용자 승인한 남은 작업에 따라 메일 발송 코드·health·모의 시험을 수정했다.
@@ -82,7 +112,7 @@
 ### 변경 내용 (커밋별)
 | 커밋 | 파일 | 내용 |
 |---|---|---|
-| 47fbbd2 | `supabase/migrations/0010_notification_delivery.sql` | sending 상태, attempts·last_error·provider_message_id·sending_started_at·next_attempt_at·dedupe_key(unique). **미적용** |
+| 47fbbd2 | `supabase/migrations/0010_notification_delivery.sql` | sending 상태, attempts·last_error·provider_message_id·sending_started_at·next_attempt_at·dedupe_key(unique). **운영 적용 완료 (2026-10-19 사용자 확인)** |
 | f0d48d6 | `src/lib/notifications/{templates,resend,config,mask}.ts`, `scripts/render-notifications.mts` | 템플릿 2종, Resend 클라이언트(fetch), 메일 설정·모드, 주소 마스킹 |
 | 29c8384 | `src/lib/notifications/dispatch.ts`, `src/lib/billing/recurring.ts`, cron route | 선점·발송 공통 함수, 기록 지점 2곳 즉시 발송, cron f 단계 |
 | 795f75f | health, `apphosting.yaml`, PROGRESS.md | resendApiKey 점검, mailMode 표시, RESEND_API_KEY 참조, MAIL_* 주석 |
@@ -139,11 +169,10 @@ Resend 응답 분기 (문서 확인):
 - **미검증**: 실제 Resend 발송, 운영 DB 경로 (아래 테스트 절차).
 
 ### Kevin 할 일 — 순서대로
-1. **값 확정 후 apphosting.yaml 의 MAIL_* 주석 해제** (MAIL_FROM, MAIL_REPLY_TO, MAIL_SUPPORT_EMAIL,
-   MAIL_MODE=allowlist, MAIL_ALLOWLIST=테스트 주소). 비워 둔 채 배포하면 발송하지 않을 뿐 장애는 없다.
-2. **Resend 도메인 인증** (발신 도메인 DNS: SPF·DKIM 레코드, Resend 대시보드에서 Verified 확인)
-3. **0010 적용** (Supabase SQL Editor). 적용 전 배포하면 기록·발송 쿼리가 실패한다 (청구는 영향 없음).
-4. **resend-api-key 등록** — 값이 화면·셸 히스토리에 남지 않는 방식:
+1. **MAIL_* 설정 반영 완료** — allowlist, 전부 RUNTIME 전용. 실제 값은 위 설정 기록 참조.
+2. **Resend 도메인 인증 진행 중** — inovaai.ai의 SPF·DKIM 및 Verified 완료 여부를 push 전에 확인.
+3. **0010 운영 적용 완료** (사용자 확인). 이번 작업에서 운영 DB를 조회·변경하지 않음.
+4. **resend-api-key 등록·grantaccess 완료** (사용자 확인). 아래는 기존 최초 등록 참고 절차이며 재실행하지 않음:
    ```sh
    gcloud secrets create resend-api-key --replication-policy=automatic --data-file=- --project sniff-by-hatch-app
    # ↑ 실행 후 키를 붙여 넣고, Enter 없이 Ctrl-D (Enter 를 치면 개행이 값에 들어간다)
@@ -151,7 +180,7 @@ Resend 응답 분기 (문서 확인):
    gcloud secrets versions access latest --secret resend-api-key --project sniff-by-hatch-app | wc -c
    gcloud secrets versions access latest --secret resend-api-key --project sniff-by-hatch-app | tail -c 1 | xxd   # 마지막 바이트가 0a 면 개행 포함 → 재등록
    ```
-   기대 길이: (등록 후 Kevin 이 알려주면 기록)
+   기대 길이: **36**, 끝 개행 없음 확인 완료 (사용자 확인; 이번 작업에서 값 조회 없음)
 5. **push** → 롤아웃 성공 확인 (resend-api-key 가 없으면 롤아웃 실패)
 6. **health**: 여섯 항목 모두 true, `"mailMode":"allowlist"`, `"mailConfigBlocked":0` 확인.
    값이 null이면 집계 불가, 양수이면 401·403 설정 오류로 발송 대기 중인 행이 있음 (정상 여부 판정과 별개).
@@ -162,8 +191,9 @@ Resend 응답 분기 (문서 확인):
 > **경고: cron 수동 트리거는 전체 청구 배치를 실행함. web_subscriptions에 테스트 외
 > 구독이 없는 공개 전에만 실행. 실행 직전 구독 행 조회로 확인**
 
-이번 작업에서는 아래 SQL·명령어를 실행하지 않았다. 발신 주소는 미정이고 `apphosting.yaml`의 `MAIL_*`는
-주석 유지한다. 값 전달·도메인 인증·0010 적용·시크릿 설정·배포·운영 시험은 각각 별도 승인 후 진행한다.
+이번 작업에서는 아래 SQL·명령어를 실행하지 않았다. `apphosting.yaml`의 `MAIL_*`는 위 설정 기록대로
+반영했으며, 0010 운영 적용·시크릿 등록·grantaccess는 사용자 확인으로 완료 기록했다.
+Resend 도메인 인증은 진행 중이며, push·롤아웃·운영 시험은 별도 승인 후 진행한다.
 시험 시 health의 boolean 6개 true, mailMode=allowlist를 확인한다.
 키·전체 이메일·카드 값·알림 본문은 출력·문서화하지 않는다.
 
@@ -405,6 +435,7 @@ gcloud secrets versions access latest --secret <이름> --project sniff-by-hatch
 | portone-webhook-secret | 50 | `whsec_` + base64 44자 |
 | portone-api-secret | 80 | 2026-10-19 현재 값 기준 (값 출력 없이 측정) |
 | billing-cron-secret | 64 | 아래 명령으로 생성한 hex |
+| resend-api-key | 36 | 끝 개행 없음·등록·grantaccess 완료 (2026-10-19 사용자 확인) |
 새 버전 등록 후에는 롤아웃이 필요하다 (리비전이 버전에 고정). 확인: `curl -s https://inovaai.ai/api/health/billing`.
 
 ### Kevin 체크리스트 — 순서대로

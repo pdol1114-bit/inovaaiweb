@@ -93,31 +93,31 @@ env:
     availability:
       - RUNTIME
 
-# 메일 발송 설정 (RUNTIME 전용 일반 값). 값은 Kevin 확정 후 주석 해제.
+# 메일 발송 설정 (RUNTIME 전용 일반 값). 공개 전 allowlist 시험 설정.
 # MAIL_FROM 이 없거나 MAIL_MODE 가 off(미설정 포함)면 발송하지 않고 대기열에 pending 으로 쌓인다.
 # MAIL_MODE: off | allowlist(MAIL_ALLOWLIST 주소에만) | live(전체). 공개 전 allowlist, 공개 당일 live.
 # MAIL_SUPPORT_EMAIL 이 없으면 본문 문의 주소는 사업자정보의 SUPPORT_EMAIL.
 #
-#  - variable: MAIL_FROM
-#    value: "Sniff <no-reply@발신도메인>"
-#    availability:
-#      - RUNTIME
-#  - variable: MAIL_REPLY_TO
-#    value: "회신 주소"
-#    availability:
-#      - RUNTIME
-#  - variable: MAIL_SUPPORT_EMAIL
-#    value: "문의 주소"
-#    availability:
-#      - RUNTIME
-#  - variable: MAIL_MODE
-#    value: "allowlist"
-#    availability:
-#      - RUNTIME
-#  - variable: MAIL_ALLOWLIST
-#    value: "테스트 주소"
-#    availability:
-#      - RUNTIME
+  - variable: MAIL_FROM
+    value: "Sniff <support@inovaai.ai>"
+    availability:
+      - RUNTIME
+  - variable: MAIL_REPLY_TO
+    value: "support@inovaai.ai"
+    availability:
+      - RUNTIME
+  - variable: MAIL_SUPPORT_EMAIL
+    value: "support@inovaai.ai"
+    availability:
+      - RUNTIME
+  - variable: MAIL_MODE
+    value: "allowlist"
+    availability:
+      - RUNTIME
+  - variable: MAIL_ALLOWLIST
+    value: "sniffreview2026@gmail.com"
+    availability:
+      - RUNTIME
 
 # 출시 전 서비스(sniff-hospital, csv-automation, fem-ai) 메뉴 노출 토글.
 # 미설정이 곧 '숨김'이라 지금은 주석으로 두는 것으로 충분하다.
