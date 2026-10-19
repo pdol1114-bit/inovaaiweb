@@ -1,6 +1,45 @@
 
 # PROGRESS
 
+## 2026-10-19 — Phase 5 후속: 작업 규칙·health 대기 행 수·운영 시험 절차
+
+### 범위와 상태
+- 현재 대화에 직전 세션의 승인 계획 2~6번 원문이 없어 해당 원문을 요청한 상태다.
+  아래는 이번 메시지에 명시된 독립 작업만 반영한 결과이며, 전체 후속 작업 완료를 의미하지 않는다.
+- `6c02127`: 사용자 제공 문구 그대로 `AGENTS.md` 생성, 이 파일만 별도 로컬 커밋.
+- health에 `mailConfigBlocked` 추가: `status='failed'`, `next_attempt_at is not null`,
+  `last_error`가 `HTTP_401:` 또는 `HTTP_403:`으로 시작하는 행의 정확한 수.
+  미래 재시도 대기도 포함하고, 최종 실패·다른 오류·sent는 제외한다.
+- `mailConfigBlocked`는 `checks` 바깥 표시값이다. 기존 boolean 6개, `ok`, HTTP 200/503 판정 유지.
+  집계 조회 실패(0010 미적용 등)는 `null`로 표시해 0건과 구별한다. 60초 캐시 적용.
+- 발송 정책·청구·재시도·웹훅 코드는 변경하지 않았다. `apphosting.yaml`의 `MAIL_*`는 주석 유지,
+  발신 주소는 allowlist 시험 전에 사용자가 별도로 전달한다.
+- push, 0010 적용, 시크릿 등록·변경, 롤아웃, 운영 시험은 실행하지 않았다.
+
+### 검증·명령어
+- AGENTS 커밋: `npm run build` 통과. 최초 시도는 Google Fonts 네트워크 제한으로 실패해
+  네트워크 허용 후 같은 명령으로 통과했다.
+- `npx tsc --noEmit`: 삭제된 `/test-payment`를 참조하는 `.next/dev/types/validator.ts` 캐시로 최초 실패.
+  해당 생성 파일을 OS 임시 폴더에 이동·보관한 뒤 통과. 소스·tsconfig 수정 없음.
+- `node scripts/verify-mail-health.mjs`: **16개 모의 시나리오 통과**.
+  실제 health route·메일 모드 파서를 transpile해 실행하고 DB·PG만 모의 처리한다.
+  네트워크·운영 키·운영 DB 접근 없음.
+  - 신규 5개: 401/403 대기만 집계, 빈 대기열 0, 조회 오류 null, throw null, 60초 캐시 갱신.
+  - 회귀 11개: 모드 4종, 잘못된 메일 키 3종, 기존 DB 검사 실패 2종, PG 오류·미설정 2종.
+  - 매 시나리오에서 boolean 항목 6개와 no-store 확인. 집계 실패가 정상 health를 503으로 바꾸지 않음.
+- (이 커밋): health 표시·모의 시험 스크립트·운영 절차 보강.
+- 후속 커밋: `npm run build`, `npx tsc --noEmit` 모두 통과.
+  빌드는 Google Fonts 접근 제한으로 최초 실패한 뒤 승인된 네트워크 허용 재실행으로 통과했다.
+- `npx eslint src/app/api/health/billing/route.ts scripts/verify-mail-health.mjs`, `git diff --check` 통과.
+  시험 스크립트의 로더 변수명에 대한 lint 오류를 수정한 뒤 모의 시험 16개·lint를 재실행해 통과.
+
+### 운영 시험 절차 보강 (아래 Phase 5·4 절차 참조)
+- 맨 위에 전체 청구 배치 경고, 매 실행 직전 전체 구독 행 확인 SQL 추가.
+- Phase 5 첫 실패·재시도·최종 종료 시험은 테스트 구독의 `billing_key=null` 경로로 설명.
+  PG 호출 전 실패 위치 `src/lib/billing/recurring.ts:201`, `:204`와 PG 호출 `:274`를 명시.
+- 테스트 외 구독이 있거나 테스트 계정 여부가 불명확하면 실행 중단.
+  운영 시험은 별도 승인 후 진행하며 이번 작업에서는 실행하지 않았다.
+
 ## 2026-10-19 — 결제 Phase 5: 안내 메일 발송 (Resend)
 
 ### 변경 내용 (커밋별)
@@ -68,23 +107,57 @@ Resend 응답 분기 (문서 확인):
    ```
    기대 길이: (등록 후 Kevin 이 알려주면 기록)
 5. **push** → 롤아웃 성공 확인 (resend-api-key 가 없으면 롤아웃 실패)
-6. **health**: 여섯 항목 모두 true, `"mailMode":"allowlist"`
+6. **health**: 여섯 항목 모두 true, `"mailMode":"allowlist"`, `"mailConfigBlocked":0` 확인.
+   값이 null이면 집계 불가, 양수이면 401·403 설정 오류로 발송 대기 중인 행이 있음 (정상 여부 판정과 별개).
 7. **테스트 절차** (아래)
 8. **공개 당일**: apphosting.yaml 의 MAIL_MODE 를 live 로 → push → 롤아웃 → health 에서 `"mailMode":"live"` 확인
 
-### 테스트 절차 (allowlist)
-테스트 계정(sniffreview2026@gmail.com)을 MAIL_ALLOWLIST 에 넣은 상태에서:
+### 테스트 절차 (allowlist) — 운영 실행은 별도 승인 후
+> **경고: cron 수동 트리거는 전체 청구 배치를 실행함. web_subscriptions에 테스트 외
+> 구독이 없는 공개 전에만 실행. 실행 직전 구독 행 조회로 확인**
+
+이번 작업에서는 실행하지 않는다. 발신 주소는 미정이며 `apphosting.yaml`의 `MAIL_*` 주석을 유지한다.
+사용자가 주소를 별도로 전달하고 설정·0010 적용·시크릿 등록·배포를 승인한 뒤 진행한다.
+테스트 계정을 MAIL_ALLOWLIST에 넣고, 매 수동 트리거 직전에 아래 조회 결과가 모두 테스트 계정인지 확인한다.
+키·전체 이메일 주소·카드 정보는 조회 결과나 작업 문서에 남기지 않는다.
+```sql
+select id, user_id, status, next_billing_date, failed_attempts, next_retry_at, grace_ends_at
+  from web_subscriptions order by created_at;
+```
+테스트 외 구독이 한 행이라도 있거나 테스트 계정 여부가 불명확하면 실행하지 않는다.
+아래의 “출금 없음”은 준비한 테스트 구독의 경로에만 해당한다.
+
 1. **대기열 직접 기록 → cron 발송** (출금 없음):
    ```sql
    insert into web_notifications (user_id, kind, payload, dedupe_key) values
    ('<UID>', 'payment_failed_first',
-    '{"subscription_id":"test","due_date":"2026-11-19T01:18:36+00:00","amount":3300,"card_brand":"신한카드","card_last4":"9780",
+    '{"subscription_id":"test","due_date":"2026-11-19T01:18:36+00:00","amount":3300,"card_brand":null,"card_last4":null,
       "retry_dates":["2026-11-19T15:00:00Z","2026-11-21T15:00:00Z"],"grace_ends_at":"2026-11-22T14:59:59.999Z"}',
     'test:payment_failed_first:1');
    ```
    → 배치 수동 실행 → 메일 수신, 행 status=sent·provider_message_id 기록, 로그 `[mail] … result=sent`.
-2. **실제 흐름** (출금 없음): Phase 4 테스트 3번(빌링키 삭제 → 결제일 과거 → 배치)으로 past_due 전환 →
-   payment_failed_first 즉시 발송 확인. 이어서 5·6번으로 최종 종료 → subscription_canceled_nonpayment 발송 확인.
+2. **실제 흐름** (준비한 테스트 구독은 PG 청구 호출 없음): 테스트 계정의 구독만 아래처럼 준비한다.
+   기존 테스트 빌링키가 있다면 PG 콘솔에서 해당 테스트 키를 정리하고, 키 값은 출력·기록하지 않는다.
+   ```sql
+   update web_subscriptions
+      set billing_key=null, status='active', failed_attempts=0,
+          next_billing_date=now()-interval '1 hour', next_retry_at=null, grace_ends_at=null
+    where user_id='<UID>';
+   ```
+   코드 근거: `src/lib/billing/recurring.ts:201`의 `!sub.billing_key` 분기가
+   `:204`에서 `applyChargeFailure()`로 반환한다. PG 사전 조회(`:219`)와
+   청구 호출(`:274`)보다 앞이므로 이 테스트 구독은 PG 청구를 호출하지 않는다.
+   → 전체 구독 행을 다시 조회·확인 → 배치 → `charge.past_due_1`, 첫 실패 메일 즉시 발송 확인.
+   이어서 Phase 4 테스트 5·6번처럼 테스트 구독의 `next_retry_at`만 과거로 바꾸되,
+   매 배치 직전 전체 구독 행 조회와 아래 키 없음 검사를 확인한다 (`has_no_billing_key=true` 필수).
+   ```sql
+   select id, status, failed_attempts, billing_key is null as has_no_billing_key,
+          next_billing_date, next_retry_at, grace_ends_at
+     from web_subscriptions where user_id='<UID>';
+   ```
+   마지막에 `retry.canceled_PAYMENT_FAILED_FINAL`, 최종 종료 메일 발송을 확인한다.
+   유예 만료 경로는 첫 실패 상태를 별도로 준비하고 `grace_ends_at`을 과거로 설정해
+   `final.canceled_GRACE_EXPIRED`와 최종 종료 메일을 확인한다.
 3. **allowlist 차단**: 다른 계정 user_id 로 1번 행 기록 → 배치 후에도 status=pending·attempts=0 (발송 없음). 확인 후 그 행은 status='failed' 로 바꿔 둘 것 (삭제 금지).
 4. 배치 수동 실행:
    ```sh
@@ -92,6 +165,11 @@ Resend 응답 분기 (문서 확인):
      https://inovaai.ai/api/cron/billing
    ```
    응답에는 청구 counts 만, 메일 집계는 로그 `[cron/billing] summary {… "mail":{…}}`.
+   결과 확인은 본문·전체 이메일·카드 값을 조회하지 않고 아래 상태 필드만 사용한다.
+   ```sql
+   select id, kind, status, attempts, last_error, provider_message_id, next_attempt_at
+     from web_notifications where user_id='<UID>' order by created_at desc;
+   ```
 
 ## 2026-10-19 — 결제 Phase 4: 매월 자동청구 · 미납 처리 · 대사
 
@@ -191,6 +269,14 @@ gcloud secrets versions access latest --secret <이름> --project sniff-by-hatch
 6. **테스트 절차** (아래). 끝나면 테스트 결제는 콘솔에서 취소하고 테스트 행 정리.
 
 ### 테스트 절차 (한 달을 기다리지 않고)
+> **경고: cron 수동 트리거는 전체 청구 배치를 실행함. web_subscriptions에 테스트 외
+> 구독이 없는 공개 전에만 실행. 실행 직전 구독 행 조회로 확인**
+
+```sql
+select id, user_id, status, next_billing_date, failed_attempts, next_retry_at, grace_ends_at
+  from web_subscriptions order by created_at;
+```
+테스트 외 구독이 있거나 계정 여부가 불명확하면 실행하지 않는다. 운영 시험은 별도 승인 후 수행한다.
 준비: 테스트 계정으로 첫 결제를 완료해 active 구독을 만든다. `<UID>` = 테스트 계정 user_id.
 배치 수동 실행 (둘 중 하나):
 ```sh
@@ -316,7 +402,7 @@ Kevin 이 버전 4(219자, role=service_role, ref=hvloodegutmwxbabdsjf)를 등�
 curl -s https://inovaai.ai/api/health/billing
 # 기대 (Phase 5 이후 정상 기준, 여섯 항목 모두 true. mailMode 는 표시만 하며 ok 판정에 포함되지 않음):
 # {"ok":true,"checks":{"supabaseAdmin":true,"paymentsTable":true,"portoneApi":true,"portoneWebhookSecret":true,
-#   "billingCronSecret":true,"resendApiKey":true},"mailMode":"allowlist|live"}
+#   "billingCronSecret":true,"resendApiKey":true},"mailMode":"allowlist|live","mailConfigBlocked":0}
 # 공개 이후에는 "mailMode":"live" 인지도 확인
 ```
 - 하나라도 false 면 503. 원인은 Cloud Run 로그 `[health/billing]` 에서 확인.
