@@ -62,3 +62,15 @@ export function nextBillingDateAfter(anchor: Date, after: Date): Date {
 export function firstBillingPeriod(paidAt: Date): { periodStart: Date; periodEnd: Date } {
     return { periodStart: paidAt, periodEnd: addBillingMonths(paidAt, 1) };
 }
+
+/** date 의 KST 날짜에 addDays 를 더한 날의 KST 00:00:00.000 */
+export function kstStartOfDay(date: Date, addDays = 0): Date {
+    const k = new Date(date.getTime() + KST_OFFSET_MS);
+    const kstMidnight = Date.UTC(k.getUTCFullYear(), k.getUTCMonth(), k.getUTCDate() + addDays);
+    return new Date(kstMidnight - KST_OFFSET_MS);
+}
+
+/** date 의 KST 날짜에 addDays 를 더한 날의 KST 23:59:59.999 */
+export function kstEndOfDay(date: Date, addDays = 0): Date {
+    return new Date(kstStartOfDay(date, addDays + 1).getTime() - 1);
+}

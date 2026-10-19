@@ -1,7 +1,7 @@
 // 결제일 유틸 검증 스크립트. 의존성 없이 Node(타입 스트리핑)로 실행한다.
 //   node scripts/verify-billing-period.mts
 import assert from "node:assert/strict";
-import { addBillingMonths, nextBillingDateAfter, firstBillingPeriod } from "../src/lib/billing/period.ts";
+import { addBillingMonths, nextBillingDateAfter, firstBillingPeriod, kstStartOfDay, kstEndOfDay } from "../src/lib/billing/period.ts";
 
 // KST 벽시계 문자열 → Date
 const kst = (s: string) => new Date(`${s}+09:00`);
@@ -54,6 +54,29 @@ check("KST 말일 새벽 (1/31 03:00 KST)", "2027-01-31T03:00", [1],
     assert.equal(fmt(p.periodStart), "2027-01-31 10:00");
     assert.equal(fmt(p.periodEnd), "2027-02-28 10:00");
     console.log("ok  firstBillingPeriod");
+    passed++;
+}
+
+
+// KST 하루 경계 (정기 청구 대상 기준·재시도 시각·유예 종료)
+{
+    const fmtS = (d: Date) => new Date(d.getTime() + 9 * 3600e3).toISOString().slice(0, 19).replace("T", " ");
+    // UTC 로는 전날인 KST 새벽
+    assert.equal(fmtS(kstStartOfDay(kst("2027-02-01T00:30"))), "2027-02-01 00:00:00");
+    assert.equal(fmtS(kstStartOfDay(kst("2027-01-31T23:59"), 1)), "2027-02-01 00:00:00");
+    assert.equal(fmtS(kstStartOfDay(kst("2027-02-27T10:00"), 3)), "2027-03-02 00:00:00"); // 평년 2월 넘김
+    assert.equal(fmtS(kstEndOfDay(kst("2027-12-30T08:00"), 3)), "2028-01-02 23:59:59"); // 연도 넘김
+    // 청구 대상: 결제일 11:00 인 구독은 같은 날 10:00 배치에서 대상이어야 한다 (오늘 KST 날짜 이하)
+    const batchAt = kst("2027-03-15T10:00");
+    const cutoff = kstStartOfDay(batchAt, 1);
+    assert.ok(kst("2027-03-15T11:00") < cutoff);
+    assert.ok(!(kst("2027-03-16T00:00") < cutoff));
+    // 미납 일정: D 실패 → 재시도 D+1 00:00, D+3 00:00, 유예 D+3 23:59:59
+    const D = kst("2027-03-15T11:00");
+    assert.equal(fmtS(kstStartOfDay(D, 1)), "2027-03-16 00:00:00");
+    assert.equal(fmtS(kstStartOfDay(D, 3)), "2027-03-18 00:00:00");
+    assert.equal(fmtS(kstEndOfDay(D, 3)), "2027-03-18 23:59:59");
+    console.log("ok  KST 하루 경계 (청구 대상 기준, 재시도·유예 시각, 월·연 넘김)");
     passed++;
 }
 
