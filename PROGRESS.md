@@ -1,6 +1,22 @@
 
 # PROGRESS
 
+## 2026-10-19 — Phase 5 운영 시험 결과 (사용자 확인)
+
+- 아래 결과는 사용자가 전달한 운영 시험 결과를 기록한 것이다. 이번 문서 작업에서 운영 DB·health 조회나
+  트리거·메일 발송을 다시 실행하지 않았다.
+- **1단계 실행 완료**: 첫 결제 실패 재현 → `past_due`, `failed_attempts=1`,
+  `payment_failed_first` 알림 `sent`, `web_payments` 0건 확인.
+  allowlist 계정의 Gmail 받은편지함에서 안내 메일 수신 확인.
+- **2·3·4·5단계 미실행**. 종료 안내의 실제 발송은 미검증이며, 해당 경로는 기존 모의 시험으로 대체했다.
+  기존 메일 모의 시험은 신규 10개·회귀 13개 통과 기록 참조.
+- **테스트 행 정리 완료**. `web_subscriptions`, `web_notifications`, `web_payments` 세 테이블 0건 확인.
+- **Resend 도메인 `inovaai.ai` Verified**, **health 6항목 모두 true**, **`mailMode=allowlist`** 확인.
+- 현재 발송 모드는 allowlist 유지. 공개 당일 첫 확인 항목은 아래 체크리스트의
+  **MAIL_MODE=live 전환 후 health 확인**이며, 이번 작업에서 설정을 바꾸지 않았다.
+- 변경 범위: `PROGRESS.md`만. push·코드·설정 변경 없음.
+- 문서 커밋 검증: `npm run build`, `npx tsc --noEmit`, `git diff --check` 모두 통과.
+
 ## 2026-10-19 — Phase 5: 발신 설정 반영 (allowlist)
 
 ### 설정 기록
@@ -170,7 +186,7 @@ Resend 응답 분기 (문서 확인):
 
 ### Kevin 할 일 — 순서대로
 1. **MAIL_* 설정 반영 완료** — allowlist, 전부 RUNTIME 전용. 실제 값은 위 설정 기록 참조.
-2. **Resend 도메인 인증 진행 중** — inovaai.ai의 SPF·DKIM 및 Verified 완료 여부를 push 전에 확인.
+2. **Resend 도메인 inovaai.ai Verified 확인 완료** (2026-10-19 사용자 확인).
 3. **0010 운영 적용 완료** (사용자 확인). 이번 작업에서 운영 DB를 조회·변경하지 않음.
 4. **resend-api-key 등록·grantaccess 완료** (사용자 확인). 아래는 기존 최초 등록 참고 절차이며 재실행하지 않음:
    ```sh
@@ -187,13 +203,18 @@ Resend 응답 분기 (문서 확인):
 7. **테스트 절차** (아래)
 8. **공개 당일**: apphosting.yaml 의 MAIL_MODE 를 live 로 → push → 롤아웃 → health 에서 `"mailMode":"live"` 확인
 
-### 테스트 절차 (allowlist) — 작성만 완료, 운영 실행 금지
+### 공개 당일 체크리스트
+
+- [ ] **MAIL_MODE=live 전환 후 health 확인** — `mailMode=live`, health 6항목 모두 true 확인.
+
+### 테스트 절차 (allowlist) — 1단계 확인 완료, 2·3·4·5단계 미실행
 > **경고: cron 수동 트리거는 전체 청구 배치를 실행함. web_subscriptions에 테스트 외
 > 구독이 없는 공개 전에만 실행. 실행 직전 구독 행 조회로 확인**
 
 이번 작업에서는 아래 SQL·명령어를 실행하지 않았다. `apphosting.yaml`의 `MAIL_*`는 위 설정 기록대로
 반영했으며, 0010 운영 적용·시크릿 등록·grantaccess는 사용자 확인으로 완료 기록했다.
-Resend 도메인 인증은 진행 중이며, push·롤아웃·운영 시험은 별도 승인 후 진행한다.
+Resend 도메인 Verified 및 1단계 운영 시험 결과는 위 사용자 확인 기록을 참조한다.
+아래 절차의 추가 실행과 push·롤아웃은 별도 승인 후 진행한다.
 시험 시 health의 boolean 6개 true, mailMode=allowlist를 확인한다.
 키·전체 이메일·카드 값·알림 본문은 출력·문서화하지 않는다.
 
