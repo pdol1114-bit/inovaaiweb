@@ -15,7 +15,7 @@ import "server-only";
  *                                         템플릿·설정이 바뀐 때뿐) — 영구 실패로 두지 않음
  *  429 (rate/일·월 할당량)               → 재시도
  *  5xx · 네트워크 · 타임아웃            → 재시도 (멱등 키로 중복 방지)
- *  401 · 403 (키 무효·도메인 미인증 등)  → 재시도 (설정을 고치면 보낼 수 있으므로)
+ *  401 · 403 (키 무효·도메인 미인증 등)  → 설정 오류 (발송 횟수 미소모, 1시간 대기)
  *  404 · 405                           → 재시도 (엔드포인트 문제, 재시도 한도로 종료)
  *  400 · 422 (형식 오류)                → 영구 실패
  */
@@ -26,7 +26,7 @@ const IDEMPOTENCY_MISMATCH_MIN_DELAY_MS = 25 * 60 * 60 * 1000;
 
 export type SendResult =
     | { ok: true; id: string | null }
-    | { ok: false; retryable: boolean; code: string; minDelayMs?: number };
+    | { ok: false; retryable: boolean; code: string; configurationError?: boolean; minDelayMs?: number };
 
 export async function sendViaResend(params: {
     apiKey: string;
@@ -65,6 +65,11 @@ export async function sendViaResend(params: {
         return { ok: false, retryable: true, code: aborted ? "TIMEOUT" : "NETWORK_ERROR" };
     } finally {
         clearTimeout(timer);
+    }
+
+    // 설정 오류에는 공급자 응답 본문을 읽거나 기록하지 않는다.
+    if (res.status === 401 || res.status === 403) {
+        return { ok: false, retryable: true, configurationError: true, code: `MAIL_CONFIG_HTTP_${res.status}` };
     }
 
     const body: { id?: unknown; name?: unknown } = await res.json().catch(() => ({}));

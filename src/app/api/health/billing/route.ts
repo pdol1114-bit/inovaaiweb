@@ -75,9 +75,9 @@ async function runChecks(): Promise<HealthResult> {
                 const result = await admin
                     .from("web_notifications")
                     .select("id", { count: "exact", head: true })
-                    .eq("status", "failed")
+                    .eq("status", "pending")
                     .not("next_attempt_at", "is", null)
-                    .or("last_error.like.HTTP_401:%,last_error.like.HTTP_403:%");
+                    .in("last_error", ["MAIL_CONFIG_HTTP_401", "MAIL_CONFIG_HTTP_403"]);
                 if (!result.error) return result.count;
             } catch {
                 // 표시에만 쓰는 집계 오류가 기존 boolean 검사에 영향을 주지 않게 한다.

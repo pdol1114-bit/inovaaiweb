@@ -1,6 +1,30 @@
 
 # PROGRESS
 
+## 2026-10-19 — Phase 5 후속: 401·403 설정 오류 대기 처리
+
+- 사용자 승인한 남은 작업에 따라 메일 발송 코드·health·모의 시험을 수정했다.
+- Resend 401·403은 본문을 읽지 않고 `MAIL_CONFIG_HTTP_401` / `MAIL_CONFIG_HTTP_403`으로 구분.
+  선점 전 attempts로 원복, `pending`, `next_attempt_at=현재+1시간`, `sending_started_at=null` 저장.
+  설정 오류는 5회 발송 한도를 소모하지 않는다.
+- 즉시 발송·cron pending 조회·DB 선점 조건 모두 next_attempt_at 이전 실행을 차단한다.
+  attempts 원복 후 예전 값을 읽은 실행이 다시 선점하는 경합도 차단한다.
+- health 집계는 `pending` + 위 고정 코드 + next_attempt_at 존재로 일치시켰다.
+  `checks` 바깥 표시값이며 boolean 6개와 ok/HTTP 상태 판정은 유지한다.
+- 메일 로그는 notification id와 고정 코드만 남긴다. 주소·키·응답 본문·DB 오류 원문을 출력하지 않는다.
+- 검증: `node scripts/verify-notification-delivery.mjs` **신규 10개·회귀 13개 통과**.
+  신규: 401/403 각 6회 반복·한도 직전 attempts=4 유지·즉시/cron 대기·200 복구 및 health 해소,
+  오래된 읽기와 원복 간 경합, 민감한 응답 name 무시 및 id/고정 코드 로그만 출력.
+  회귀: 409 3종(본문 불일치 25시간 대기 포함), 429, 500, 422, 10초 타임아웃,
+  동시 선점 10회 중 1회 발송, allowlist 안/밖, off, 일반 실패 5회 한도·기존 backoff, 네트워크 오류.
+- `node scripts/verify-mail-health.mjs` 16개 통과. 변경된 pending/고정 코드 집계 및 기존 검사 회귀 확인.
+- 시험은 가짜 DB·모의 fetch·가상 시계로 실제 메일 모듈과 health를 실행한다. 운영 키·네트워크 접근 없음.
+  기존 기록에 대응하는 발송 시험 파일이 저장소에 없어 이번에 재실행 가능한 시험 파일로 저장했다.
+- `npm run build` (Google Fonts용 네트워크 허용), `npx tsc --noEmit`, 변경 6개 파일 대상 `npx eslint`,
+  `git diff --check` 모두 통과. 최초 모의 timeout 시험의 VM Error realm 차이는 시험 도구에서 수정 후 재실행해 통과.
+- 청구·재시도·웹훅 코드와 apphosting.yaml은 변경하지 않았다. push·0010 적용·시크릿·롤아웃·운영 시험 미실행.
+- 운영 SQL·트리거·확인·정리 절차 완성과 커밋 표 갱신은 별도 문서 커밋으로 이어서 정리한다.
+
 ## 2026-10-19 — Phase 5 후속: 작업 규칙·health 대기 행 수·운영 시험 절차
 
 ### 범위와 상태

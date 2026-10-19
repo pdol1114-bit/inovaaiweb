@@ -9,13 +9,14 @@ import ts from "typescript";
 let passed = 0;
 const row = (status, last_error, next_attempt_at) => ({ status, last_error, next_attempt_at });
 const waiting = [
-    row("failed", "HTTP_401:unauthorized", "2099-01-01"),
-    row("failed", "HTTP_403:validation_error", "2020-01-01"),
-    row("failed", "HTTP_401:unauthorized", null),
+    row("pending", "MAIL_CONFIG_HTTP_401", "2099-01-01"),
+    row("pending", "MAIL_CONFIG_HTTP_403", "2020-01-01"),
+    row("pending", "MAIL_CONFIG_HTTP_401", null),
     row("failed", "HTTP_500:server_error", "2020-01-01"),
-    row("sent", "HTTP_403:validation_error", "2020-01-01"),
-    row("sending", "HTTP_403:validation_error", "2020-01-01"),
+    row("sent", "MAIL_CONFIG_HTTP_403", "2020-01-01"),
+    row("sending", "MAIL_CONFIG_HTTP_403", "2020-01-01"),
     row("pending", null, null),
+    row("failed", "MAIL_CONFIG_HTTP_401", "2099-01-01"),
 ];
 
 function harness(options = {}) {
@@ -56,13 +57,8 @@ function harness(options = {}) {
                     filters.push(r => r[key] != null);
                     return this;
                 },
-                or(expression) {
-                    const prefixes = expression.split(",").map(part => {
-                        const match = /^last_error\.like\.(.+)%$/.exec(part);
-                        assert.ok(match);
-                        return match[1];
-                    });
-                    filters.push(r => prefixes.some(prefix => r.last_error?.startsWith(prefix)));
+                in(key, values) {
+                    filters.push(r => values.includes(r[key]));
                     return this;
                 },
                 async then(yes, no) {
@@ -159,7 +155,7 @@ for (const failure of ["countError", "countThrows"]) {
 await test("60 second cache covers count and external probes", async () => {
     const h = harness();
     await h.get();
-    h.rows.push(row("failed", "HTTP_403:forbidden", "2099-01-01"));
+    h.rows.push(row("pending", "MAIL_CONFIG_HTTP_403", "2099-01-01"));
     assert.equal((await h.get()).body.mailConfigBlocked, 2);
     assert.equal(h.reads(), 3);
     assert.equal(h.pgReads(), 1);
