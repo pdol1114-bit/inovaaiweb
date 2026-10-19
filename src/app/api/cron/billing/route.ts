@@ -45,6 +45,7 @@ export async function POST(request: Request) {
                 finishedAt: summary.finishedAt,
                 truncated: summary.truncated,
                 counts: summary.counts,
+                mail: summary.mail,
             })
         );
         for (const d of summary.details.slice(0, 200)) {

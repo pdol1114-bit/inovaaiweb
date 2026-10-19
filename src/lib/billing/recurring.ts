@@ -8,6 +8,7 @@ import { resolvePendingPayment } from "@/lib/billing/settlement";
 import { processPaymentWebhook } from "@/lib/billing/webhook";
 import { settleIfExpired, type Subscription } from "@/lib/subscription";
 import { deleteBillingKey, findPayment, requestBillingKeyCharge } from "@/lib/portone/server";
+import { processPendingNotifications, queueAndSend } from "@/lib/notifications/dispatch";
 
 /**
  * 일일 정기결제 배치 (POST /api/cron/billing, 매일 KST 10~14시 매시 실행).
@@ -43,6 +44,8 @@ export type BatchSummary = {
     truncated: boolean;
     counts: Record<string, number>;
     details: { step: Step; id: string; result: string }[];
+    /** f 단계 메일 발송 집계 (청구 집계 counts 와 분리) */
+    mail: Record<string, number>;
 };
 
 type SubRow = Pick<
@@ -63,6 +66,7 @@ export async function runBillingBatch(options: { budgetMs: number }): Promise<Ba
         truncated: false,
         counts: {},
         details: [],
+        mail: {},
     };
     const record = (step: Step, id: string, result: string) => {
         const key = `${step}.${result}`;
@@ -170,6 +174,16 @@ export async function runBillingBatch(options: { budgetMs: number }): Promise<Ba
         for (const sub of (data ?? []) as SubRow[]) {
             if (timeUp()) { summary.truncated = true; break; }
             record("final", sub.id, await cancelForNonPayment(admin, sub, "GRACE_EXPIRED"));
+        }
+    }
+
+    // f) 미발송 안내 메일 처리 (청구 처리와 격리 — 실패해도 위 결과에 영향 없음)
+    if (!timeUp()) {
+        try {
+            summary.mail = await processPendingNotifications(admin, timeUp);
+        } catch (e) {
+            console.error("[cron/billing] mail step failed (ignored)", e instanceof Error ? e.message : "unknown");
+            summary.mail = { error: 1 };
         }
     }
 
@@ -319,7 +333,51 @@ async function applyChargeFailure(admin: SupabaseClient, sub: SubRow): Promise<s
         return "error_past_due";
     }
     if (!data || data.length === 0) return "skipped_changed";
+
+    // 안내 메일: 처음 실패해 past_due 로 바뀐 경우에만 (기록 지점 1/2). 결과 라벨에 영향 없음.
+    if (attempts === 1) {
+        const secondRetry = kstStartOfDay(due, 3).toISOString();
+        const retryDates = [nextRetryAt, secondRetry].filter(
+            (d, i, all) => d <= graceEndsAt && all.indexOf(d) === i && (i === 0 || d > nextRetryAt)
+        );
+        await queueAndSend(admin, {
+            userId: sub.user_id,
+            kind: "payment_failed_first",
+            dedupeKey: `payment_failed_first:${sub.id}:${sub.next_billing_date}`,
+            payload: {
+                subscription_id: sub.id,
+                due_date: sub.next_billing_date,
+                amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+                ...(await cardSnapshot(admin, sub.id)),
+                retry_dates: retryDates,
+                grace_ends_at: graceEndsAt,
+            },
+        });
+    }
+
     return `past_due_${attempts}`;
+}
+
+/** 안내 메일용 카드 표시 정보 (카드사, 끝자리 4). 실패해도 빈 값 — 결제 흐름에 영향 없음. */
+async function cardSnapshot(
+    admin: SupabaseClient,
+    subscriptionId: string
+): Promise<{ card_brand: string | null; card_last4: string | null }> {
+    try {
+        const { data } = await admin
+            .from("web_subscriptions")
+            .select("card_brand, card_number_masked")
+            .eq("id", subscriptionId)
+            .maybeSingle();
+        const masked = (data?.card_number_masked as string | null | undefined) ?? null;
+        const digits = masked ? masked.replace(/[^0-9]/g, "") : "";
+        return {
+            card_brand: (data?.card_brand as string | null | undefined) ?? null,
+            card_last4: digits.length >= 4 ? digits.slice(-4) : null,
+        };
+    } catch {
+        return { card_brand: null, card_last4: null };
+    }
 }
 
 /** 미납 최종 종료: 빌링키 삭제 → canceled → 안내 대기열 기록 (메일 실패가 처리를 막지 않음). */
@@ -356,16 +414,22 @@ async function cancelForNonPayment(admin: SupabaseClient, sub: SubRow, reason: s
     }
     if (!data || data.length === 0) return "skipped_changed";
 
-    try {
-        const { error: notifyError } = await admin.from("web_notifications").insert({
-            user_id: sub.user_id,
-            kind: "subscription_canceled_nonpayment",
-            payload: { subscription_id: sub.id, reason, due_date: sub.next_billing_date },
-        });
-        if (notifyError) console.error("[cron/billing] failed to queue notification", sub.id, notifyError.message);
-    } catch (e) {
-        console.error("[cron/billing] failed to queue notification", sub.id, e);
-    }
+    // 안내 메일 (기록 지점 2/2). queueAndSend 는 throw 하지 않으며 결과 라벨에 영향 없음.
+    await queueAndSend(admin, {
+        userId: sub.user_id,
+        kind: "subscription_canceled_nonpayment",
+        dedupeKey: `subscription_canceled_nonpayment:${sub.id}:${sub.next_billing_date}`,
+        payload: {
+            subscription_id: sub.id,
+            reason,
+            due_date: sub.next_billing_date,
+            amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+            ...(await cardSnapshot(admin, sub.id)),
+            canceled_at: now,
+            charge_attempts: reason === "PAYMENT_FAILED_FINAL" ? sub.failed_attempts + 1 : sub.failed_attempts,
+            grace_ends_at: sub.grace_ends_at,
+        },
+    });
 
     return `canceled_${reason}`;
 }
