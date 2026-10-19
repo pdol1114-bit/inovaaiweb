@@ -1,6 +1,136 @@
 
 # PROGRESS
 
+## 2026-10-19 — 결제 Phase 4: 매월 자동청구 · 미납 처리 · 대사
+
+### 변경 내용 (커밋별)
+| 커밋 | 파일 | 내용 |
+|---|---|---|
+| 288be51 | `supabase/migrations/0009_recurring_billing.sql` | past_due, 재시도 컬럼, web_payments.kind, web_notifications. **미적용** |
+| f7a48f6 | `settlement.ts`, `webhook.ts`, `subscription.ts` | 정기 청구 확정(기준일 유지·회차 진행), 재구독 시 재시도 초기화, 웹훅 전액 취소에 past_due 포함 |
+| 0afc8d3 | `initial-charge.ts` | past_due 사용자 카드 재등록 = 재구독 (첫 결제, 미납 회차 미청구) |
+| 370144c | `cancel-subscription/route.ts`, `settlement.ts` | past_due 즉시 해지 (pending 결제 중이면 409), 회차 진행 실패 needs_review 로그 |
+| d1c69f6 | `period.ts`, `scripts/verify-billing-period.mts` | KST 하루 경계 함수 (10 checks) |
+| e1c8a45 | `src/lib/billing/recurring.ts`, `src/app/api/cron/billing/route.ts`, `apphosting.yaml`, health | 일일 배치, BILLING_CRON_SECRET 참조, health 에 billingCronSecret |
+| 60155f8 | `SubscriptionManager.tsx`, `messages/ko.json`, `messages/en.json` | past_due 화면 |
+| 3b22fdf | `src/app/api/webhook/portone/route.ts` | WEBHOOK_SECRET_INVALID 로그 (응답 500 유지) |
+
+### 미납 정책 구현 (D = 회차 결제일의 KST 날짜)
+| 시점 | 처리 | 실패 시 |
+|---|---|---|
+| D 배치 | 1차 청구 | past_due, failed_attempts=1, next_retry_at=D+1 00:00, grace_ends_at=D+3 23:59:59 |
+| D+1 배치 | 재시도 | failed_attempts=2, next_retry_at=D+3 00:00 |
+| D+3 배치 | 마지막 재시도 | canceled, service_end_date=지금, 빌링키 삭제, web_notifications 기록 |
+- 성공: active, 재시도 컬럼 초기화, next_billing_date = started_at 기준 다음 회차 (재시도일 기준 아님).
+- 청구 대상: active 이고 next_billing_date 의 KST 날짜 ≤ 오늘 (결제일 시각이 배치보다 늦어도 당일 청구).
+- 재시도는 유예(grace_ends_at) 안에서만. 유예가 끝난 past_due 는 e 단계가 종료 (배치 누락 대비).
+- 늦게 첫 실패가 난 경우에도 재시도는 최소 다음 날 (같은 날 반복 청구 방지).
+
+### 배치 `POST /api/cron/billing`
+인증 `Authorization: Bearer <billing-cron-secret>` (SHA-256 후 timing-safe 비교, 32자 미만이면 500).
+순서: a 대사(35일 paid + 5분 넘은 pending → 웹훅 처리기) → b 만료 정리 → c 정기 청구 → d 재시도 → e 최종 실패.
+예산 240초 (Cloud Run 타임아웃 300초). 남은 건은 다음 정시 실행이 처리 (10~14시 매시).
+로그: `[cron/billing] summary {...counts}` + `step=… id=… result=…`.
+
+이중 청구 방지 4겹: 회차 부분 unique(subscription_id, period_start) · 사용자 pending 잠금(0007) ·
+고정 paymentId(`spr`+hex32) · **잠금 후 구독 재확인** + 갱신 조건(next_billing_date=회차, failed_attempts 기대값).
+
+### past_due 재구독 동시성 확인
+| 경합 | 막는 장치 | 결과 |
+|---|---|---|
+| 배치가 잠금 보유 중 재등록 | 사용자 pending 잠금 | register-key 409 IN_PROGRESS |
+| 재등록이 잠금 보유 중 배치 | 사용자 pending 잠금 | 배치 skipped_locked, 이후 구독은 active·미래 결제일이라 대상 아님 |
+| 배치가 past_due 를 읽은 뒤 재등록 완료, 그 후 배치가 잠금 | **배치 잠금 후 재확인** (status·결제일·실패 횟수·빌링키 비교) | 잠금 해제 후 skipped_changed |
+| 배치 성공 후 재등록 | register-key 잠금 후 재확인 | 409 ALREADY_SUBSCRIBED, 새 빌링키 삭제 |
+| past_due 즉시 해지 vs 배치 | 해지 시 pending 확인(409), 배치 재확인 | 확인과 갱신 사이 극히 짧은 구간만 남음 → 발생 시 needs_review 로그 |
+계획 보고의 "구독 갱신 조건"만으로는 3행을 막지 못해(갱신은 출금 뒤) 잠금 후 재확인을 추가했다.
+
+### 메일 (구현 안 함)
+리포에 발송 수단 없음. 최종 실패 안내는 `web_notifications` 에 pending 으로 쌓인다.
+선택지: **Resend 권장**(inovaai.ai DNS 인증 + API 키 시크릿 1개, fetch 만으로 호출) /
+Google Workspace SMTP(admin@inovaai.ai 앱 비밀번호 + nodemailer) /
+Supabase(인증 메일 전용, 일반 메일은 Edge Function + 외부 서비스 필요).
+
+### 카드 변경
+기능 없음. past_due 는 결제 페이지에서 새 카드로 재구독하는 것이 유일한 경로 (기준일이 새로 잡힘).
+
+### 검증
+- `npm run build` 통과. 클라이언트 번들에 cron 시크릿·배치·service role 참조 0건.
+- `node scripts/verify-billing-period.mts` 10 checks 통과.
+- 로컬: cron 무인증·잘못된 시크릿 401, GET 405, 올바른 시크릿 → 인증 통과 후 (로컬 DB 키 없음) 500.
+  웹훅 시크릿이 base64 아님 → 500 + `WEBHOOK_SECRET_INVALID` 로그.
+- **미검증**: 배치의 DB·포트원 경로 전체, past_due 화면 렌더 (아래 테스트 절차로 확인).
+
+### 시크릿 등록 절차 (공통) — 키별 기대 길이
+값은 프롬프트에 **한 번만** 붙여 넣는다 (2026-10-19 두 번 이중 붙여넣기 장애). 등록 후 길이 확인:
+```sh
+gcloud secrets versions access latest --secret <이름> --project sniff-by-hatch-app | tr -d '\n' | wc -c
+```
+| Secret Manager 이름 | 기대 길이 | 비고 |
+|---|---|---|
+| supabase-service-role-key | 219 | JWT (role=service_role) |
+| portone-webhook-secret | 50 | `whsec_` + base64 44자 |
+| portone-api-secret | 80 | 2026-10-19 현재 값 기준 (값 출력 없이 측정) |
+| billing-cron-secret | 64 | 아래 명령으로 생성한 hex |
+새 버전 등록 후에는 롤아웃이 필요하다 (리비전이 버전에 고정). 확인: `curl -s https://inovaai.ai/api/health/billing`.
+
+### Kevin 체크리스트 — 순서대로
+1. **0009 적용** (Supabase SQL Editor). 적용 전 배포하면 구독 조회가 실패한다.
+2. **cron 시크릿 생성·등록·길이 확인** (값이 화면에 나오지 않는 방식):
+   ```sh
+   openssl rand -hex 32 | tr -d '\n' | gcloud secrets create billing-cron-secret \
+     --replication-policy=automatic --data-file=- --project sniff-by-hatch-app
+   firebase apphosting:secrets:grantaccess billing-cron-secret --backend sniff-web-server --project sniff-by-hatch-app
+   gcloud secrets versions access latest --secret billing-cron-secret --project sniff-by-hatch-app | wc -c   # 64
+   ```
+3. **push** → 롤아웃 성공 확인 (시크릿 없으면 롤아웃 실패)
+4. **health**: 다섯 항목 모두 true (`billingCronSecret` 포함)
+5. **Cloud Scheduler API 활성화·작업 생성** (매일 KST 10~14시 매시 정각):
+   ```sh
+   gcloud services enable cloudscheduler.googleapis.com --project sniff-by-hatch-app
+   gcloud scheduler jobs create http sniff-billing-daily \
+     --project sniff-by-hatch-app --location us-central1 \
+     --schedule "0 10-14 * * *" --time-zone "Asia/Seoul" \
+     --uri https://inovaai.ai/api/cron/billing --http-method POST \
+     --headers "Authorization=Bearer $(gcloud secrets versions access latest --secret billing-cron-secret --project sniff-by-hatch-app)" \
+     --attempt-deadline 300s --max-retry-attempts 0
+   ```
+   시크릿 교체 시 `gcloud scheduler jobs update http sniff-billing-daily --update-headers ...` 로 헤더도 갱신.
+6. **테스트 절차** (아래). 끝나면 테스트 결제는 콘솔에서 취소하고 테스트 행 정리.
+
+### 테스트 절차 (한 달을 기다리지 않고)
+준비: 테스트 계정으로 첫 결제를 완료해 active 구독을 만든다. `<UID>` = 테스트 계정 user_id.
+배치 수동 실행 (둘 중 하나):
+```sh
+gcloud scheduler jobs run sniff-billing-daily --location us-central1 --project sniff-by-hatch-app
+# 또는
+curl -s -X POST -H "Authorization: Bearer $(gcloud secrets versions access latest --secret billing-cron-secret --project sniff-by-hatch-app)" \
+  https://inovaai.ai/api/cron/billing
+```
+확인 쿼리:
+```sql
+select status, next_billing_date, failed_attempts, next_retry_at, grace_ends_at, started_at
+  from web_subscriptions where user_id = '<UID>';
+select payment_id, kind, status, failure_reason, period_start, period_end, paid_at
+  from web_payments where user_id = '<UID>' order by created_at desc;
+```
+
+| # | 경로 | 준비 SQL / 조작 | 기대 결과 |
+|---|---|---|---|
+| 1 | 정기 청구 성공 (**3,300원 실청구**) | `update web_subscriptions set next_billing_date = now() - interval '1 hour' where user_id='<UID>';` → 배치 | `charge.paid` 1. spr 행 kind=recurring paid, period_start=바꾼 결제일. next_billing_date = started_at 기준 다음 회차 |
+| 2 | 겹친 실행 | 1과 같은 준비 후 curl 두 개를 동시에 실행 | 한쪽 paid, 다른 쪽 skipped_locked (청구 1건) |
+| 3 | 1차 실패 (출금 없음) | 포트원 콘솔에서 구독 빌링키 삭제 → 1의 준비 SQL → 배치 | `charge.past_due_1`. status=past_due, failed_attempts=1, next_retry_at=내일 00:00 KST, grace=D+3 끝. failed 행 |
+| 4 | 화면 | 3 상태에서 /account/subscription | 결제 실패 배지, 재시도·기한, 새 카드 결제 안내 |
+| 5 | 재시도 실패 | `update web_subscriptions set next_retry_at = now() - interval '1 minute' where user_id='<UID>';` → 배치 | `retry.past_due_2`, next_retry_at=D+3 00:00 (또는 내일 중 늦은 쪽) |
+| 6 | 마지막 재시도 실패 | 5의 SQL 다시 → 배치 | `retry.canceled_PAYMENT_FAILED_FINAL`, canceled, web_notifications pending 1건 |
+| 7 | 유예 만료 | 3까지 다시 만든 뒤 `update web_subscriptions set grace_ends_at = now() - interval '1 minute' where user_id='<UID>';` → 배치 | `final.canceled_GRACE_EXPIRED` |
+| 8 | past_due 재구독 | 3 상태에서 /payment 새 카드 등록 (**3,300원 실청구**) | active, started_at=새 결제 시각, 재시도 컬럼 null, 미납 회차 미청구 |
+| 9 | past_due 즉시 해지 | 3 상태에서 구독관리 해지 | canceled, service_end_date=지금 |
+| 10 | 재시도 성공 (**실청구**) | 정상 빌링키가 있는 구독에서 `update web_subscriptions set status='past_due', failed_attempts=1, next_billing_date=now()-interval '1 day', next_retry_at=now()-interval '1 minute', grace_ends_at=now()+interval '2 day' where user_id='<UID>';` → 배치 | `retry.paid`, active, 재시도 컬럼 null, next_billing_date = started_at 기준 다음 회차 |
+| 11 | 청구 전 재조회 | 1 이후 직전 paid 결제를 콘솔에서 전액 취소, 웹훅이 반영되기 전에 1의 준비 SQL → 배치 | 웹훅이 먼저 반영하면 구독 canceled 로 청구 대상 아님. 아니면 `charge.skipped_last_payment_cancelled` |
+
+정리: 테스트로 청구된 결제는 콘솔에서 취소, 테스트 계정의 web_payments·web_subscriptions·web_notifications·web_webhook_events 행 삭제.
+
 ## 2026-10-19 — 결제 Phase 3: 포트원 웹훅 처리
 
 ### 변경 내용 (커밋별)
