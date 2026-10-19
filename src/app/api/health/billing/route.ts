@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { findPayment, getPortOneClient } from "@/lib/portone/server";
+import { parseMailMode, type MailMode } from "@/lib/notifications/config";
 
 /**
  * 결제 경로 설정 점검. 배포 직후 시크릿이 실제로 유효한지 확인하는 용도.
@@ -25,13 +26,19 @@ type Checks = {
     portoneWebhookSecret: boolean;
     /** 정기결제 배치 시크릿 로드 (32자 이상) */
     billingCronSecret: boolean;
+    /** Resend API 키: 값 존재, "re_" 접두어, 앞뒤 공백·개행 없음 */
+    resendApiKey: boolean;
 };
 
 const CACHE_MS = 60 * 1000;
 // 영숫자만 쓰는 존재하지 않는 결제 ID. 포트원이 PAYMENT_NOT_FOUND 를 주면 인증이 정상이다.
 const PROBE_PAYMENT_ID = "healthcheckprobe0000000000000000";
 
-let cached: { at: number; checks: Checks } | null = null;
+let cached: { at: number; checks: Checks; mailMode: MailMode } | null = null;
+
+function isValidResendKey(key: string | undefined): boolean {
+    return !!key && key.startsWith("re_") && key === key.trim() && key.length > 3;
+}
 
 /** SDK 와 같은 규칙: "whsec_" 접두 제거 후 base64 디코딩이 되고 비어 있지 않아야 한다. */
 function isDecodableWebhookSecret(secret: string | undefined): boolean {
@@ -51,6 +58,7 @@ async function runChecks(): Promise<Checks> {
         portoneApi: false,
         portoneWebhookSecret: isDecodableWebhookSecret(process.env.PORTONE_WEBHOOK_SECRET),
         billingCronSecret: (process.env.BILLING_CRON_SECRET?.length ?? 0) >= 32,
+        resendApiKey: isValidResendKey(process.env.RESEND_API_KEY),
     };
 
     try {
@@ -82,11 +90,12 @@ async function runChecks(): Promise<Checks> {
 
 export async function GET() {
     if (!cached || Date.now() - cached.at > CACHE_MS) {
-        cached = { at: Date.now(), checks: await runChecks() };
+        cached = { at: Date.now(), checks: await runChecks(), mailMode: parseMailMode(process.env.MAIL_MODE) };
     }
     const ok = Object.values(cached.checks).every(Boolean);
+    // mailMode 는 표시만 한다 (ok 판정·항목 수에 포함하지 않음). 공개 당일 live 인지 확인용.
     return NextResponse.json(
-        { ok, checks: cached.checks },
+        { ok, checks: cached.checks, mailMode: cached.mailMode },
         { status: ok ? 200 : 503, headers: { "Cache-Control": "no-store" } }
     );
 }

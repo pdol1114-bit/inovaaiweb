@@ -1,6 +1,98 @@
 
 # PROGRESS
 
+## 2026-10-19 — 결제 Phase 5: 안내 메일 발송 (Resend)
+
+### 변경 내용 (커밋별)
+| 커밋 | 파일 | 내용 |
+|---|---|---|
+| 47fbbd2 | `supabase/migrations/0010_notification_delivery.sql` | sending 상태, attempts·last_error·provider_message_id·sending_started_at·next_attempt_at·dedupe_key(unique). **미적용** |
+| f0d48d6 | `src/lib/notifications/{templates,resend,config,mask}.ts`, `scripts/render-notifications.mts` | 템플릿 2종, Resend 클라이언트(fetch), 메일 설정·모드, 주소 마스킹 |
+| 29c8384 | `src/lib/notifications/dispatch.ts`, `src/lib/billing/recurring.ts`, cron route | 선점·발송 공통 함수, 기록 지점 2곳 즉시 발송, cron f 단계 |
+| (이 커밋) | health, `apphosting.yaml`, PROGRESS.md | resendApiKey 점검, mailMode 표시, RESEND_API_KEY 참조, MAIL_* 주석 |
+
+### 알림 유형 (기록 지점 2곳만)
+| kind | 기록 시점 | payload |
+|---|---|---|
+| payment_failed_first | 정기 청구 첫 실패로 past_due 전환 (recurring.ts applyChargeFailure, attempts=1) | subscription_id, due_date, amount, card_brand, card_last4, retry_dates, grace_ends_at |
+| subscription_canceled_nonpayment | 미납 최종 종료 (cancelForNonPayment) | subscription_id, reason(PAYMENT_FAILED_FINAL·GRACE_EXPIRED), due_date, amount, card_brand, card_last4, canceled_at, charge_attempts, grace_ends_at |
+- dedupe_key = `kind:subscription_id:due_date`, 기록은 충돌 시 무시.
+- 카드 정보·금액은 기록 시점 스냅샷 (그 사이 재구독해도 메일 내용이 바뀌지 않음). 수신 주소는 발송 시 auth 에서 조회.
+- past_due 사용자가 새 카드로 재구독하면: 구독이 active·미래 결제일이 되므로 재시도(d 단계: status=past_due 조건)와
+  최종 종료(e 단계: past_due 조건)가 실행되지 않는다 (2026-10-19 Phase 4 실결제 테스트에서 미납 회차 미청구 확인).
+  이미 기록된 첫 실패 안내는 그대로 발송된다.
+
+### 발송 구조
+- `deliverNotification()` 하나를 즉시 발송과 cron f 가 공유. 선점: status ∈ (pending, failed) 이고 attempts 가
+  읽은 값과 같을 때만 sending(+1). 0행이면 다른 실행이 가져간 것.
+- Resend `Idempotency-Key` = notification id (24h). 결과 기록 전 중단돼도 재발송이 중복되지 않는다.
+- 재시도 최대 5회, 간격 1h·1h·24h·24h. 영구 오류·5회 초과는 failed + next_attempt_at=null (행 삭제 없음).
+- cron f: 10분 넘은 sending → pending 복구 후 pending·재시도 대상 failed 발송. 메일 집계는 `summary.mail` 로 분리.
+- 기록 지점은 `queueAndSend()` 로만 호출: throw 없음, 15초 상한 → 청구 결과·응답·집계 영향 없음.
+- MAIL_MODE: off(미설정 기본, 선점 안 함·pending 유지) / allowlist(MAIL_ALLOWLIST 수신자만, 그 외 행은 미변경) / live.
+  MAIL_FROM·API 키·사이트 주소 중 하나라도 없으면 off 와 같다.
+- 로그: `[mail] id=… kind=… to=s***6@gmail.com attempt=… result=… provider_id=…` (키·본문·카드 정보 미출력).
+
+Resend 응답 분기 (문서 확인):
+| 응답 | 처리 |
+|---|---|
+| 2xx | sent |
+| 409 concurrent_idempotent_requests · resource_locked | 재시도 |
+| 409 invalid_idempotent_request (같은 키·다른 본문) | 재시도, 최소 25시간 뒤 (키 보관 24h) — 영구 실패 아님 |
+| 429 · 5xx · 타임아웃(10초) · 네트워크 | 재시도 |
+| 401 · 403 (키 무효·도메인 미인증) · 404 · 405 | 재시도 (설정 수정 후 복구) |
+| 400 · 422 | 영구 실패 |
+
+### 검증 (로컬)
+- `npm run build` 통과, 클라이언트 번들에 메일 관련 코드 0건.
+- `node scripts/render-notifications.mts` — 3 샘플 렌더 + 결정성(같은 입력 같은 출력) + 알 수 없는 kind null.
+- Resend 클라이언트를 로컬 모의 서버로: 위 표 11가지 응답 모두 설계대로, 모든 요청에 Idempotency-Key.
+- 발송 로직을 가짜 DB·모의 Resend 로: 즉시 발송·dedupe 무시 / 같은 행 동시 10회 → 1회 발송 /
+  allowlist 밖 미변경 / off·MAIL_FROM 없음 선점 안 함 / 500 → 1h 재시도 → 5회째 최종 실패 /
+  422 즉시 최종 / NO_RECIPIENT·UNKNOWN_KIND / 멈춘 sending 복구 / Resend 무응답에도 상한 내 반환·예외 없음.
+- health: resendApiKey 정상 true, 끝 개행 false, 접두어 다름 false. mailMode 표시, 항목 6개.
+- **미검증**: 실제 Resend 발송, 운영 DB 경로 (아래 테스트 절차).
+
+### Kevin 할 일 — 순서대로
+1. **값 확정 후 apphosting.yaml 의 MAIL_* 주석 해제** (MAIL_FROM, MAIL_REPLY_TO, MAIL_SUPPORT_EMAIL,
+   MAIL_MODE=allowlist, MAIL_ALLOWLIST=테스트 주소). 비워 둔 채 배포하면 발송하지 않을 뿐 장애는 없다.
+2. **Resend 도메인 인증** (발신 도메인 DNS: SPF·DKIM 레코드, Resend 대시보드에서 Verified 확인)
+3. **0010 적용** (Supabase SQL Editor). 적용 전 배포하면 기록·발송 쿼리가 실패한다 (청구는 영향 없음).
+4. **resend-api-key 등록** — 값이 화면·셸 히스토리에 남지 않는 방식:
+   ```sh
+   gcloud secrets create resend-api-key --replication-policy=automatic --data-file=- --project sniff-by-hatch-app
+   # ↑ 실행 후 키를 붙여 넣고, Enter 없이 Ctrl-D (Enter 를 치면 개행이 값에 들어간다)
+   firebase apphosting:secrets:grantaccess resend-api-key --backend sniff-web-server --project sniff-by-hatch-app
+   gcloud secrets versions access latest --secret resend-api-key --project sniff-by-hatch-app | wc -c
+   gcloud secrets versions access latest --secret resend-api-key --project sniff-by-hatch-app | tail -c 1 | xxd   # 마지막 바이트가 0a 면 개행 포함 → 재등록
+   ```
+   기대 길이: (등록 후 Kevin 이 알려주면 기록)
+5. **push** → 롤아웃 성공 확인 (resend-api-key 가 없으면 롤아웃 실패)
+6. **health**: 여섯 항목 모두 true, `"mailMode":"allowlist"`
+7. **테스트 절차** (아래)
+8. **공개 당일**: apphosting.yaml 의 MAIL_MODE 를 live 로 → push → 롤아웃 → health 에서 `"mailMode":"live"` 확인
+
+### 테스트 절차 (allowlist)
+테스트 계정(sniffreview2026@gmail.com)을 MAIL_ALLOWLIST 에 넣은 상태에서:
+1. **대기열 직접 기록 → cron 발송** (출금 없음):
+   ```sql
+   insert into web_notifications (user_id, kind, payload, dedupe_key) values
+   ('<UID>', 'payment_failed_first',
+    '{"subscription_id":"test","due_date":"2026-11-19T01:18:36+00:00","amount":3300,"card_brand":"신한카드","card_last4":"9780",
+      "retry_dates":["2026-11-19T15:00:00Z","2026-11-21T15:00:00Z"],"grace_ends_at":"2026-11-22T14:59:59.999Z"}',
+    'test:payment_failed_first:1');
+   ```
+   → 배치 수동 실행 → 메일 수신, 행 status=sent·provider_message_id 기록, 로그 `[mail] … result=sent`.
+2. **실제 흐름** (출금 없음): Phase 4 테스트 3번(빌링키 삭제 → 결제일 과거 → 배치)으로 past_due 전환 →
+   payment_failed_first 즉시 발송 확인. 이어서 5·6번으로 최종 종료 → subscription_canceled_nonpayment 발송 확인.
+3. **allowlist 차단**: 다른 계정 user_id 로 1번 행 기록 → 배치 후에도 status=pending·attempts=0 (발송 없음). 확인 후 그 행은 status='failed' 로 바꿔 둘 것 (삭제 금지).
+4. 배치 수동 실행:
+   ```sh
+   curl -s -X POST -H "Authorization: Bearer $(gcloud secrets versions access latest --secret billing-cron-secret --project sniff-by-hatch-app)" \
+     https://inovaai.ai/api/cron/billing
+   ```
+   응답에는 청구 counts 만, 메일 집계는 로그 `[cron/billing] summary {… "mail":{…}}`.
+
 ## 2026-10-19 — 결제 Phase 4: 매월 자동청구 · 미납 처리 · 대사
 
 ### 변경 내용 (커밋별)
@@ -222,7 +314,10 @@ Kevin 이 버전 4(219자, role=service_role, ref=hvloodegutmwxbabdsjf)를 등�
 ### 배포 후 점검 (매 롤아웃마다)
 ```sh
 curl -s https://inovaai.ai/api/health/billing
-# 기대: {"ok":true,"checks":{"supabaseAdmin":true,"paymentsTable":true,"portoneApi":true,"portoneWebhookSecret":true}}
+# 기대 (Phase 5 이후 정상 기준, 여섯 항목 모두 true. mailMode 는 표시만 하며 ok 판정에 포함되지 않음):
+# {"ok":true,"checks":{"supabaseAdmin":true,"paymentsTable":true,"portoneApi":true,"portoneWebhookSecret":true,
+#   "billingCronSecret":true,"resendApiKey":true},"mailMode":"allowlist|live"}
+# 공개 이후에는 "mailMode":"live" 인지도 확인
 ```
 - 하나라도 false 면 503. 원인은 Cloud Run 로그 `[health/billing]` 에서 확인.
 - `supabaseAdmin` false: service role 키 무효 (이번 장애 유형). 길이 219 확인:

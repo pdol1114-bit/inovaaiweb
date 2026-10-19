@@ -85,6 +85,40 @@ env:
     availability:
       - RUNTIME
 
+# 결제 안내 메일 (Resend). 키는 Secret Manager resend-api-key, "re_" 로 시작.
+# 등록은 gcloud secrets create + grantaccess 로 한다 (firebase apphosting:secrets:set 은
+# 이 파일을 다시 쓸 수 있어 쓰지 않는다). 등록 전 push 하면 롤아웃 실패.
+  - variable: RESEND_API_KEY
+    secret: resend-api-key
+    availability:
+      - RUNTIME
+
+# 메일 발송 설정 (RUNTIME 전용 일반 값). 값은 Kevin 확정 후 주석 해제.
+# MAIL_FROM 이 없거나 MAIL_MODE 가 off(미설정 포함)면 발송하지 않고 대기열에 pending 으로 쌓인다.
+# MAIL_MODE: off | allowlist(MAIL_ALLOWLIST 주소에만) | live(전체). 공개 전 allowlist, 공개 당일 live.
+# MAIL_SUPPORT_EMAIL 이 없으면 본문 문의 주소는 사업자정보의 SUPPORT_EMAIL.
+#
+#  - variable: MAIL_FROM
+#    value: "Sniff <no-reply@발신도메인>"
+#    availability:
+#      - RUNTIME
+#  - variable: MAIL_REPLY_TO
+#    value: "회신 주소"
+#    availability:
+#      - RUNTIME
+#  - variable: MAIL_SUPPORT_EMAIL
+#    value: "문의 주소"
+#    availability:
+#      - RUNTIME
+#  - variable: MAIL_MODE
+#    value: "allowlist"
+#    availability:
+#      - RUNTIME
+#  - variable: MAIL_ALLOWLIST
+#    value: "테스트 주소"
+#    availability:
+#      - RUNTIME
+
 # 출시 전 서비스(sniff-hospital, csv-automation, fem-ai) 메뉴 노출 토글.
 # 미설정이 곧 '숨김'이라 지금은 주석으로 두는 것으로 충분하다.
 # KCP 심사가 끝나면 아래 주석을 풀고 value를 "true"로 두면 메뉴가 복구된다.
