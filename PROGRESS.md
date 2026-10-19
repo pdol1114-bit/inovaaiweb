@@ -23,16 +23,29 @@
 - `npm run build` (Google Fonts용 네트워크 허용), `npx tsc --noEmit`, 변경 6개 파일 대상 `npx eslint`,
   `git diff --check` 모두 통과. 최초 모의 timeout 시험의 VM Error realm 차이는 시험 도구에서 수정 후 재실행해 통과.
 - 청구·재시도·웹훅 코드와 apphosting.yaml은 변경하지 않았다. push·0010 적용·시크릿·롤아웃·운영 시험 미실행.
-- 운영 SQL·트리거·확인·정리 절차 완성과 커밋 표 갱신은 별도 문서 커밋으로 이어서 정리한다.
+- 운영 SQL·트리거·확인·정리 절차는 아래 별도 문서 커밋에서 완성했다.
+
+### 문서 커밋 — `docs: complete Phase 5 mail verification runbook`
+- Phase 5 표의 기존 placeholder를 `795f75f`로 교체하고 후속 커밋들을 추가했다.
+- 현재 상태 설명·로그 형식·health 집계를 401/403 pending 대기에 맞춰 갱신했다.
+- 운영 절차: 전용 신규 구독의 오늘 KST 결제일 SQL → 첫 실패 → 중간 재시도 → 같은 구독 D+3 최종 종료,
+  매 단계 확인 쿼리·기대값, Scheduler 수동 트리거(시크릿 값 미조회·미출력), 대기열 직접 기록,
+  allowlist 밖 pending/attempts=0 확인, 테스트 ID와 user_id를 모두 제한한 정리 SQL을 작성했다.
+- SQL·명령어는 **작성·코드 대조만** 했으며 운영 DB·Scheduler에 실행하지 않았다.
+  PostgreSQL 실행 검증과 실제 수신 확인은 미실시. 구독·알림·결제 스키마 및 배치 분기와 대조했다.
+- 문서 커밋: `npm run build` (Google Fonts용 네트워크 허용), `npx tsc --noEmit`, `git diff --check` 통과.
+- 일회성 Python 정적 검사 통과: 운영 절차 SQL 블록 12개, DELETE 3개 모두 정확한 ID와 user_id의
+  WHERE 조건 포함, 코드 위치 5개 일치, 트리거 명령에 시크릿 조회 없음, 전체 이메일 주소 없음.
+  이 검사는 SQL 문법 실행 검증을 대체하지 않으며 DB 명령은 실행하지 않았다.
 
 ## 2026-10-19 — Phase 5 후속: 작업 규칙·health 대기 행 수·운영 시험 절차
 
 ### 범위와 상태
-- 현재 대화에 직전 세션의 승인 계획 2~6번 원문이 없어 해당 원문을 요청한 상태다.
-  아래는 이번 메시지에 명시된 독립 작업만 반영한 결과이며, 전체 후속 작업 완료를 의미하지 않는다.
+- `0c7419e` 시점에는 직전 승인 계획 원문 확인 대기 중이었다. 이후 사용자가 남은 작업을 명시해 승인했고,
+  위 `17579c9`와 후속 문서 커밋으로 완료했다.
 - `6c02127`: 사용자 제공 문구 그대로 `AGENTS.md` 생성, 이 파일만 별도 로컬 커밋.
-- health에 `mailConfigBlocked` 추가: `status='failed'`, `next_attempt_at is not null`,
-  `last_error`가 `HTTP_401:` 또는 `HTTP_403:`으로 시작하는 행의 정확한 수.
+- `0c7419e`에서 health에 `mailConfigBlocked` 추가. 최초 failed/HTTP 접두어 집계는
+  `17579c9`에서 pending/고정 오류 코드 집계로 변경했다 (현재 정의는 위 항목 참조).
   미래 재시도 대기도 포함하고, 최종 실패·다른 오류·sent는 제외한다.
 - `mailConfigBlocked`는 `checks` 바깥 표시값이다. 기존 boolean 6개, `ok`, HTTP 200/503 판정 유지.
   집계 조회 실패(0010 미적용 등)는 `null`로 표시해 0건과 구별한다. 60초 캐시 적용.
@@ -51,7 +64,7 @@
   - 신규 5개: 401/403 대기만 집계, 빈 대기열 0, 조회 오류 null, throw null, 60초 캐시 갱신.
   - 회귀 11개: 모드 4종, 잘못된 메일 키 3종, 기존 DB 검사 실패 2종, PG 오류·미설정 2종.
   - 매 시나리오에서 boolean 항목 6개와 no-store 확인. 집계 실패가 정상 health를 503으로 바꾸지 않음.
-- (이 커밋): health 표시·모의 시험 스크립트·운영 절차 보강.
+- `0c7419e`: health 표시·모의 시험 스크립트·운영 절차 보강.
 - 후속 커밋: `npm run build`, `npx tsc --noEmit` 모두 통과.
   빌드는 Google Fonts 접근 제한으로 최초 실패한 뒤 승인된 네트워크 허용 재실행으로 통과했다.
 - `npx eslint src/app/api/health/billing/route.ts scripts/verify-mail-health.mjs`, `git diff --check` 통과.
@@ -72,7 +85,11 @@
 | 47fbbd2 | `supabase/migrations/0010_notification_delivery.sql` | sending 상태, attempts·last_error·provider_message_id·sending_started_at·next_attempt_at·dedupe_key(unique). **미적용** |
 | f0d48d6 | `src/lib/notifications/{templates,resend,config,mask}.ts`, `scripts/render-notifications.mts` | 템플릿 2종, Resend 클라이언트(fetch), 메일 설정·모드, 주소 마스킹 |
 | 29c8384 | `src/lib/notifications/dispatch.ts`, `src/lib/billing/recurring.ts`, cron route | 선점·발송 공통 함수, 기록 지점 2곳 즉시 발송, cron f 단계 |
-| (이 커밋) | health, `apphosting.yaml`, PROGRESS.md | resendApiKey 점검, mailMode 표시, RESEND_API_KEY 참조, MAIL_* 주석 |
+| 795f75f | health, `apphosting.yaml`, PROGRESS.md | resendApiKey 점검, mailMode 표시, RESEND_API_KEY 참조, MAIL_* 주석 |
+| 6c02127 | `AGENTS.md` | 사용자 제공 작업 규칙 별도 커밋 |
+| 0c7419e | health, `scripts/verify-mail-health.mjs`, PROGRESS.md | 설정 오류 대기 수 표시·health 시험·운영 경고 |
+| 17579c9 | 메일 발송·health·`scripts/verify-notification-delivery.mjs`·시험 도구·PROGRESS.md | 401/403 attempts 원복·1시간 pending 대기·선점 시각 제한·health 일치·신규/회귀 모의 시험 |
+| `docs: complete Phase 5 mail verification runbook` | PROGRESS.md | 본 문서 커밋: 첫 실패→D+3 SQL, 비밀값 미출력 트리거, 단계별 확인·allowlist·ID 한정 정리, 커밋 표 완성 |
 
 ### 알림 유형 (기록 지점 2곳만)
 | kind | 기록 시점 | payload |
@@ -89,12 +106,16 @@
 - `deliverNotification()` 하나를 즉시 발송과 cron f 가 공유. 선점: status ∈ (pending, failed) 이고 attempts 가
   읽은 값과 같을 때만 sending(+1). 0행이면 다른 실행이 가져간 것.
 - Resend `Idempotency-Key` = notification id (24h). 결과 기록 전 중단돼도 재발송이 중복되지 않는다.
-- 재시도 최대 5회, 간격 1h·1h·24h·24h. 영구 오류·5회 초과는 failed + next_attempt_at=null (행 삭제 없음).
+- 일반 발송 실패 재시도 최대 5회, 간격 1h·1h·24h·24h. 영구 오류·한도 도달은 failed + next_attempt_at=null.
+- 401·403 설정 오류는 선점 전 attempts로 원복하고 pending + next_attempt_at=현재+1시간으로 저장한다.
+  한도를 소모하지 않는다. 즉시 발송·cron 조회·DB 선점 모두 next_attempt_at 이전 실행을 차단한다.
+- health의 mailConfigBlocked는 pending + next_attempt_at 존재 + MAIL_CONFIG_HTTP_401/403 행 수이며
+  boolean 6개·ok 판정에는 포함하지 않는다. 조회 불가 시 null, 정상적으로 대기 없음은 0.
 - cron f: 10분 넘은 sending → pending 복구 후 pending·재시도 대상 failed 발송. 메일 집계는 `summary.mail` 로 분리.
 - 기록 지점은 `queueAndSend()` 로만 호출: throw 없음, 15초 상한 → 청구 결과·응답·집계 영향 없음.
 - MAIL_MODE: off(미설정 기본, 선점 안 함·pending 유지) / allowlist(MAIL_ALLOWLIST 수신자만, 그 외 행은 미변경) / live.
   MAIL_FROM·API 키·사이트 주소 중 하나라도 없으면 off 와 같다.
-- 로그: `[mail] id=… kind=… to=s***6@gmail.com attempt=… result=… provider_id=…` (키·본문·카드 정보 미출력).
+- 로그: `[mail] id=… code=MAIL_CONFIG_HTTP_401|MAIL_CONFIG_HTTP_403|MAIL_SENT|…` (id와 고정 코드만).
 
 Resend 응답 분기 (문서 확인):
 | 응답 | 처리 |
@@ -103,10 +124,11 @@ Resend 응답 분기 (문서 확인):
 | 409 concurrent_idempotent_requests · resource_locked | 재시도 |
 | 409 invalid_idempotent_request (같은 키·다른 본문) | 재시도, 최소 25시간 뒤 (키 보관 24h) — 영구 실패 아님 |
 | 429 · 5xx · 타임아웃(10초) · 네트워크 | 재시도 |
-| 401 · 403 (키 무효·도메인 미인증) · 404 · 405 | 재시도 (설정 수정 후 복구) |
+| 401 · 403 (키 무효·도메인 미인증) | 설정 오류: attempts 원복, pending + 1시간 대기. 응답 본문 미기록 |
+| 404 · 405 | 일반 재시도 (5회 한도 적용) |
 | 400 · 422 | 영구 실패 |
 
-### 검증 (로컬)
+### 검증 (최초 Phase 5 로컬 기록; 최신 결과는 위 후속 항목)
 - `npm run build` 통과, 클라이언트 번들에 메일 관련 코드 0건.
 - `node scripts/render-notifications.mts` — 3 샘플 렌더 + 결정성(같은 입력 같은 출력) + 알 수 없는 kind null.
 - Resend 클라이언트를 로컬 모의 서버로: 위 표 11가지 응답 모두 설계대로, 모든 요청에 Idempotency-Key.
@@ -136,64 +158,181 @@ Resend 응답 분기 (문서 확인):
 7. **테스트 절차** (아래)
 8. **공개 당일**: apphosting.yaml 의 MAIL_MODE 를 live 로 → push → 롤아웃 → health 에서 `"mailMode":"live"` 확인
 
-### 테스트 절차 (allowlist) — 운영 실행은 별도 승인 후
+### 테스트 절차 (allowlist) — 작성만 완료, 운영 실행 금지
 > **경고: cron 수동 트리거는 전체 청구 배치를 실행함. web_subscriptions에 테스트 외
 > 구독이 없는 공개 전에만 실행. 실행 직전 구독 행 조회로 확인**
 
-이번 작업에서는 실행하지 않는다. 발신 주소는 미정이며 `apphosting.yaml`의 `MAIL_*` 주석을 유지한다.
-사용자가 주소를 별도로 전달하고 설정·0010 적용·시크릿 등록·배포를 승인한 뒤 진행한다.
-테스트 계정을 MAIL_ALLOWLIST에 넣고, 매 수동 트리거 직전에 아래 조회 결과가 모두 테스트 계정인지 확인한다.
-키·전체 이메일 주소·카드 정보는 조회 결과나 작업 문서에 남기지 않는다.
+이번 작업에서는 아래 SQL·명령어를 실행하지 않았다. 발신 주소는 미정이고 `apphosting.yaml`의 `MAIL_*`는
+주석 유지한다. 값 전달·도메인 인증·0010 적용·시크릿 설정·배포·운영 시험은 각각 별도 승인 후 진행한다.
+시험 시 health의 boolean 6개 true, mailMode=allowlist를 확인한다.
+키·전체 이메일·카드 값·알림 본문은 출력·문서화하지 않는다.
+
+**준비와 ID 지정**
+- 기존 구독·결제 이력이 없는 테스트 전용 계정을 사용한다. `<UID>`는 allowlist 안 계정,
+  `<BLOCKED_UID>`는 allowlist 밖 테스트 계정이다 (주소 대신 ID만 기록).
+- `<TEST_SUB_ID>`, `<QUEUE_NOTICE_ID>`, `<BLOCKED_NOTICE_ID>`는 이번 시험만을 위한 서로 다른 새 UUID,
+  `<RUN_ID>`는 고유한 시험 식별자로 치환한다. 이미 사용한 ID로 재실행하지 않는다.
+- `<FIRST_NOTICE_ID>`, `<FINAL_NOTICE_ID>`는 배치가 만든 행의 ID를 아래 확인 쿼리에서 확보해 둔다.
+- 준비 조회 결과 `<UID>`의 기존 구독·결제는 0건이어야 한다. 있으면 덮어쓰거나 삭제하지 말고 다른 전용 계정 사용.
+  ```sql
+  select id, user_id, status from web_subscriptions where user_id='<UID>'::uuid;
+  select id, payment_id, status from web_payments where user_id='<UID>'::uuid;
+  ```
+
+**매 트리거 직전 전체 대상 확인**
 ```sql
-select id, user_id, status, next_billing_date, failed_attempts, next_retry_at, grace_ends_at
+select id, user_id, status, billing_key is null as has_no_billing_key,
+       next_billing_date, failed_attempts, next_retry_at, grace_ends_at
   from web_subscriptions order by created_at;
 ```
-테스트 외 구독이 한 행이라도 있거나 테스트 계정 여부가 불명확하면 실행하지 않는다.
-아래의 “출금 없음”은 준비한 테스트 구독의 경로에만 해당한다.
+모든 행이 승인된 테스트 계정인지 확인한다. 테스트 외 구독이 있거나 계정 여부가 불명확하면 실행하지 않는다.
+이번 절차의 구독은 매번 `has_no_billing_key=true`여야 한다. 날짜 경계가 지나면 아래 KST 시각을 다시 계산한다.
+“PG 청구 호출 없음”은 이 준비된 테스트 구독 경로에만 해당한다.
 
-1. **대기열 직접 기록 → cron 발송** (출금 없음):
-   ```sql
-   insert into web_notifications (user_id, kind, payload, dedupe_key) values
-   ('<UID>', 'payment_failed_first',
-    '{"subscription_id":"test","due_date":"2026-11-19T01:18:36+00:00","amount":3300,"card_brand":null,"card_last4":null,
-      "retry_dates":["2026-11-19T15:00:00Z","2026-11-21T15:00:00Z"],"grace_ends_at":"2026-11-22T14:59:59.999Z"}',
-    'test:payment_failed_first:1');
-   ```
-   → 배치 수동 실행 → 메일 수신, 행 status=sent·provider_message_id 기록, 로그 `[mail] … result=sent`.
-2. **실제 흐름** (준비한 테스트 구독은 PG 청구 호출 없음): 테스트 계정의 구독만 아래처럼 준비한다.
-   기존 테스트 빌링키가 있다면 PG 콘솔에서 해당 테스트 키를 정리하고, 키 값은 출력·기록하지 않는다.
-   ```sql
-   update web_subscriptions
-      set billing_key=null, status='active', failed_attempts=0,
-          next_billing_date=now()-interval '1 hour', next_retry_at=null, grace_ends_at=null
-    where user_id='<UID>';
-   ```
-   코드 근거: `src/lib/billing/recurring.ts:201`의 `!sub.billing_key` 분기가
-   `:204`에서 `applyChargeFailure()`로 반환한다. PG 사전 조회(`:219`)와
-   청구 호출(`:274`)보다 앞이므로 이 테스트 구독은 PG 청구를 호출하지 않는다.
-   → 전체 구독 행을 다시 조회·확인 → 배치 → `charge.past_due_1`, 첫 실패 메일 즉시 발송 확인.
-   이어서 Phase 4 테스트 5·6번처럼 테스트 구독의 `next_retry_at`만 과거로 바꾸되,
-   매 배치 직전 전체 구독 행 조회와 아래 키 없음 검사를 확인한다 (`has_no_billing_key=true` 필수).
-   ```sql
-   select id, status, failed_attempts, billing_key is null as has_no_billing_key,
-          next_billing_date, next_retry_at, grace_ends_at
-     from web_subscriptions where user_id='<UID>';
-   ```
-   마지막에 `retry.canceled_PAYMENT_FAILED_FINAL`, 최종 종료 메일 발송을 확인한다.
-   유예 만료 경로는 첫 실패 상태를 별도로 준비하고 `grace_ends_at`을 과거로 설정해
-   `final.canceled_GRACE_EXPIRED`와 최종 종료 메일을 확인한다.
-3. **allowlist 차단**: 다른 계정 user_id 로 1번 행 기록 → 배치 후에도 status=pending·attempts=0 (발송 없음). 확인 후 그 행은 status='failed' 로 바꿔 둘 것 (삭제 금지).
-4. 배치 수동 실행:
-   ```sh
-   curl -s -X POST -H "Authorization: Bearer $(gcloud secrets versions access latest --secret billing-cron-secret --project sniff-by-hatch-app)" \
-     https://inovaai.ai/api/cron/billing
-   ```
-   응답에는 청구 counts 만, 메일 집계는 로그 `[cron/billing] summary {… "mail":{…}}`.
-   결과 확인은 본문·전체 이메일·카드 값을 조회하지 않고 아래 상태 필드만 사용한다.
-   ```sql
-   select id, kind, status, attempts, last_error, provider_message_id, next_attempt_at
-     from web_notifications where user_id='<UID>' order by created_at desc;
-   ```
+**공통 수동 트리거 — 매 단계 SQL·직전 전체 조회를 확인한 후에만**
+기존에 구성된 Scheduler 작업의 저장된 인증 헤더로 실행한다. 시크릿 조회·셸 변수·curl 인자 노출이 없다.
+```sh
+gcloud scheduler jobs run sniff-billing-daily \
+  --location us-central1 --project sniff-by-hatch-app
+```
+이 명령의 성공은 실행 요청 접수다. 완료는 아래 summary 로그와 단계별 DB 쿼리로 확인한다.
+작업이 없으면 이 절차에서 생성하지 않는다. 로그는 건수만 있는 summary로 제한한다.
+```sh
+gcloud logging read 'resource.labels.service_name="sniff-web-server" AND textPayload:"[cron/billing] summary"' \
+  --project sniff-by-hatch-app --freshness=10m --limit=5 --format='value(timestamp,textPayload)'
+```
+응답/summary의 청구 counts와 메일 집계 `mail`은 별개다. 메일 발송 로그는 `[mail] id=… code=MAIL_SENT`,
+설정 오류는 `MAIL_CONFIG_HTTP_401/403`이다. 설정 오류가 있으면 진행을 멈추고 복구 후 next_attempt_at까지 기다린다.
+
+**1. 오늘 결제일의 전용 구독 생성 → 첫 실패**
+실제 결제·빌링키 발급 없이 새 테스트 구독만 만든다. on conflict 갱신은 사용하지 않는다.
+```sql
+insert into web_subscriptions
+  (id, user_id, billing_key, status, next_billing_date, failed_attempts, next_retry_at, grace_ends_at)
+values
+  ('<TEST_SUB_ID>'::uuid, '<UID>'::uuid, null, 'active',
+   date_trunc('day', now() at time zone 'Asia/Seoul') at time zone 'Asia/Seoul', 0, null, null)
+returning id, user_id, status, next_billing_date, failed_attempts;
+```
+반환 1행 확인 → 전체 구독 조회 → 공통 트리거 → 아래 공통 확인 쿼리 실행.
+기대: `charge.past_due_1`, status=past_due, failed_attempts=1, D+1 재시도·D+3 끝 유예,
+첫 안내 `payment_failed_first`는 sent·attempts=1 (설정 정상 기준). 그 ID를 `<FIRST_NOTICE_ID>`로 보관한다.
+
+코드 근거: `src/lib/billing/recurring.ts:201`의 `!sub.billing_key` 분기가 `:204`에서
+`applyChargeFailure()`로 반환한다. PG 사전 조회(`:219`)·청구 호출(`:274`)·결제 행 잠금 생성(`:232`)보다
+앞이므로 이 경로는 PG 청구나 web_payments 행을 만들지 않는다.
+
+**공통 확인 쿼리 — 1·2·3단계 트리거 후 매번 실행**
+```sql
+select id, user_id, status, billing_key is null as has_no_billing_key,
+       next_billing_date, failed_attempts, next_retry_at, grace_ends_at, canceled_at, service_end_date
+  from web_subscriptions where id='<TEST_SUB_ID>'::uuid and user_id='<UID>'::uuid;
+select id, kind, status, attempts, last_error, next_attempt_at, sent_at, provider_message_id,
+       payload->>'reason' as reason, payload->>'charge_attempts' as charge_attempts
+  from web_notifications
+ where user_id='<UID>'::uuid and payload->>'subscription_id'='<TEST_SUB_ID>'
+ order by created_at, id;
+select id, payment_id, kind, status
+  from web_payments where subscription_id='<TEST_SUB_ID>'::uuid;
+```
+결제 행은 매번 0건이어야 한다. 예상 밖 결제 행·대상 변경이 있으면 다음 트리거와 정리를 중단하고 확인한다.
+
+**2. 같은 구독의 중간 재시도 실패 (D+1을 기다리지 않는 시간 압축)**
+```sql
+update web_subscriptions
+   set next_retry_at=now()-interval '1 minute'
+ where id='<TEST_SUB_ID>'::uuid and user_id='<UID>'::uuid
+   and billing_key is null and status='past_due' and failed_attempts=1
+   and grace_ends_at>now()
+returning id, status, failed_attempts, next_retry_at, grace_ends_at;
+```
+반환 1행 확인 → 전체 구독 조회 → 공통 트리거 → 공통 확인 쿼리.
+기대: `retry.past_due_2`, past_due·failed_attempts=2. 첫 안내만 유지되고 새 안내는 생기지 않는다.
+
+**3. 같은 구독을 D+3 최종 재시도 시점으로 조정 → 최종 종료**
+시험용 시간 압축으로 회차 D를 오늘-3일로 옮기고, 재시도는 오늘 00:00 KST, 유예는 오늘 끝으로 맞춘다.
+유예를 과거로 만들면 e단계 GRACE_EXPIRED가 되므로, d단계 마지막 재시도 시험에서는 미래로 유지한다.
+이 시간 조정 때문에 최종 안내의 회차 날짜는 첫 안내와 달라지는 것이 예상 결과다.
+```sql
+update web_subscriptions
+   set next_billing_date=(date_trunc('day', now() at time zone 'Asia/Seoul') - interval '3 days')
+                           at time zone 'Asia/Seoul',
+       next_retry_at=date_trunc('day', now() at time zone 'Asia/Seoul') at time zone 'Asia/Seoul',
+       grace_ends_at=(date_trunc('day', now() at time zone 'Asia/Seoul') + interval '1 day'
+                     - interval '1 millisecond') at time zone 'Asia/Seoul'
+ where id='<TEST_SUB_ID>'::uuid and user_id='<UID>'::uuid
+   and billing_key is null and status='past_due' and failed_attempts=2
+returning id, status, failed_attempts, next_billing_date, next_retry_at, grace_ends_at;
+```
+반환 1행 확인 → 전체 구독 조회 → 공통 트리거 → 공통 확인 쿼리.
+기대: `retry.canceled_PAYMENT_FAILED_FINAL`, canceled, billing_key=null,
+next_billing_date/next_retry_at=null, service_end_date 설정. DB failed_attempts는 기존 2를 유지하며
+최종 알림 `charge_attempts`는 3, reason=PAYMENT_FAILED_FINAL이다.
+`subscription_canceled_nonpayment` sent·attempts=1을 확인하고 ID를 `<FINAL_NOTICE_ID>`로 보관한다.
+
+**4. 대기열 직접 기록 → cron f 발송**
+1~3 완료로 테스트 구독이 canceled인 상태에서 진행한다.
+```sql
+insert into web_notifications (id, user_id, kind, payload, dedupe_key)
+values ('<QUEUE_NOTICE_ID>'::uuid, '<UID>'::uuid, 'payment_failed_first',
+        jsonb_build_object('subscription_id', '<TEST_SUB_ID>', 'due_date', now(), 'amount', 3300,
+                          'retry_dates', jsonb_build_array(now()+interval '1 day'),
+                          'grace_ends_at', now()+interval '3 days'),
+        'test:phase5:<RUN_ID>:queue')
+returning id, status, attempts;
+```
+전체 구독 조회 → 공통 트리거 → 아래 확인 쿼리. sent·attempts=1·provider_message_id 존재가 기대값이다.
+```sql
+select id, kind, status, attempts, last_error, next_attempt_at, provider_message_id
+  from web_notifications where id='<QUEUE_NOTICE_ID>'::uuid and user_id='<UID>'::uuid;
+```
+
+**5. allowlist 밖 수신자 차단**
+`<BLOCKED_UID>`가 allowlist 밖인지 별도로 확인하고 주소는 기록하지 않는다. 그 계정의 구독은 만들지 않는다.
+```sql
+insert into web_notifications (id, user_id, kind, payload, dedupe_key)
+values ('<BLOCKED_NOTICE_ID>'::uuid, '<BLOCKED_UID>'::uuid, 'payment_failed_first',
+        jsonb_build_object('subscription_id', '<TEST_SUB_ID>', 'due_date', now(), 'amount', 3300),
+        'test:phase5:<RUN_ID>:blocked')
+returning id, status, attempts;
+```
+전체 구독 조회 → 공통 트리거 → 아래 쿼리에서 **pending·attempts=0·provider_message_id=null** 확인.
+```sql
+select id, status, attempts, next_attempt_at, provider_message_id
+  from web_notifications
+ where id='<BLOCKED_NOTICE_ID>'::uuid and user_id='<BLOCKED_UID>'::uuid
+   and dedupe_key='test:phase5:<RUN_ID>:blocked';
+```
+행을 남겨 두면 향후 live 전환 시 발송되므로, 차단 확인 뒤 해당 ID만 종결 처리한다. 행 삭제는 최종 정리에서만 한다.
+```sql
+update web_notifications
+   set status='failed', next_attempt_at=null, last_error='TEST_ALLOWLIST_BLOCKED'
+ where id='<BLOCKED_NOTICE_ID>'::uuid and user_id='<BLOCKED_UID>'::uuid
+   and dedupe_key='test:phase5:<RUN_ID>:blocked' and status='pending' and attempts=0
+returning id, status, attempts;
+```
+
+**6. 테스트 ID로 한정한 정리 (운영 실행은 별도 승인 후)**
+위 공통 확인과 개별 ID 조회로 대상이 이번 시험 행인지 재확인하고, sending 행이 없을 때만 수행한다.
+아래는 이번에 만든 알림 4개·구독 1개만 정리한다. 실제 결제·웹훅 행은 이 경로에서 생성되지 않으므로 삭제하지 않는다.
+WHERE 없는 DELETE, 계정 전체 행 삭제, 실제 청구 기록 삭제는 하지 않는다.
+```sql
+begin;
+delete from web_notifications
+ where user_id='<UID>'::uuid
+   and id in ('<FIRST_NOTICE_ID>'::uuid, '<FINAL_NOTICE_ID>'::uuid, '<QUEUE_NOTICE_ID>'::uuid)
+   and payload->>'subscription_id'='<TEST_SUB_ID>' and status in ('sent', 'failed');
+delete from web_notifications
+ where id='<BLOCKED_NOTICE_ID>'::uuid and user_id='<BLOCKED_UID>'::uuid
+   and dedupe_key='test:phase5:<RUN_ID>:blocked' and last_error='TEST_ALLOWLIST_BLOCKED'
+   and status='failed' and attempts=0;
+delete from web_subscriptions
+ where id='<TEST_SUB_ID>'::uuid and user_id='<UID>'::uuid
+   and billing_key is null and status='canceled';
+commit;
+```
+DELETE 기대 행 수는 각각 3·1·1이다. 다르면 추가 범위 삭제로 맞추지 말고 남은 대상 상태를 확인한다.
+정리 후 같은 ID 조건으로 재조회해 잔존 여부를 확인한다. allowlist 밖 시험 행을 live 전에 남기지 않는다.
 
 ## 2026-10-19 — 결제 Phase 4: 매월 자동청구 · 미납 처리 · 대사
 
@@ -302,12 +441,9 @@ select id, user_id, status, next_billing_date, failed_attempts, next_retry_at, g
 ```
 테스트 외 구독이 있거나 계정 여부가 불명확하면 실행하지 않는다. 운영 시험은 별도 승인 후 수행한다.
 준비: 테스트 계정으로 첫 결제를 완료해 active 구독을 만든다. `<UID>` = 테스트 계정 user_id.
-배치 수동 실행 (둘 중 하나):
+배치 수동 실행 (저장된 인증 헤더 사용, 시크릿 값 미조회·미출력):
 ```sh
 gcloud scheduler jobs run sniff-billing-daily --location us-central1 --project sniff-by-hatch-app
-# 또는
-curl -s -X POST -H "Authorization: Bearer $(gcloud secrets versions access latest --secret billing-cron-secret --project sniff-by-hatch-app)" \
-  https://inovaai.ai/api/cron/billing
 ```
 확인 쿼리:
 ```sql
@@ -331,7 +467,9 @@ select payment_id, kind, status, failure_reason, period_start, period_end, paid_
 | 10 | 재시도 성공 (**실청구**) | 정상 빌링키가 있는 구독에서 `update web_subscriptions set status='past_due', failed_attempts=1, next_billing_date=now()-interval '1 day', next_retry_at=now()-interval '1 minute', grace_ends_at=now()+interval '2 day' where user_id='<UID>';` → 배치 | `retry.paid`, active, 재시도 컬럼 null, next_billing_date = started_at 기준 다음 회차 |
 | 11 | 청구 전 재조회 | 1 이후 직전 paid 결제를 콘솔에서 전액 취소, 웹훅이 반영되기 전에 1의 준비 SQL → 배치 | 웹훅이 먼저 반영하면 구독 canceled 로 청구 대상 아님. 아니면 `charge.skipped_last_payment_cancelled` |
 
-정리: 테스트로 청구된 결제는 콘솔에서 취소, 테스트 계정의 web_payments·web_subscriptions·web_notifications·web_webhook_events 행 삭제.
+정리: 테스트로 청구된 결제는 콘솔에서 취소. DB 정리는 사전 확인한 테스트 id/payment_id/webhook_id 목록을
+WHERE로 제한한 별도 승인 SQL만 사용한다. 계정 전체 행 삭제·WHERE 없는 DELETE 금지.
+Phase 5의 PG 청구 없는 전용 구독 시험은 위 6번 정리 SQL을 사용한다.
 
 ## 2026-10-19 — 결제 Phase 3: 포트원 웹훅 처리
 
