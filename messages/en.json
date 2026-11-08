@@ -36,7 +36,14 @@
         "feature2Title": "Process Optimization",
         "feature2Desc": "We analyze inefficient workflows and automate them in the most efficient way.",
         "feature3Title": "Data Insight",
-        "feature3Desc": "We monitor automated task performance in real-time and provide analytical reports."
+        "feature3Desc": "We monitor automated task performance in real-time and provide analytical reports.",
+        "projectsTitle": "Projects in Progress",
+        "swingMateTitle": "SwingMate",
+        "swingMateBadge": "In Progress",
+        "swingMateDesc": "A social matching app for screen golf. Create or join rooms, and find playing partners through real-time chat.",
+        "swingMateTag1": "React Native",
+        "swingMateTag2": "Supabase",
+        "swingMateTag3": "Realtime"
     },
     "Footer": {
         "description": "From veterinarians to simulation experts, specialists from entirely different fields collaborate without boundaries—a boundary-breaking startup obsessively exploring the new possibilities of AI to resolve complex industrial challenges.",

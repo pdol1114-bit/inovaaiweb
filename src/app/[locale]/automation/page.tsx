@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Settings, Cpu, LineChart } from "lucide-react";
+import { ArrowRight, Settings, Cpu, LineChart, Smartphone } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
@@ -70,6 +70,35 @@ export default async function WorkflowAutomationPage({
                             <p className="text-gray-600">
                                 {t("feature3Desc")}
                             </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Projects in Progress */}
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-12 text-gray-900">
+                        {t("projectsTitle")}
+                    </h2>
+                    <div className="max-w-2xl mx-auto">
+                        <div className="relative p-8 rounded-3xl bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all">
+                            <span className="absolute top-6 right-6 inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-700">
+                                <span className="flex h-2 w-2 rounded-full bg-amber-400 mr-1.5 animate-pulse"></span>
+                                {t("swingMateBadge")}
+                            </span>
+                            <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center text-green-600 mb-6">
+                                <Smartphone className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">{t("swingMateTitle")}</h3>
+                            <p className="text-gray-600 mb-5">
+                                {t("swingMateDesc")}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("swingMateTag1")}</span>
+                                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("swingMateTag2")}</span>
+                                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("swingMateTag3")}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

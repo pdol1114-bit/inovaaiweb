@@ -36,7 +36,14 @@
         "feature2Title": "프로세스 최적화",
         "feature2Desc": "비효율적인 업무 흐름을 분석하고 가장 효율적인 방식으로 자동화합니다.",
         "feature3Title": "데이터 인사이트",
-        "feature3Desc": "자동화된 업무 성과를 실시간으로 모니터링하고 분석 리포트를 제공합니다."
+        "feature3Desc": "자동화된 업무 성과를 실시간으로 모니터링하고 분석 리포트를 제공합니다.",
+        "projectsTitle": "진행 중인 프로젝트",
+        "swingMateTitle": "스윙메이트",
+        "swingMateBadge": "작업중",
+        "swingMateDesc": "스크린골프 소셜 매칭 앱. 조인방을 만들고 참가하며, 실시간 채팅으로 함께 칠 사람을 찾아보세요.",
+        "swingMateTag1": "React Native",
+        "swingMateTag2": "Supabase",
+        "swingMateTag3": "Realtime"
     },
     "Footer": {
         "description": "수의사부터 시뮬레이션 전문가까지, 전혀 다른 필드의 괴짜들이 모여 AI의 새로운 가능성을 집요하게 파고듭니다. 경계 없는 협업으로 복잡한 산업의 문제를 명쾌하게 해결하는 스타트업입니다.",
