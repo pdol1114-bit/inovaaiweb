@@ -7,9 +7,7 @@
  * 심사가 끝나면 apphosting.yaml에서 NEXT_PUBLIC_SHOW_UPCOMING_SERVICES=true 로
  * 바꾸기만 하면 메뉴가 그대로 복구된다.
  */
-export const UPCOMING_SERVICE_PATHS = [
-    "/csv-automation",
-] as const;
+export const UPCOMING_SERVICE_PATHS = [] as const;
 
 /**
  * 기본값(미설정)은 '숨김'이다. NEXT_PUBLIC_* 는 빌드타임에 인라인되므로,

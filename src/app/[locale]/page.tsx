@@ -88,11 +88,9 @@ export default async function Home({
               <p className="text-gray-600 mb-6 flex-grow">
                 {t("service3Desc")}
               </p>
-              {showUpcomingServices && (
-                <Link href="/csv-automation" className="inline-flex items-center text-emerald-500 font-semibold hover:text-emerald-700 transition-colors mt-auto">
+              <Link href="/csv-automation" className="inline-flex items-center text-emerald-500 font-semibold hover:text-emerald-700 transition-colors mt-auto">
                   {t("learnMore")} <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              )}
+              </Link>
             </div>
 
             {/* Service 4: FEM & AI */}
