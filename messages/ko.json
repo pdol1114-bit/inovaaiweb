@@ -43,7 +43,13 @@
         "swingMateDesc": "스크린골프 소셜 매칭 앱. 조인방을 만들고 참가하며, 실시간 채팅으로 함께 칠 사람을 찾아보세요.",
         "swingMateTag1": "React Native",
         "swingMateTag2": "Supabase",
-        "swingMateTag3": "Realtime"
+        "swingMateTag3": "Realtime",
+        "csoTitle": "CSO 자동관리 프로그램",
+        "csoBadge": "작업중",
+        "csoDesc": "CSO(최고안전책임자) 업무를 자동화하는 관리 프로그램. 안전 점검, 보고서 작성, 규정 준수 모니터링을 AI로 자동 처리합니다.",
+        "csoTag1": "안전관리",
+        "csoTag2": "자동화",
+        "csoTag3": "규정준수"
     },
     "Footer": {
         "description": "수의사부터 시뮬레이션 전문가까지, 전혀 다른 필드의 괴짜들이 모여 AI의 새로운 가능성을 집요하게 파고듭니다. 경계 없는 협업으로 복잡한 산업의 문제를 명쾌하게 해결하는 스타트업입니다.",

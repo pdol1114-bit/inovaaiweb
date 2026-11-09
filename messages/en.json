@@ -43,7 +43,13 @@
         "swingMateDesc": "A social matching app for screen golf. Create or join rooms, and find playing partners through real-time chat.",
         "swingMateTag1": "React Native",
         "swingMateTag2": "Supabase",
-        "swingMateTag3": "Realtime"
+        "swingMateTag3": "Realtime",
+        "csoTitle": "CSO Auto Management",
+        "csoBadge": "In Progress",
+        "csoDesc": "An automated management program for CSO (Chief Safety Officer) operations. AI handles safety inspections, report generation, and compliance monitoring.",
+        "csoTag1": "Safety",
+        "csoTag2": "Automation",
+        "csoTag3": "Compliance"
     },
     "Footer": {
         "description": "From veterinarians to simulation experts, specialists from entirely different fields collaborate without boundaries—a boundary-breaking startup obsessively exploring the new possibilities of AI to resolve complex industrial challenges.",
