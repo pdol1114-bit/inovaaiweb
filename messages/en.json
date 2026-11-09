@@ -518,7 +518,8 @@
     },
     "Common": {
         "comingSoon": "Coming Soon",
-        "late26": "Late 2026"
+        "late26": "Late 2026",
+        "early27": "Early 2027"
     },
     "SniffHospital": {
         "title": "Sniff for Hospital",
@@ -550,8 +551,8 @@
     },
     "FemAi": {
         "badge": "Industrial Innovation",
-        "heroTitle": "Engineering Precision Empowered by AI",
-        "heroDesc": "Accelerating engineering simulations by combining traditional Finite Element Method with deep learning acceleration.",
+        "heroTitle": "One-Touch Auto MESH",
+        "heroDesc": "Generate high-quality meshes from complex 3D models with a single click. AI analyzes geometry and automatically determines optimal element size and distribution.",
         "getStarted": "Start Free Simulation",
         "login": "Login",
         "conceptTitle": "AI-Accelerated Simulation",
@@ -559,8 +560,7 @@
         "feature1Title": "Real-time Feedback",
         "feature1Desc": "Instantaneous structural response analysis for design iteration.",
         "feature2Title": "Inverse Design AI",
-        "feature2Desc": "Automatically find optimal structures based on desired performance parameters.",
-        "launchDate": "Launching Early 2027"
+        "feature2Desc": "Automatically find optimal structures based on desired performance parameters."
     },
     "Pricing": {
         "title": "Pricing",

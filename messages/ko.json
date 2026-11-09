@@ -518,7 +518,8 @@
     },
     "Common": {
         "comingSoon": "출시 예정",
-        "late26": "2026년 말"
+        "late26": "2026년 말",
+        "early27": "2027년 초"
     },
     "SniffHospital": {
         "title": "Sniff for Hospital",
@@ -550,8 +551,8 @@
     },
     "FemAi": {
         "badge": "산업 혁신",
-        "heroTitle": "AI가 강화하는 엔지니어링 정밀도",
-        "heroDesc": "전통적인 유한요소법(FEM)과 딥러닝 가속을 결합하여 엔지니어링 시뮬레이션을 가속화합니다.",
+        "heroTitle": "원터치 자동MESH",
+        "heroDesc": "복잡한 3D 모델도 한 번의 클릭으로 고품질 메쉬를 자동 생성합니다. AI가 형상을 분석하고 최적의 요소 크기와 분포를 자동 결정합니다.",
         "getStarted": "무료 시뮬레이션 시작하기",
         "login": "로그인",
         "conceptTitle": "AI 가속 시뮬레이션",
@@ -559,8 +560,7 @@
         "feature1Title": "실시간 피드백",
         "feature1Desc": "설계 반복을 위한 즉각적인 구조적 응답 분석을 제공합니다.",
         "feature2Title": "역설계 AI",
-        "feature2Desc": "원하는 성능 매개변수를 기반으로 최적의 구조를 자동으로 찾아줍니다.",
-        "launchDate": "2027년 초 출시 예정"
+        "feature2Desc": "원하는 성능 매개변수를 기반으로 최적의 구조를 자동으로 찾아줍니다."
     },
     "Pricing": {
         "title": "요금제",
