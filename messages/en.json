@@ -559,7 +559,8 @@
         "feature1Title": "Real-time Feedback",
         "feature1Desc": "Instantaneous structural response analysis for design iteration.",
         "feature2Title": "Inverse Design AI",
-        "feature2Desc": "Automatically find optimal structures based on desired performance parameters."
+        "feature2Desc": "Automatically find optimal structures based on desired performance parameters.",
+        "launchDate": "Launching Early 2027"
     },
     "Pricing": {
         "title": "Pricing",

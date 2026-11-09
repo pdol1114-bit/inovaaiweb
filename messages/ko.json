@@ -559,7 +559,8 @@
         "feature1Title": "실시간 피드백",
         "feature1Desc": "설계 반복을 위한 즉각적인 구조적 응답 분석을 제공합니다.",
         "feature2Title": "역설계 AI",
-        "feature2Desc": "원하는 성능 매개변수를 기반으로 최적의 구조를 자동으로 찾아줍니다."
+        "feature2Desc": "원하는 성능 매개변수를 기반으로 최적의 구조를 자동으로 찾아줍니다.",
+        "launchDate": "2027년 초 출시 예정"
     },
     "Pricing": {
         "title": "요금제",

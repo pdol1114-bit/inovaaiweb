@@ -18,8 +18,9 @@ export default async function FemAiPage({
             {/* Coming Soon Overlay */}
             <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
                 <div className="relative">
-                    <div className="bg-white/95 text-red-600 rounded-3xl px-16 py-10 rotate-[-10deg] flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(220,38,38,0.15)] border-[12px] border-red-600/80">
-                        <span className="text-red-600 text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">{common("comingSoon")}</span>
+                    <div className="bg-white/95 text-blue-600 rounded-3xl px-16 py-10 rotate-[-10deg] flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(37,99,235,0.15)] border-[12px] border-blue-600/80">
+                        <span className="text-blue-600 text-4xl md:text-6xl font-black tracking-tighter uppercase whitespace-nowrap">{common("comingSoon")}</span>
+                        <span className="text-blue-500 text-lg md:text-2xl font-bold">{t("launchDate")}</span>
                     </div>
                 </div>
             </div>

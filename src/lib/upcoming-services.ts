@@ -9,7 +9,6 @@
  */
 export const UPCOMING_SERVICE_PATHS = [
     "/csv-automation",
-    "/fem-ai",
 ] as const;
 
 /**
