@@ -1,91 +1,59 @@
-import { Button } from "@/components/ui/button";
-import { Box, Cpu, Zap } from "lucide-react";
-import Link from "next/link";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import type { Metadata } from 'next';
+import { ArrowDown, ArrowRight, Cloud, Layers3, LockKeyhole, MoveUpRight } from 'lucide-react';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
+import { SUPPORT_EMAIL } from '@/lib/business-info';
+import { FemWorkspace } from '@/components/fem/FemWorkspace';
+import { MeshConcept } from '@/components/fem/MeshConcept';
+import styles from '@/components/fem/fem.module.css';
 
-export default async function FemAiPage({
-    params,
-}: {
-    params: Promise<{ locale: string }>;
-}) {
-    const { locale } = await params;
-    setRequestLocale(locale);
-    const t = await getTranslations("FemAi");
-    const common = await getTranslations("Common");
-
-    return (
-        <div className="flex flex-col min-h-screen relative">
-            {/* Coming Soon Overlay */}
-            <div className="fixed inset-0 z-40 flex items-center justify-center bg-white/5 backdrop-blur-[2px] pointer-events-none">
-                <div className="relative">
-                    <div className="bg-white/95 text-red-600 rounded-3xl px-16 py-10 rotate-[-10deg] flex flex-col items-center gap-2 shadow-[0_20px_50px_rgba(220,38,38,0.15)] border-[12px] border-red-600/80">
-                        <span className="text-red-600/90 text-4xl md:text-6xl font-black tracking-tighter uppercase whitespace-nowrap">{common("early27")}</span>
-                        <span className="text-red-600 text-5xl md:text-7xl font-black tracking-tighter uppercase whitespace-nowrap">{common("comingSoon")}</span>
-                    </div>
-                </div>
+type Props = { params: Promise<{ locale: string }> };
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'FemAi' });
+  return { title: t('metaTitle'), description: t('metaDesc') };
+}
+export default async function FemAiPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('FemAi');
+  const mail = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t('mailSubject'))}`;
+  return <div className={styles.root}>
+    <section className={styles.hero}>
+      <div className={styles.container}>
+        <div className={styles.heroGrid}>
+          <div>
+            <p className={styles.eyebrow}><span />{t('badge')}</p>
+            <h1>{t('heroTitle')}<br/><span>{t('heroAccent')}</span></h1>
+            <p className={styles.heroDesc}>{t('heroDesc')}</p>
+            <div className={styles.actions}>
+              <a href="#mesh-workspace" className={styles.primary}>{t('openWorkspace')}<ArrowDown size={16}/></a>
+              <a href="#enterprise-contact" className={styles.secondary}>{t('contact')}<MoveUpRight size={15}/></a>
             </div>
-            {/* Hero Section */}
-            <section className="relative pt-32 pb-24 overflow-hidden bg-white">
-                <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-blue-50 rounded-full blur-[100px] opacity-60 z-0"></div>
-                <div className="container relative z-10 mx-auto px-4 text-center">
-                    <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-600 mb-6 animate-fade-in shadow-sm">
-                        <span className="flex h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
-                        {t("badge")}
-                    </div>
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 text-gray-900 animate-fade-in">
-                        {t("heroTitle")}
-                    </h1>
-                    <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
-                        {t("heroDesc")}
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
-                        <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
-                            <Link href={`/${locale}/auth?service=fem-ai`}>{t("getStarted")}</Link>
-                        </Button>
-                        <Button size="lg" variant="outline" className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 px-8 h-12 text-base" asChild>
-                            <Link href={`/${locale}/auth?service=fem-ai`}>{t("login")}</Link>
-                        </Button>
-                    </div>
-                </div>
-            </section>
-
-            {/* Concept Section */}
-            <section className="py-20 bg-secondary/10">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div className="relative h-[400px] rounded-3xl overflow-hidden glass-panel border-purple-500/20 flex items-center justify-center">
-                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20"></div>
-                            <Box className="h-32 w-32 text-purple-500 animate-pulse" />
-                        </div>
-                        <div>
-                            <h2 className="text-3xl font-bold mb-6">{t("conceptTitle")}</h2>
-                            <p className="text-muted-foreground mb-6">
-                                {t("conceptDesc")}
-                            </p>
-                            <div className="space-y-6">
-                                <div className="flex items-start">
-                                    <div className="h-10 w-10 rounded-lg bg-purple-500/20 flex items-center justify-center mr-4 shrink-0">
-                                        <Zap className="h-5 w-5 text-purple-400" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold">{t("feature1Title")}</h4>
-                                        <p className="text-sm text-muted-foreground">{t("feature1Desc")}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start">
-                                    <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center mr-4 shrink-0">
-                                        <Cpu className="h-5 w-5 text-blue-400" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold">{t("feature2Title")}</h4>
-                                        <p className="text-sm text-muted-foreground">{t("feature2Desc")}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <div className={styles.formats}><span>STEP / BREP</span><ArrowRight size={14}/><span>Hex · Wedge · Tet</span><ArrowRight size={14}/><span>INP / MSH</span></div>
+          </div>
+          <div className={styles.concept}>
+            <div className={styles.conceptTop}><span>INOVA.AI / FEM</span><span>{t('previewTag')}</span></div>
+            <MeshConcept/>
+            <p>{t('concept')}</p>
+          </div>
         </div>
-    );
+        <div className={styles.notice}><span className={styles.statusDot}/><strong>{t('noEngine')}</strong><p>{t('notice')}</p></div>
+      </div>
+    </section>
+    <section className={`${styles.container} ${styles.flow}`}>
+      <div className={styles.sectionHeading}><h2>{t('flowTitle')}</h2><p>{t('flowDesc')}</p></div>
+      <ol>{[0,1,2,3].map(i=><li key={i}><span>0{i+1}</span><h3>{t(`step${i}`)}</h3><p>{t(`flow${i}`)}</p></li>)}</ol>
+    </section>
+    <FemWorkspace/>
+    <section className={`${styles.container} ${styles.enterprise}`}>
+      <div className={styles.sectionHeading}><p className={styles.eyebrow}>FOR ENGINEERING TEAMS</p><h2>{t('enterpriseTitle')}</h2><p>{t('enterpriseDesc')}</p></div>
+      <div className={styles.enterpriseGrid}>{[
+        {icon:Cloud,title:'cloudTitle',desc:'cloudDesc'},
+        {icon:Layers3,title:'pocTitle',desc:'pocDesc'},
+        {icon:LockKeyhole,title:'onpremTitle',desc:'onpremDesc'},
+      ].map(({icon:Icon,title,desc},i)=><article key={title}><span className={styles.cardNumber}>0{i+1}</span><Icon size={24}/><h3>{t(title)}</h3><p>{t(desc)}</p></article>)}</div>
+      <div id="enterprise-contact" className={styles.contact}><div><h2>{t('contactTitle')}</h2><p>{t('contactDesc')}</p><Link href="/privacy">{t('privacyLink')}<MoveUpRight size={12}/></Link></div><a href={mail} className={styles.primary}>{t('contact')}<ArrowRight size={16}/></a></div>
+    </section>
+  </div>;
 }
