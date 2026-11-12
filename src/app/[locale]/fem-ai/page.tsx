@@ -28,6 +28,7 @@ export default async function FemAiPage({ params }: Props) {
             <p className={styles.heroDesc}>{t('heroDesc')}</p>
             <div className={styles.actions}>
               <a href="#mesh-workspace" className={styles.primary}>{t('openWorkspace')}<ArrowDown size={16}/></a>
+              <Link href="/payment?plan=fem_pro" className={styles.secondary}>{t('subscribeCta')}<ArrowRight size={15}/></Link>
               <a href="#enterprise-contact" className={styles.secondary}>{t('contact')}<MoveUpRight size={15}/></a>
             </div>
             <div className={styles.formats}><span>STEP / BREP</span><ArrowRight size={14}/><span>Hex · Wedge · Tet</span><ArrowRight size={14}/><span>INP / MSH</span></div>

@@ -1,6 +1,35 @@
 
 # PROGRESS
 
+## 2026-11-12 — FEM AI Pro 월 요금제 신설 및 FEM 엔진 연결 준비
+
+### 승인 및 구현 범위
+- 사용자 승인에 따라 FEM 전용 월 구독 요금제(`fem_pro`, 공급가 50,000원/월 부가세 별도 · 실제 결제 55,000원/월 · 월 40회 실행 제한) 및 클로드 작업(#9, `inova_mesh`) 연결 준비를 구현했다.
+- 기존 `sniff_premium`(3,300원/월)의 청구·재시도·웹훅 로직은 하위 호환을 100% 유지하며 다중 플랜 지원으로 확장했다.
+
+### 변경 내용
+1. **DB 마이그레이션 작성 (운영 미적용)**: `supabase/migrations/0011_multi_plan_subscriptions.sql`
+   - `web_subscriptions` 유니크 제약을 `(user_id)` → `(user_id, plan)`으로 변경해 Sniff와 FEM 독립 구독 지원.
+   - `web_payments.plan` 컬럼 추가 및 `fem_jobs` 테이블(실행 이력·월 40회 쿼터 관리) 신설.
+2. **다중 플랜 결제·구독 확장**:
+   - `src/lib/billing/constants.ts`: `FEM_PRO_PLAN`, `FEM_PRO_SUPPLY_PRICE`(50,000), `FEM_PRO_MONTHLY_PRICE`(55,000), `FEM_PRO_MONTHLY_QUOTA`(40), `PLAN_CONFIGS` 추가.
+   - `src/lib/subscription.ts`: `getSubscriptionForUser(..., plan)`, `getAllSubscriptionsForUser`, `isSubscriptionActive` 추가.
+   - `src/lib/billing/{initial-charge,settlement,recurring}.ts` 및 `/api/billing/{register-key,cancel-subscription,resume-subscription}`: `plan` 기반 금액·주문명·대상 행 처리.
+   - `src/app/[locale]/pricing/page.tsx`, `payment/page.tsx`, `account/subscription/page.tsx`, `SubscribeButton.tsx`, `SubscriptionManager.tsx`, `messages/{ko,en}.json`: `fem_pro` 요금제/결제/해지 관리 UI 및 다국어 문구 추가.
+3. **FEM 엔진 연결 스캐폴드**:
+   - `src/lib/fem/engine-client.ts`, `src/lib/fem/quota.ts`: `FEM_ENGINE_URL` / `FEM_ENGINE_API_KEY` 기반 HTTP 어댑터 및 KST 월간 40회 쿼터 조회.
+   - `src/app/api/fem/jobs/route.ts`, `jobs/[id]/route.ts`, `jobs/[id]/download/route.ts`: 구독·쿼터·파일 검증 후 엔진 작업 제출·폴링·INP/MSH 다운로드 프록시(미설정 시 `503 ENGINE_NOT_CONFIGURED`).
+   - `src/components/fem/FemWorkspace.tsx`, `src/app/[locale]/fem-ai/page.tsx`: 미구독 시 `/payment?plan=fem_pro` 안내, 구독 시 잔여 횟수(`used / 40`)·실행·폴링·결과/다운로드 연동.
+   - `docs/FEM-ENGINE-CONTRACT.md`: FEM Python 워커용 REST API 계약 문서화.
+
+### 검증 결과
+- `npx tsc --noEmit`: 통과 (exit 0)
+- `node scripts/verify-fem-preflight.mjs`: 12/12 통과
+- `npm run build`: 통과 (exit 0, 43/43 정적 페이지 및 `/api/fem/*` 라우트 포함)
+- `git diff --check`: 통과
+- 운영 DB 마이그레이션(`0011`) 적용, `git push`, 운영 테스트는 미실행 (승인 대기).
+
+
 ## 2026-11-12 — FEM 글꼴·크기 후속 운영 배포 완료
 
 - 사용자가 “배포해”로 이번 후속 운영 배포를 명시적으로 승인했다. 이전 자동 승인 검토 차단 사유 해소.
