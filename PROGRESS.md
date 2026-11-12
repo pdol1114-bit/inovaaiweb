@@ -1,6 +1,23 @@
 
 # PROGRESS
 
+## 2026-11-12 — FEM 웹 운영 배포 완료 (사용자 승인)
+
+- 사용자가 “배포 해”로 승인. 원격 갱신 후 origin/main 대비 뒤처짐 0·앞섬 1, 작업 트리 clean 확인.
+- 배포 대상은 `dfc163494f4d0ae9a0a265326afdd611cd8acfd7` 한 개, 10개 파일.
+- `git diff --check origin/main..HEAD`, `node scripts/verify-fem-preflight.mjs` 12개 재확인 통과.
+- `git push origin dfc163494f4d0ae9a0a265326afdd611cd8acfd7:refs/heads/main` 실행, 기존 Firebase 자동 배포.
+- Firebase App Hosting `rollout-2026-11-12-001`: SUCCEEDED, `build-2026-11-12-001`: READY.
+  빌드 소스가 승인 커밋과 일치하며 새 빌드가 트래픽 대상에 반영됨을 확인. 완료 2026-11-12 22:41:37 KST.
+- Cloud Build 식별자: `d18ccc1b-0310-46a8-8814-6f2a1a4ee2f1`, 리전 us-central1.
+- 운영 `/ko/fem-ai`, `/en/fem-ai` HTTP 200, 새 홈페이지·메타데이터·기존 US 언어 전환 확인.
+- 운영 UI에서 엔진 미연결, 실행 버튼 비활성, 7개 품질 지표 `—`, INP/MSH 다운로드 비활성 확인.
+- 파일 선택·업로드·엔진·DB·결제·메일을 대상으로 운영 테스트하지 않음. 실제 FEM 연동·데몬 변경 없음.
+- 검증 브라우저 작업 종료. 이번 배포 기록은 문서만 별도 로컬 커밋하며 추가 push/배포하지 않음.
+- 문서 커밋 검증: `git diff --check`, 변경 파일 PROGRESS.md 한 개 확인. 실행 소스·설정은 배포 커밋과 동일.
+  해당 소스의 전체 빌드·타입체크·12개 입력 검사 통과 기록은 아래 항목 참조, 클라우드 배포 빌드도 READY 확인.
+
+
 ## 2026-11-12 — FEM Cloud-first 기업용 홈페이지·메싱 UI 프리뷰
 
 ### 계획과 승인 범위
