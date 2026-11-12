@@ -1,6 +1,16 @@
 
 # PROGRESS
 
+## 2026-11-13 — 사업자정보 대표자명 변경 (강유석, 성지세 / Yousuk Kang, Jise Sung)
+
+- 사용자 요청에 따라 회사 대표자 정보를 공동대표 표기로 갱신.
+- 변경 파일:
+  - `src/lib/business-info.ts`: `REPRESENTATIVE` 객체에 `ko: "강유석, 성지세"`, `en: "Yousuk Kang, Jise Sung"` 반영.
+  - `messages/ko.json`: 약관 제21조 회사 정보 대표자 수정.
+  - `messages/en.json`: Terms Article 21 Representative 수정.
+- 검증: `npx tsc --noEmit`, `git diff --check`, `npm run build` 모두 통과 (exit 0).
+
+
 ## 2026-11-13 — FEM 개념도 수정 및 FEM AI Pro 결제·엔진 연동 운영 배포 완료
 
 - 사용자 “배포해” 승인에 따라 원격 `main`으로 푸시 실행.

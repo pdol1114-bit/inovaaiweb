@@ -11,8 +11,8 @@ export const COMPANY_NAME = {
 } as const;
 
 export const REPRESENTATIVE = {
-    ko: "성지세",
-    en: "Jise Sung",
+    ko: "강유석, 성지세",
+    en: "Yousuk Kang, Jise Sung",
 } as const;
 
 export const BUSINESS_ADDRESS = {
