@@ -30,7 +30,7 @@ export function MeshConcept() {
       <g opacity=".8">{grid}</g>
     </g>
     <g stroke="#94a9c3" strokeWidth="1"><path d="M 199 144 H 106 V 104"/><circle cx="199" cy="144" r="3" fill="#0066ff" stroke="white"/><path d="M 438 345 H 514 V 291"/><circle cx="438" cy="345" r="3" fill="#0066ff" stroke="white"/></g>
-    <g fontFamily="monospace" fontSize="11" fill="#55708e"><text x="65" y="89">CAD → MESH</text><text x="482" y="279">HEX / WEDGE / TET</text></g>
-    <g transform="translate(55 354)" strokeWidth="2"><path d="M0 25 H30" stroke="#e67a7a"/><path d="M0 25 V-5" stroke="#6d9be0"/><path d="M0 25 L-17 38" stroke="#6ba98c"/><g fontFamily="monospace" fontSize="9" fill="#6d7d91"><text x="35" y="28">X</text><text x="-3" y="-12">Z</text><text x="-26" y="49">Y</text></g></g>
+    <g fontFamily="inherit" fontSize="11" fill="#55708e"><text x="65" y="89">CAD → MESH</text><text x="482" y="279">HEX / WEDGE / TET</text></g>
+    <g transform="translate(55 354)" strokeWidth="2"><path d="M0 25 H30" stroke="#e67a7a"/><path d="M0 25 V-5" stroke="#6d9be0"/><path d="M0 25 L-17 38" stroke="#6ba98c"/><g fontFamily="inherit" fontSize="9" fill="#6d7d91"><text x="35" y="28">X</text><text x="-3" y="-12">Z</text><text x="-26" y="49">Y</text></g></g>
   </svg>;
 }
