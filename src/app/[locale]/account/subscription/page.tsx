@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "@/i18n/routing";
 import { Link } from "@/i18n/routing";
 import { createClient } from "@/utils/supabase/server";
-import { getSubscriptionForUser } from "@/lib/subscription";
+import { getAllSubscriptionsForUser } from "@/lib/subscription";
 import { SubscriptionManager } from "@/components/account/SubscriptionManager";
 import { ArrowLeft } from "lucide-react";
 
@@ -24,7 +24,7 @@ export default async function SubscriptionPage({
         redirect({ href: "/auth", locale });
     }
 
-    const subscription = await getSubscriptionForUser(supabase, user!.id);
+    const subscriptions = await getAllSubscriptionsForUser(supabase, user!.id);
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50/50">
@@ -42,8 +42,14 @@ export default async function SubscriptionPage({
             </section>
 
             <section className="py-12">
-                <div className="container mx-auto px-4 max-w-3xl">
-                    <SubscriptionManager subscription={subscription} locale={locale} />
+                <div className="container mx-auto px-4 max-w-3xl space-y-6">
+                    {subscriptions.length === 0 ? (
+                        <SubscriptionManager subscription={null} locale={locale} />
+                    ) : (
+                        subscriptions.map((sub) => (
+                            <SubscriptionManager key={sub.id} subscription={sub} locale={locale} />
+                        ))
+                    )}
                 </div>
             </section>
         </div>

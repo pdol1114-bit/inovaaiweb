@@ -2,7 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createAdminClient } from "@/utils/supabase/admin";
-import { SNIFF_PREMIUM_MONTHLY_PRICE, SNIFF_PREMIUM_ORDER_NAME } from "@/lib/billing/constants";
+import { getPlanConfig, SNIFF_PREMIUM_PLAN, type PlanId } from "@/lib/billing/constants";
 import {
     deleteKeySafely,
     resolvePendingPayment,
@@ -59,8 +59,10 @@ type Outcome = { kind: "paid"; nextBillingDate: string } | { kind: "failed" } | 
 export async function chargeInitialSubscription(params: {
     user: User;
     billingKey: string;
+    plan?: PlanId;
 }): Promise<InitialChargeResult> {
     const { user, billingKey } = params;
+    const planConfig = getPlanConfig(params.plan ?? SNIFF_PREMIUM_PLAN);
 
     // 1) 빌링키 검증: 발급 완료 + 고객 ID = 세션 사용자
     let verification: Awaited<ReturnType<typeof verifyIssuedBillingKey>>;
@@ -84,12 +86,12 @@ export async function chargeInitialSubscription(params: {
         admin = createAdminClient();
 
         // 2) 사용자 잠금 (pending 행)
-        const lock = await acquirePendingLock(admin, user.id);
+        const lock = await acquirePendingLock(admin, user.id, planConfig);
         if (!lock.ok) return { status: "conflict", reason: "IN_PROGRESS" };
         paymentId = lock.paymentId;
 
         // 3) 잠금 후 구독 상태 재확인
-        const blocking = await findBlockingSubscription(admin, user.id);
+        const blocking = await findBlockingSubscription(admin, user.id, planConfig.plan);
         if (blocking) {
             await releaseUnusedLock(admin, user.id, paymentId);
             // 이미 구독 중인 카드와 다른 새 빌링키는 쓸 곳이 없으므로 정리한다.
@@ -108,8 +110,8 @@ export async function chargeInitialSubscription(params: {
     const requestResult = await requestBillingKeyCharge({
         paymentId,
         billingKey,
-        orderName: SNIFF_PREMIUM_ORDER_NAME,
-        amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+        orderName: planConfig.orderName,
+        amount: planConfig.monthlyPrice,
         customer: {
             id: user.id,
             email: user.email ?? undefined,
@@ -128,6 +130,7 @@ export async function chargeInitialSubscription(params: {
     const outcome = await settleAttempt(admin, {
         userId: user.id,
         paymentId,
+        plan: planConfig.plan,
         billingKey,
         card: verification.card,
         requestResult,
@@ -143,14 +146,16 @@ export async function chargeInitialSubscription(params: {
 
 async function acquirePendingLock(
     admin: SupabaseClient,
-    userId: string
+    userId: string,
+    planConfig: ReturnType<typeof getPlanConfig>
 ): Promise<{ ok: true; paymentId: string } | { ok: false }> {
     for (let attempt = 0; attempt < 2; attempt++) {
         const paymentId = newInitialPaymentId();
         const { error } = await admin.from("web_payments").insert({
             payment_id: paymentId,
             user_id: userId,
-            amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+            plan: planConfig.plan,
+            amount: planConfig.monthlyPrice,
             currency: "KRW",
             status: "pending",
         });
@@ -195,12 +200,14 @@ async function acquirePendingLock(
  */
 async function findBlockingSubscription(
     admin: SupabaseClient,
-    userId: string
+    userId: string,
+    plan: PlanId
 ): Promise<{ reason: "ALREADY_SUBSCRIBED" | "CANCEL_SCHEDULED"; billingKey: string | null } | null> {
     const { data, error } = await admin
         .from("web_subscriptions")
         .select("status, service_end_date, billing_key")
         .eq("user_id", userId)
+        .eq("plan", plan)
         .maybeSingle();
     if (error) throw new Error(`[billing/initial] failed to read subscription: ${error.message}`);
     if (!data) return null;

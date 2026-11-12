@@ -6,13 +6,20 @@ import { SubscribeButton } from "@/components/payment/SubscribeButton";
 import { BusinessInfo } from "@/components/layout/BusinessInfo";
 import { createClient } from "@/utils/supabase/server";
 import { getSubscriptionForUser } from "@/lib/subscription";
+import { FEM_PRO_PLAN, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
 
 export default async function PaymentPage({
     params,
+    searchParams,
 }: {
     params: Promise<{ locale: string }>;
+    searchParams: Promise<{ plan?: string }>;
 }) {
     const { locale } = await params;
+    const { plan: rawPlan } = await searchParams;
+    const plan = rawPlan === FEM_PRO_PLAN ? FEM_PRO_PLAN : SNIFF_PREMIUM_PLAN;
+    const isFem = plan === FEM_PRO_PLAN;
+
     setRequestLocale(locale);
     const t = await getTranslations("Payment");
 
@@ -21,16 +28,31 @@ export default async function PaymentPage({
     const {
         data: { user },
     } = await supabase.auth.getUser();
-    const subscription = user ? await getSubscriptionForUser(supabase, user.id) : null;
+    const subscription = user ? await getSubscriptionForUser(supabase, user.id, plan) : null;
     const hasActiveSubscription =
         subscription?.status === "active" || subscription?.status === "cancel_scheduled";
 
-    const features = [
-        t("features.aiAnalysis"),
-        t("features.healthHistory"),
-        t("features.expertSupport"),
-        t("features.earlyDetection")
-    ];
+    const features = isFem
+        ? [
+              t("fem.features.monthlyQuota"),
+              t("fem.features.formats"),
+              t("fem.features.qualityReport"),
+              t("fem.features.exports"),
+          ]
+        : [
+              t("features.aiAnalysis"),
+              t("features.healthHistory"),
+              t("features.expertSupport"),
+              t("features.earlyDetection"),
+          ];
+
+    const planName = isFem ? t("fem.planName") : t("planName");
+    const pageTitle = isFem ? t("fem.title") : t("title");
+    const pageDesc = isFem ? t("fem.description") : t("description");
+    const planTitle = isFem ? t("fem.planTitle") : t("planTitle");
+    const priceLabel = isFem ? t("fem.price") : t("price");
+    const vatNote = isFem ? t("fem.vatNote") : t("vatNote");
+    const recurringNoticeKey = isFem ? "fem.recurringNotice" : "recurringNotice";
 
     return (
         <div className="flex flex-col min-h-[calc(100vh-64px)] bg-[#f8fafc] overflow-hidden relative">
@@ -48,13 +70,13 @@ export default async function PaymentPage({
                         <div className="space-y-4">
                             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-600/10 border border-blue-600/10 text-blue-600 text-sm font-semibold">
                                 <Star className="h-4 w-4 fill-current" />
-                                <span>{t("planName")}</span>
+                                <span>{planName}</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight text-slate-900">
-                                {t("title")}
+                                {pageTitle}
                             </h1>
                             <p className="text-xl text-slate-600 max-w-lg leading-relaxed">
-                                {t("description")}
+                                {pageDesc}
                             </p>
                         </div>
 
@@ -88,12 +110,12 @@ export default async function PaymentPage({
                             </div>
 
                             <div className="mb-12">
-                                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-400 mb-3">{t("planTitle")}</h2>
+                                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-slate-400 mb-3">{planTitle}</h2>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-6xl font-black tracking-tighter text-slate-900">{t("price")}</span>
+                                    <span className="text-5xl md:text-6xl font-black tracking-tighter text-slate-900">{priceLabel}</span>
                                     <span className="text-slate-400 font-bold text-lg">/ mo</span>
                                 </div>
-                                <p className="mt-3 text-sm text-slate-400 font-medium">{t("vatNote")}</p>
+                                <p className="mt-3 text-sm text-slate-400 font-medium">{vatNote}</p>
                             </div>
 
                             <div className="space-y-8 flex-1">
@@ -127,7 +149,7 @@ export default async function PaymentPage({
                                 {/* 카드사 등록심사 요건: 자동갱신 조건·해지 경로를 결제 버튼 바로 위에 고지한다.
                                     심사 대상 문구이므로 흐리게 처리하지 말 것 (13px / slate-700 유지). */}
                                 <p className="text-[13px] leading-relaxed text-slate-700 font-medium">
-                                    {t.rich("recurringNotice", {
+                                    {t.rich(recurringNoticeKey, {
                                         manage: (chunks) => (
                                             <Link
                                                 href="/account/subscription"
@@ -147,7 +169,7 @@ export default async function PaymentPage({
                                         {t("manageSubscription")}
                                     </Link>
                                 ) : (
-                                    <SubscribeButton />
+                                    <SubscribeButton plan={plan} issueName={planName} />
                                 )}
 
                                 <div className="flex justify-center gap-4 text-[11px] text-slate-400">

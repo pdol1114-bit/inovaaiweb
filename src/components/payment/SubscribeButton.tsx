@@ -62,7 +62,13 @@ function formatBillingDate(value: string, locale: string): string {
     }).format(new Date(value));
 }
 
-export function SubscribeButton() {
+export function SubscribeButton({
+    plan = "sniff_premium",
+    issueName,
+}: {
+    plan?: string;
+    issueName?: string;
+} = {}) {
     const t = useTranslations("Payment");
     const locale = useLocale();
     const router = useRouter();
@@ -90,7 +96,7 @@ export function SubscribeButton() {
     const chargeWithBillingKey = async (billingKey: string) => {
         setPhase({ kind: "charging" });
         try {
-            applyOutcome(await registerBillingKey(billingKey));
+            applyOutcome(await registerBillingKey(billingKey, plan));
         } catch {
             setPhase({ kind: "error", key: "unexpected" });
         }
@@ -145,17 +151,18 @@ export function SubscribeButton() {
                 console.warn("[PortOne] TEST MODE — billing key issuance is not a real payment");
             }
 
+            const redirectQuery = plan !== "sniff_premium" ? `?plan=${encodeURIComponent(plan)}` : "";
             const response = await PortOne.requestIssueBillingKey({
                 storeId: PORTONE_STORE_ID,
                 channelKey: PORTONE_CHANNEL_KEY,
                 billingKeyMethod: "CARD",
                 issueId: crypto.randomUUID(),
-                issueName: t("planName"),
+                issueName: issueName ?? t("planName"),
                 customer: {
                     customerId: user.id,
                     email: user.email,
                 },
-                redirectUrl: `${window.location.origin}${window.location.pathname}`,
+                redirectUrl: `${window.location.origin}${window.location.pathname}${redirectQuery}`,
             });
 
             // On the redirect flow the browser navigates away and never reaches here.
@@ -186,12 +193,26 @@ export function SubscribeButton() {
                         ? t("status.paidBody", { date: formatBillingDate(phase.nextBillingDate, locale) })
                         : t("status.paidBodyNoDate")}
                 </p>
-                <Link
-                    href="/account/subscription"
-                    className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors"
-                >
-                    {t("status.goToManage")}
-                </Link>
+                <div className="flex flex-wrap justify-center gap-3">
+                    {plan === "fem_pro" && (
+                        <Link
+                            href="/fem-ai#mesh-workspace"
+                            className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors"
+                        >
+                            {t("status.goToFem")}
+                        </Link>
+                    )}
+                    <Link
+                        href="/account/subscription"
+                        className={`inline-flex items-center justify-center h-12 px-8 rounded-2xl font-bold transition-colors ${
+                            plan === "fem_pro"
+                                ? "bg-white border border-green-200 text-green-800 hover:bg-green-100"
+                                : "bg-blue-600 hover:bg-blue-700 text-white"
+                        }`}
+                    >
+                        {t("status.goToManage")}
+                    </Link>
+                </div>
             </div>
         );
     }

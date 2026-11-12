@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { getSubscriptionForUser } from "@/lib/subscription";
+import { isValidPlan, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
 
 /**
  * 해지 취소. 이용 종료일이 지나기 전, 해지 예약 상태에서만 동작한다.
  *
  * 빌링키를 종료일까지 보관하므로 카드를 다시 등록할 필요가 없다.
  */
-export async function POST() {
+export async function POST(request: Request) {
     const supabase = await createClient();
     const {
         data: { user },
@@ -18,8 +19,20 @@ export async function POST() {
         return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
     }
 
+    let rawPlan: unknown;
+    try {
+        const body = await request.json().catch(() => ({}));
+        rawPlan = (body as { plan?: unknown })?.plan;
+    } catch {
+        rawPlan = undefined;
+    }
+    const plan = rawPlan === undefined || rawPlan === null ? SNIFF_PREMIUM_PLAN : rawPlan;
+    if (!isValidPlan(plan)) {
+        return NextResponse.json({ error: "INVALID_PLAN" }, { status: 400 });
+    }
+
     // 종료일이 이미 지났다면 이 조회 안에서 'canceled'로 정리되어 아래 분기에 걸린다.
-    const subscription = await getSubscriptionForUser(supabase, user.id);
+    const subscription = await getSubscriptionForUser(supabase, user.id, plan);
 
     if (!subscription) {
         return NextResponse.json({ error: "NO_SUBSCRIPTION" }, { status: 404 });

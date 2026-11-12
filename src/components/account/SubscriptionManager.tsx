@@ -36,7 +36,11 @@ export function SubscriptionManager({
         setError(null);
         setIsPending(true);
         try {
-            const res = await fetch(endpoint, { method: "POST" });
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ plan: subscription?.plan ?? "sniff_premium" }),
+            });
             if (!res.ok) {
                 setError(t("errors.failed"));
                 return;
@@ -52,18 +56,34 @@ export function SubscriptionManager({
 
     if (!subscription || subscription.status === "canceled") {
         const isEnded = subscription?.status === "canceled";
+        const isFem = subscription?.plan === "fem_pro";
         return (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center space-y-6">
                 <p className="text-gray-600">{isEnded ? t("ended") : t("noSubscription")}</p>
-                <Link
-                    href="/payment"
-                    className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors"
-                >
-                    {isEnded ? t("resubscribe") : t("goToPayment")}
-                </Link>
+                <div className="flex flex-wrap justify-center gap-3">
+                    <Link
+                        href={isFem ? "/payment?plan=fem_pro" : "/payment"}
+                        className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors"
+                    >
+                        {isEnded ? t("resubscribe") : t("goToPayment")}
+                    </Link>
+                    {!isEnded && (
+                        <Link
+                            href="/payment?plan=fem_pro"
+                            className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-colors"
+                        >
+                            {t("goToFemPayment")}
+                        </Link>
+                    )}
+                </div>
             </div>
         );
     }
+
+    const isFemPlan = subscription.plan === "fem_pro";
+    const planLabel = isFemPlan ? t("femPlanName") : t("planName");
+    const planPriceLabel = isFemPlan ? t("femPlanPrice") : t("planPrice");
+    const paymentHref = isFemPlan ? "/payment?plan=fem_pro" : "/payment";
 
     const isCancelScheduled = subscription.status === "cancel_scheduled";
     const isPastDue = subscription.status === "past_due";
@@ -76,14 +96,14 @@ export function SubscriptionManager({
 
     const rows: { label: string; value: string }[] = isPastDue
         ? [
-              { label: t("plan"), value: `${t("planName")} · ${t("planPrice")}` },
+              { label: t("plan"), value: `${planLabel} · ${planPriceLabel}` },
               { label: t("dueDate"), value: endDate },
               ...(retryDate ? [{ label: t("nextRetryAt"), value: retryDate }] : []),
               { label: t("graceEndsAt"), value: graceDate },
               { label: t("startedAt"), value: formatDate(subscription.started_at, locale) },
           ]
         : [
-              { label: t("plan"), value: `${t("planName")} · ${t("planPrice")}` },
+              { label: t("plan"), value: `${planLabel} · ${planPriceLabel}` },
               {
                   label: isCancelScheduled ? t("serviceEndDate") : t("nextBillingDate"),
                   value: endDate,
@@ -104,7 +124,7 @@ export function SubscriptionManager({
         <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-6">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <h2 className="text-xl font-bold text-gray-900">{t("planName")}</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{planLabel}</h2>
                     <span
                         className={`px-3 py-1 rounded-full text-xs font-bold ${
                             isPastDue
@@ -140,7 +160,7 @@ export function SubscriptionManager({
                         </p>
                         <p className="text-sm font-medium text-red-900">{t("pastDueRepay")}</p>
                         <Link
-                            href="/payment"
+                            href={paymentHref}
                             className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-colors"
                         >
                             {t("payWithNewCard")}

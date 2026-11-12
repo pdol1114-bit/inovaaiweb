@@ -17,13 +17,16 @@ export type RegisterOutcome =
     | { kind: "notCharged" } // 결제 호출 전 실패 (출금 없음)
     | { kind: "error" };
 
-export async function registerBillingKey(billingKey: string): Promise<RegisterOutcome> {
+export async function registerBillingKey(
+    billingKey: string,
+    plan = "sniff_premium"
+): Promise<RegisterOutcome> {
     let res: Response;
     try {
         res = await fetch("/api/billing/register-key", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ billing_key: billingKey }),
+            body: JSON.stringify({ billing_key: billingKey, plan }),
         });
     } catch {
         // 요청이 서버에 닿았는지 알 수 없다. 결제가 진행됐을 수 있으므로 '확인 중'으로 안내한다.

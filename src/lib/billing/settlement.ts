@@ -1,6 +1,6 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { SNIFF_PREMIUM_MONTHLY_PRICE, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
+import { getPlanConfig, SNIFF_PREMIUM_PLAN, type PlanId } from "@/lib/billing/constants";
 import { addBillingMonths, nextBillingDateAfter } from "@/lib/billing/period";
 import {
     deleteBillingKey,
@@ -30,6 +30,8 @@ export type SettleOutcome =
 export type SettleContext = {
     userId: string;
     paymentId: string;
+    /** 결제 대상 플랜. 없으면 web_payments 행에서 조회한다. */
+    plan?: PlanId;
     /** 이번 요청이 결제에 쓴 빌링키. 없으면 결제 조회 결과에서 얻는다. */
     billingKey?: string;
     card?: CardInfo;
@@ -70,7 +72,9 @@ export async function resolvePendingPayment(
 
     switch (payment.status) {
         case "PAID": {
-            const amountOk = payment.amount.total === SNIFF_PREMIUM_MONTHLY_PRICE;
+            const plan = ctx.plan ?? (await resolvePaymentPlan(admin, ctx.paymentId, ctx.recurring?.subscriptionId));
+            const expectedAmount = getPlanConfig(plan).monthlyPrice;
+            const amountOk = payment.amount.total === expectedAmount;
             const currencyOk = payment.currency === "KRW";
             const keyOk = !!billingKey && payment.billingKey === billingKey;
             const customerOk = payment.customer?.id === ctx.userId;
@@ -91,6 +95,7 @@ export async function resolvePendingPayment(
                 : await activateSubscription(admin, {
                       userId: ctx.userId,
                       paymentId: ctx.paymentId,
+                      plan,
                       billingKey: billingKey!,
                       paidAt: new Date(payment.paidAt),
                       card: ctx.card,
@@ -133,12 +138,13 @@ export async function resolvePendingPayment(
  */
 async function activateSubscription(
     admin: SupabaseClient,
-    p: { userId: string; paymentId: string; billingKey: string; paidAt: Date; card?: CardInfo }
+    p: { userId: string; paymentId: string; plan: string; billingKey: string; paidAt: Date; card?: CardInfo }
 ): Promise<string> {
     const { data: previous, error: previousError } = await admin
         .from("web_subscriptions")
         .select("billing_key")
         .eq("user_id", p.userId)
+        .eq("plan", p.plan)
         .maybeSingle();
     if (previousError) throw new Error(`[billing/settle] failed to read subscription: ${previousError.message}`);
     const previousKey = (previous?.billing_key as string | null | undefined) ?? null;
@@ -154,7 +160,7 @@ async function activateSubscription(
             {
                 user_id: p.userId,
                 billing_key: p.billingKey,
-                plan: SNIFF_PREMIUM_PLAN,
+                plan: p.plan,
                 status: "active",
                 started_at: startedAt,
                 next_billing_date: nextBillingDate,
@@ -168,7 +174,7 @@ async function activateSubscription(
                 card_number_masked: card.numberMasked,
                 updated_at: new Date().toISOString(),
             },
-            { onConflict: "user_id" }
+            { onConflict: "user_id,plan" }
         )
         .select("id")
         .single();
@@ -295,19 +301,43 @@ async function markFinished(
     if (error) throw new Error(`[billing/settle] failed to mark payment ${status}: ${error.message}`);
 }
 
-/** 실패한 결제의 새 빌링키 삭제. 현재 구독이 쓰는 키면 지우지 않는다. */
+/** 실패한 결제의 새 빌링키 삭제. 현재 구독(다른 플랜 포함)이 쓰는 키면 지우지 않는다. */
 export async function deleteOrphanKey(admin: SupabaseClient, userId: string, billingKey: string) {
     const { data, error } = await admin
         .from("web_subscriptions")
-        .select("billing_key")
+        .select("id")
         .eq("user_id", userId)
-        .maybeSingle();
+        .eq("billing_key", billingKey)
+        .limit(1);
     if (error) {
         console.error("[billing/settle] could not check subscription key; skipping deletion", error.message);
         return;
     }
-    if (data?.billing_key === billingKey) return;
+    if (data && data.length > 0) return;
     await deleteKeySafely(billingKey, "첫 결제 실패");
+}
+
+async function resolvePaymentPlan(
+    admin: SupabaseClient,
+    paymentId: string,
+    subscriptionId?: string
+): Promise<string> {
+    const { data: pay } = await admin
+        .from("web_payments")
+        .select("plan")
+        .eq("payment_id", paymentId)
+        .maybeSingle();
+    if (pay?.plan) return pay.plan as string;
+
+    if (subscriptionId) {
+        const { data: sub } = await admin
+            .from("web_subscriptions")
+            .select("plan")
+            .eq("id", subscriptionId)
+            .maybeSingle();
+        if (sub?.plan) return sub.plan as string;
+    }
+    return SNIFF_PREMIUM_PLAN;
 }
 
 export async function deleteKeySafely(billingKey: string, reason: string) {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { getSubscriptionForUser } from "@/lib/subscription";
+import { isValidPlan, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
 import { deleteBillingKey } from "@/lib/portone/server";
 
 /**
@@ -14,7 +15,7 @@ import { deleteBillingKey } from "@/lib/portone/server";
  * 미납(past_due) 구독은 즉시 해지한다: canceled, service_end_date = 지금, 빌링키 삭제.
  * 결제가 진행 중(pending)이면 409 로 막는다 — 배치 재시도와 겹쳐 해지 후 출금되는 것을 방지.
  */
-export async function POST() {
+export async function POST(request: Request) {
     const supabase = await createClient();
     const {
         data: { user },
@@ -25,7 +26,19 @@ export async function POST() {
         return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
     }
 
-    const subscription = await getSubscriptionForUser(supabase, user.id);
+    let rawPlan: unknown;
+    try {
+        const body = await request.json().catch(() => ({}));
+        rawPlan = (body as { plan?: unknown })?.plan;
+    } catch {
+        rawPlan = undefined;
+    }
+    const plan = rawPlan === undefined || rawPlan === null ? SNIFF_PREMIUM_PLAN : rawPlan;
+    if (!isValidPlan(plan)) {
+        return NextResponse.json({ error: "INVALID_PLAN" }, { status: 400 });
+    }
+
+    const subscription = await getSubscriptionForUser(supabase, user.id, plan);
 
     if (!subscription || subscription.status === "canceled") {
         return NextResponse.json({ error: "NO_ACTIVE_SUBSCRIPTION" }, { status: 404 });

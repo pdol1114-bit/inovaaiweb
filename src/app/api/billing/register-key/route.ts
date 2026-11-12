@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getPortOneClient } from "@/lib/portone/server";
+import { isValidPlan, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
 import { chargeInitialSubscription, PreChargeError } from "@/lib/billing/initial-charge";
 
 /**
@@ -30,10 +31,16 @@ export async function POST(request: Request) {
     }
 
     let billingKey: unknown;
+    let rawPlan: unknown;
     try {
-        ({ billing_key: billingKey } = await request.json());
+        ({ billing_key: billingKey, plan: rawPlan } = await request.json());
     } catch {
         return NextResponse.json({ error: "INVALID_JSON" }, { status: 400 });
+    }
+
+    const plan = rawPlan === undefined || rawPlan === null ? SNIFF_PREMIUM_PLAN : rawPlan;
+    if (!isValidPlan(plan)) {
+        return NextResponse.json({ error: "INVALID_PLAN" }, { status: 400 });
     }
 
     if (typeof billingKey !== "string" || billingKey.length === 0 || billingKey.length > 200) {
@@ -46,7 +53,7 @@ export async function POST(request: Request) {
     }
 
     try {
-        const result = await chargeInitialSubscription({ user, billingKey });
+        const result = await chargeInitialSubscription({ user, billingKey, plan });
 
         switch (result.status) {
             case "paid":

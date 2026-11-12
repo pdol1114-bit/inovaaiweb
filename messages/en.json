@@ -211,13 +211,29 @@
             "paidBodyNoDate": "Your first month has been charged.",
             "processingTitle": "Confirming your payment",
             "processingBody": "Please check the status under Manage subscription in a moment. To avoid a duplicate charge, do not try again right away.",
-            "goToManage": "Go to Manage subscription"
+            "goToManage": "Go to Manage subscription",
+            "goToFem": "Go to FEM Workspace"
         },
         "refundPolicyLink": "Refund Policy",
         "termsLink": "Terms of Service",
         "privacyLink": "Privacy Policy",
         "manageSubscription": "Manage subscription",
-        "recurringNotice": "KRW 3,300 (VAT included) will be charged automatically to your registered card each month on the same date as your first payment. In months without that date, you will be charged on the last day of the month (e.g. if billed on the 31st, a 30-day month is billed on the 30th). You can cancel anytime under <manage>Manage subscription</manage>; once cancelled, you will not be billed from the next billing date."
+        "recurringNotice": "KRW 3,300 (VAT included) will be charged automatically to your registered card each month on the same date as your first payment. In months without that date, you will be charged on the last day of the month (e.g. if billed on the 31st, a 30-day month is billed on the 30th). You can cancel anytime under <manage>Manage subscription</manage>; once cancelled, you will not be billed from the next billing date.",
+        "fem": {
+            "title": "FEM AI Pro Subscription",
+            "description": "Run cloud-first one-touch automatic meshing and quality verification up to 40 times per month.",
+            "planTitle": "Selected Plan",
+            "planName": "FEM AI Pro",
+            "price": "KRW 50,000 / mo",
+            "vatNote": "VAT excluded (KRW 55,000 / month billed incl. VAT)",
+            "features": {
+                "monthlyQuota": "Up to 40 cloud auto-meshing jobs / month",
+                "formats": "STEP / STP / BREP input (up to 100 MiB)",
+                "qualityReport": "Hex · Wedge · Tet quality metrics report",
+                "exports": "Abaqus INP · Gmsh MSH export"
+            },
+            "recurringNotice": "KRW 55,000 (KRW 50,000 + 10% VAT) will be charged automatically to your registered card each month on the same date as your first payment. In months without that date, you will be charged on the last day of the month. You can cancel anytime under <manage>Manage subscription</manage>; once cancelled, you will not be billed from the next billing date."
+        }
     },
     "Privacy": {
         "title": "Privacy Policy",
@@ -658,7 +674,16 @@
         "contactDesc": "For initial inquiries, describe formats, part types and quality needs without attaching CAD. Share actual files only after security and upload policies are agreed.",
         "mailSubject": "Enterprise FEM mesh preprocessing inquiry",
         "metaTitle": "Enterprise FEM Mesh Preprocessing | INOVA.AI",
-        "metaDesc": "Cloud-first STEP/BREP mesh preprocessing for enterprise teams. Preview meshing settings, quality reports, 3D preview and INP/MSH export UI. Engine not connected."
+        "metaDesc": "Cloud-first STEP/BREP mesh preprocessing for enterprise teams. Preview meshing settings, quality reports, 3D preview and INP/MSH export UI. Engine not connected.",
+        "subscribeCta": "Subscribe FEM Pro (KRW 50,000/mo)",
+        "engineConnected": "Engine connected",
+        "quotaStatus": "{used} / {limit} runs used this month",
+        "subscriptionRequiredBadge": "FEM AI Pro subscription required",
+        "subscriptionRequiredDesc": "Cloud meshing execution requires an active FEM AI Pro subscription (KRW 50,000/mo + VAT, 40 runs/mo).",
+        "loginToSubscribe": "Sign in to subscribe",
+        "quotaExceededDesc": "You have used all 40 meshing runs for this month. Your quota resets on the next billing cycle.",
+        "doneLabel": "Completed",
+        "runningLabel": "Running"
     },
     "Pricing": {
         "title": "Pricing",
@@ -673,6 +698,13 @@
         "premiumFeature2": "Pet health history management",
         "premiumFeature3": "Professional veterinary questionnaire simulation",
         "premiumFeature4": "Early disease symptom detection",
+        "femPlanTitle": "FEM AI Pro",
+        "femPrice": "KRW 50,000/month",
+        "femPriceNote": "VAT excluded (KRW 55,000/mo billed incl. VAT)",
+        "femFeature1": "Up to 40 cloud auto-meshing runs / month",
+        "femFeature2": "STEP / STP / BREP input (up to 100 MiB)",
+        "femFeature3": "Hex-dominant, mixed, Tet & linear/quadratic",
+        "femFeature4": "Abaqus INP · Gmsh MSH export",
         "subscribeButton": "Start Subscription",
         "disclaimer": "Premium subscriptions are billed automatically every month. You can cancel at any time, and no further charges will be made from the next billing date after cancellation.",
         "refundPolicyLink": "View Refund Policy"
@@ -695,6 +727,9 @@
         "backToMain": "Back to Main",
         "planName": "Sniff Premium",
         "planPrice": "KRW 3,300/month (VAT included)",
+        "femPlanName": "FEM AI Pro",
+        "femPlanPrice": "KRW 50,000/month (+VAT · KRW 55,000 billed)",
+        "goToFemPayment": "Subscribe to FEM Pro",
         "plan": "Plan",
         "nextBillingDate": "Next billing date",
         "serviceEndDate": "Access ends on",

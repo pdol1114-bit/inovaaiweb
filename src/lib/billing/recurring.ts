@@ -2,7 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/utils/supabase/admin";
-import { SNIFF_PREMIUM_MONTHLY_PRICE, SNIFF_PREMIUM_ORDER_NAME } from "@/lib/billing/constants";
+import { getPlanConfig } from "@/lib/billing/constants";
 import { kstEndOfDay, kstStartOfDay } from "@/lib/billing/period";
 import { resolvePendingPayment } from "@/lib/billing/settlement";
 import { processPaymentWebhook } from "@/lib/billing/webhook";
@@ -50,9 +50,9 @@ export type BatchSummary = {
 
 type SubRow = Pick<
     Subscription,
-    "id" | "user_id" | "status" | "next_billing_date" | "failed_attempts" | "billing_key" | "grace_ends_at"
+    "id" | "user_id" | "plan" | "status" | "next_billing_date" | "failed_attempts" | "billing_key" | "grace_ends_at"
 >;
-const SUB_COLUMNS = "id, user_id, status, next_billing_date, failed_attempts, billing_key, grace_ends_at";
+const SUB_COLUMNS = "id, user_id, plan, status, next_billing_date, failed_attempts, billing_key, grace_ends_at";
 
 export async function runBillingBatch(options: { budgetMs: number }): Promise<BatchSummary> {
     const started = Date.now();
@@ -227,6 +227,8 @@ async function chargeCycle(admin: SupabaseClient, sub: SubRow): Promise<string> 
         return "error_precheck";
     }
 
+    const planConfig = getPlanConfig(sub.plan);
+
     // 2) 회차 잠금 (pending 행)
     const paymentId = newRecurringPaymentId();
     const { error: lockError } = await admin.from("web_payments").insert({
@@ -234,7 +236,8 @@ async function chargeCycle(admin: SupabaseClient, sub: SubRow): Promise<string> 
         user_id: sub.user_id,
         subscription_id: sub.id,
         kind: "recurring",
-        amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+        plan: planConfig.plan,
+        amount: planConfig.monthlyPrice,
         currency: "KRW",
         status: "pending",
         period_start: due,
@@ -274,8 +277,8 @@ async function chargeCycle(admin: SupabaseClient, sub: SubRow): Promise<string> 
     const requestResult = await requestBillingKeyCharge({
         paymentId,
         billingKey: sub.billing_key,
-        orderName: SNIFF_PREMIUM_ORDER_NAME,
-        amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+        orderName: planConfig.orderName,
+        amount: planConfig.monthlyPrice,
         customer: { id: sub.user_id, email },
     });
 
@@ -347,7 +350,7 @@ async function applyChargeFailure(admin: SupabaseClient, sub: SubRow): Promise<s
             payload: {
                 subscription_id: sub.id,
                 due_date: sub.next_billing_date,
-                amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+                amount: getPlanConfig(sub.plan).monthlyPrice,
                 ...(await cardSnapshot(admin, sub.id)),
                 retry_dates: retryDates,
                 grace_ends_at: graceEndsAt,
@@ -423,7 +426,7 @@ async function cancelForNonPayment(admin: SupabaseClient, sub: SubRow, reason: s
             subscription_id: sub.id,
             reason,
             due_date: sub.next_billing_date,
-            amount: SNIFF_PREMIUM_MONTHLY_PRICE,
+            amount: getPlanConfig(sub.plan).monthlyPrice,
             ...(await cardSnapshot(admin, sub.id)),
             canceled_at: now,
             charge_attempts: reason === "PAYMENT_FAILED_FINAL" ? sub.failed_attempts + 1 : sub.failed_attempts,

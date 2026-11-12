@@ -211,13 +211,29 @@
             "paidBodyNoDate": "첫 달 요금이 결제되었습니다.",
             "processingTitle": "결제 결과를 확인하고 있습니다",
             "processingBody": "잠시 후 구독 관리에서 상태를 확인해 주세요. 중복 결제를 막기 위해 바로 다시 시도하지 마세요.",
-            "goToManage": "구독 관리로 이동"
+            "goToManage": "구독 관리로 이동",
+            "goToFem": "FEM 작업실로 이동"
         },
         "refundPolicyLink": "환불정책",
         "termsLink": "이용약관",
         "privacyLink": "개인정보처리방침",
         "manageSubscription": "구독 관리",
-        "recurringNotice": "매월 결제일에 ₩3,300(부가세 포함)이 등록하신 카드로 자동 결제됩니다. 결제일은 첫 결제일과 같은 날짜이며, 그 날짜가 없는 달에는 해당 월의 말일에 결제됩니다(예: 31일 결제 시 30일까지 있는 달은 30일). 언제든 <manage>구독 관리</manage>에서 해지할 수 있으며, 해지 시 다음 결제일부터 청구되지 않습니다."
+        "recurringNotice": "매월 결제일에 ₩3,300(부가세 포함)이 등록하신 카드로 자동 결제됩니다. 결제일은 첫 결제일과 같은 날짜이며, 그 날짜가 없는 달에는 해당 월의 말일에 결제됩니다(예: 31일 결제 시 30일까지 있는 달은 30일). 언제든 <manage>구독 관리</manage>에서 해지할 수 있으며, 해지 시 다음 결제일부터 청구되지 않습니다.",
+        "fem": {
+            "title": "FEM AI Pro 구독",
+            "description": "원터치 자동 MESH 전처리와 품질 리포트를 월 40회까지 클라우드에서 바로 실행하세요.",
+            "planTitle": "선택한 플랜",
+            "planName": "FEM AI Pro",
+            "price": "₩50,000 / 월",
+            "vatNote": "부가세 별도 (실제 결제금액 ₩55,000 / 월)",
+            "features": {
+                "monthlyQuota": "클라우드 자동 메싱 월 40회",
+                "formats": "STEP / STP / BREP 입력 지원 (최대 100 MiB)",
+                "qualityReport": "Hex · Wedge · Tet 품질 지표 리포트",
+                "exports": "Abaqus INP · Gmsh MSH 내보내기"
+            },
+            "recurringNotice": "매월 결제일에 ₩55,000(공급가 ₩50,000 + 부가세 10%)이 등록하신 카드로 자동 결제됩니다. 결제일은 첫 결제일과 같은 날짜이며, 그 날짜가 없는 달에는 해당 월의 말일에 결제됩니다. 언제든 <manage>구독 관리</manage>에서 해지할 수 있으며, 해지 시 다음 결제일부터 청구되지 않습니다."
+        }
     },
     "Privacy": {
         "title": "개인정보처리방침",
@@ -658,7 +674,16 @@
         "contactDesc": "초기 문의에는 파일을 첨부하지 말고 형식·부품 유형·요구 품질을 알려주세요. 실제 자료 전달은 보안·업로드 정책 합의 후 진행합니다.",
         "mailSubject": "기업용 FEM 메쉬 전처리 도입 문의",
         "metaTitle": "기업용 FEM 자동 메쉬 전처리 | INOVA.AI",
-        "metaDesc": "기업 해석팀을 위한 클라우드 우선 STEP/BREP 자동 메쉬 전처리. 메싱 설정, 품질 보고서, 3D 미리보기 및 INP/MSH 출력 UI 프리뷰. 엔진 미연결."
+        "metaDesc": "기업 해석팀을 위한 클라우드 우선 STEP/BREP 자동 메쉬 전처리. 메싱 설정, 품질 보고서, 3D 미리보기 및 INP/MSH 출력 UI 프리뷰. 엔진 미연결.",
+        "subscribeCta": "FEM Pro 구독하기 (월 50,000원)",
+        "engineConnected": "엔진 연결됨",
+        "quotaStatus": "이번 달 {used} / {limit}회 사용",
+        "subscriptionRequiredBadge": "FEM AI Pro 구독 필요",
+        "subscriptionRequiredDesc": "클라우드 메싱 실행은 FEM AI Pro (월 50,000원 · 부가세 별도 / 월 40회) 구독 후 이용할 수 있습니다.",
+        "loginToSubscribe": "로그인 후 구독하기",
+        "quotaExceededDesc": "이번 달 실행 한도(40회)를 모두 사용했습니다. 다음 결제 주기에 초기화됩니다.",
+        "doneLabel": "완료",
+        "runningLabel": "처리 중"
     },
     "Pricing": {
         "title": "요금제",
@@ -673,6 +698,13 @@
         "premiumFeature2": "반려동물 건강 히스토리 관리",
         "premiumFeature3": "전문적인 수의학 문진 시뮬레이션",
         "premiumFeature4": "질병 조기 징후 감지",
+        "femPlanTitle": "FEM AI Pro",
+        "femPrice": "월 50,000원",
+        "femPriceNote": "부가세 별도 (결제금액 월 55,000원)",
+        "femFeature1": "클라우드 자동 메싱 월 40회",
+        "femFeature2": "STEP / STP / BREP 입력 (최대 100 MiB)",
+        "femFeature3": "Hex 우선 · 혼합 · Tet 및 1차/2차 요소",
+        "femFeature4": "Abaqus INP · Gmsh MSH 내보내기",
         "subscribeButton": "구독 시작하기",
         "disclaimer": "Premium 구독은 매월 자동으로 결제됩니다. 언제든지 해지할 수 있으며, 해지 시 다음 결제일부터 요금이 청구되지 않습니다.",
         "refundPolicyLink": "환불정책 보기"
@@ -695,6 +727,9 @@
         "backToMain": "메인으로 돌아가기",
         "planName": "Sniff Premium",
         "planPrice": "월 3,300원 (부가세 포함)",
+        "femPlanName": "FEM AI Pro",
+        "femPlanPrice": "월 50,000원 (부가세 별도 · 결제금액 55,000원)",
+        "goToFemPayment": "FEM Pro 구독하기",
         "plan": "플랜",
         "nextBillingDate": "다음 결제 예정일",
         "serviceEndDate": "이용 종료일",

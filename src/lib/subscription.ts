@@ -76,17 +76,39 @@ export async function settleIfExpired(
     }
 }
 
-/** 로그인한 사용자의 구독을 조회한다. 종료일이 지났으면 먼저 정리한다. */
+/** 로그인한 사용자의 특정 플랜 구독을 조회한다. 종료일이 지났으면 먼저 정리한다. */
 export async function getSubscriptionForUser(
     supabase: SupabaseClient,
-    userId: string
+    userId: string,
+    plan = "sniff_premium"
 ): Promise<Subscription | null> {
     const { data, error } = await supabase
         .from("web_subscriptions")
         .select(COLUMNS)
         .eq("user_id", userId)
+        .eq("plan", plan)
         .maybeSingle();
 
     if (error || !data) return null;
     return settleIfExpired(data as Subscription, userId);
+}
+
+/** 로그인한 사용자의 모든 웹 구독을 조회한다. 종료일이 지난 건은 먼저 정리한다. */
+export async function getAllSubscriptionsForUser(
+    supabase: SupabaseClient,
+    userId: string
+): Promise<Subscription[]> {
+    const { data, error } = await supabase
+        .from("web_subscriptions")
+        .select(COLUMNS)
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true });
+
+    if (error || !data) return [];
+    return Promise.all((data as Subscription[]).map((sub) => settleIfExpired(sub, userId)));
+}
+
+export function isSubscriptionActive(sub: Subscription | null): boolean {
+    if (!sub) return false;
+    return sub.status === "active" || sub.status === "cancel_scheduled";
 }
