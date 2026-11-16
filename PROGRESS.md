@@ -9,11 +9,14 @@
 - 운영 차단 확인 (23:42 KST, 한·영 32개 항목 통과): FEM 구매 링크 없음, 요금 페이지 "결제 준비 중"·엔진 범위 문구,
   `/payment` 의 Sniff 결제 버튼·SDK 유지, `/payment?plan=fem_pro`·모바일 복귀 URL·알 수 없는 plan 은 SDK 없는 안내 화면,
   로그인 없는 등록 API 요청은 `401`(포트원 호출·DB 쓰기 전).
-- 운영 DB: 사용자가 SQL 편집기에서 `0012_billing_plan_compat.sql` 실행 (23:44 KST). 사전 확인 구독·결제·pending 0건,
+- 운영 DB: Codex 가 사용자 승인 범위에서 Supabase SQL 편집기로 `0012_billing_plan_compat.sql` 실행 (2026-11-16 23:44 KST).
+  (정정: 처음에는 실행 주체를 "사용자"로 잘못 적었다.) **완료된 것은 스키마 적용이며, 실제 결제 성공은 검증되지 않았다.** 사전 확인 구독·결제·pending 0건,
   필수 유일 인덱스 5개 존재. 적용 후 `web_payments.plan`(text, 기본 `sniff_premium`, NOT NULL), `web_subscriptions_user_id_key` 보존,
   `web_subscriptions_user_id_plan_key` 생성, `fem_jobs` 없음, 구독·결제 0건 유지. `0011` 은 실행하지 않았다.
   Supabase 마이그레이션 이력 표에는 등록하지 않았다(SQL 편집기 실행).
 - 적용 후 공개 키 읽기 전용 확인 (23:45 KST): `web_payments.plan` 조회 가능, `fem_jobs` 없음.
+- 정기결제 배치(Cloud Scheduler `sniff-billing-daily`, 매일 10~14시 KST 매시): 0012 적용 후 첫 실행은 2026-11-17 10:00 KST 예정.
+  2026-11-16 23:52 KST 기준 아직 실행 전이라 미확인. 구독이 0건이면 실행돼도 "배치 실행 확인, 실제 청구 미검증"이다.
 - **미검증**: 실제 PG 결제 성공(실제 결제는 승인 범위 밖), 로그인 상태의 등록 API 403·구독 화면(운영), 0012 적용 후 정기결제 배치 결과
   (구독 0건이라 배치가 돌아도 청구 성공 검증은 아니다), 포트원에만 남은 빌링키·결제 유무.
 - 이 기록 커밋은 push 하지 않았다(push 는 재배포를 일으킨다).
