@@ -1,6 +1,23 @@
 
 # PROGRESS
 
+## 2026-11-16 — FEM 신규 판매 차단 운영 배포 및 운영 DB 0012 적용 완료
+
+- 사용자 승인(코드 배포 → 차단 확인 → DB 0012 순서)에 따라 진행.
+- 코드: 커밋 `b2e0b90` 을 `main` 에 push (23:38 KST, `ad84a7e..b2e0b90`. 미push 였던 문서 커밋 `2e8362f` 포함).
+  Firebase App Hosting `rollout-2026-11-16-001` / `build-2026-11-16-001` 성공 (23:41 KST).
+- 운영 차단 확인 (23:42 KST, 한·영 32개 항목 통과): FEM 구매 링크 없음, 요금 페이지 "결제 준비 중"·엔진 범위 문구,
+  `/payment` 의 Sniff 결제 버튼·SDK 유지, `/payment?plan=fem_pro`·모바일 복귀 URL·알 수 없는 plan 은 SDK 없는 안내 화면,
+  로그인 없는 등록 API 요청은 `401`(포트원 호출·DB 쓰기 전).
+- 운영 DB: 사용자가 SQL 편집기에서 `0012_billing_plan_compat.sql` 실행 (23:44 KST). 사전 확인 구독·결제·pending 0건,
+  필수 유일 인덱스 5개 존재. 적용 후 `web_payments.plan`(text, 기본 `sniff_premium`, NOT NULL), `web_subscriptions_user_id_key` 보존,
+  `web_subscriptions_user_id_plan_key` 생성, `fem_jobs` 없음, 구독·결제 0건 유지. `0011` 은 실행하지 않았다.
+  Supabase 마이그레이션 이력 표에는 등록하지 않았다(SQL 편집기 실행).
+- 적용 후 공개 키 읽기 전용 확인 (23:45 KST): `web_payments.plan` 조회 가능, `fem_jobs` 없음.
+- **미검증**: 실제 PG 결제 성공(실제 결제는 승인 범위 밖), 로그인 상태의 등록 API 403·구독 화면(운영), 0012 적용 후 정기결제 배치 결과
+  (구독 0건이라 배치가 돌아도 청구 성공 검증은 아니다), 포트원에만 남은 빌링키·결제 유무.
+- 이 기록 커밋은 push 하지 않았다(push 는 재배포를 일으킨다).
+
 ## 2026-11-16 — 결제 코드·운영 DB 불일치 해소(0012) + FEM AI Pro 신규 판매 차단 (사용자 승인: 코드 배포 → 차단 확인 → 운영 DB 0012 적용 순서)
 
 ### 확인된 사실
