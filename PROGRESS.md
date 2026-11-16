@@ -1,5 +1,55 @@
+# PROGRESS
+
+## 2026-11-17 — FEM 로그인 후 월 40회 무료 베타 준비 (Codex)
+
+사용자가 무료 베타(결제 불필요), 기존 Pro 조직 FEM Supabase 월 $10, 기존 GCP 서울 리전 FEM 자원 생성·합성 CAD 시험($5 이내),
+기존 Google OAuth 정보의 FEM 등록·새 콜백 추가, 운영 웹 IAM/시크릿 연결 및 검증 후 커밋·push·배포를 명시 승인했다.
+기존 보류와 유료 구독 필수 조건은 이 범위에서 대체된다. Sniff·고객 결제 코드는 유지한다.
+
+- FEM 전용 Supabase: dkvshlxfvzpdmbfkmirz, 서울, Micro, 월 $10 추가 안내. 전용 0001 스키마만 적용.
+- 작업공간: /tmp/fem-beta-web (dcf7fb0 기준 + 보존된 통합 v2 + 무료 베타 변경).
+  기존 FEM-Web-ws, FEM-Web-ws2, 원본 stash는 보존. Documents 사본의 파일 읽기 지연으로 임시 작업공간에서 검증했다.
+- FEM_ACCESS_MODE=free_beta일 때만 로그인 회원에게 무료 이용 권한을 준다. subscribed는 실제 유료 상태로 유지하고 entitled와 구분한다.
+  월 40회 DB 원자적 예약, 소유권, 인증, 조회 실패 시 차단을 유지한다. Pro 구독 행을 만들어 권한을 속이지 않는다.
+- 비공개 Cloud Run API + X-Serverless-Authorization IAM ID 토큰 + 별도 워커 키. 시크릿은 RUNTIME 전용.
+- 실제 클라우드 합성 CAD 7건: Hex box 성공, Tet tee 성공, torus 경고, 경계 불일치·미지원·조립체 Tet·요소 한도 실패 예상대로.
+  INP/MSH/미리보기 해시 검증. 원본 엔진 소스 26개 해시 19dff7f0dec240d9859b00eaf736660e8bf0227d56e9398fe11789991e61ec02 동일.
+- 신규 FEM DB + 로컬 웹 + 비공개 클라우드 워커 실제 세션 시험 9개 통과: 무료 권한, 비로그인 거절, 위조 ID 무시,
+  소유권, 실제 메싱·다운로드 해시·미리보기, 중복 요청, 45건 동시 예약 중 잔여 39건만 접수(총40), 브라우저 RPC 금지.
+  합성 계정 2개 삭제 및 해당 DB 작업 0건 확인. 실제 PG·청구 없음.
+- 단위 시험 15개 통과, 실제 워커 통합 시험 10개는 이 실행에서 환경 미설정으로 건너뜀(별도 실제 세션·클라우드 시험으로 확인).
+  타입 검사, 변경 파일 린트, 실제 FEM 공개 설정의 프로덕션 빌드 통과.
+- 실제 Linux 비교 12개 사례 × 2회 = 24회: 기존 에뮬레이션 Linux와 판정·오류 코드·요소/절점/미달/무효 수·경계 통과 여부·임계값 동일.
+  최소 SJ 차이는 최대 6.22e-15. Mac과 Tet 구성 차이는 유지된다. 이를 Mac 633/633 검증과 같다고 표시하지 않는다.
+- 대형 T자관은 Cloud Run 1 vCPU/4 GiB에서 180.083초 TIMEOUT, 최대 RSS 약 1.03 GiB. 실패 결과·다운로드 차단 확인.
+- Google 웹 클라이언트의 기존 복귀 주소들을 보존하고 FEM Supabase 콜백 1개를 추가했다. FEM Google 제공자 저장·활성화 및 Google 계정 선택 화면 도달 확인.
+  Apple은 미설정이므로 버튼과 서버 액션을 비활성화한다. Google 실제 OAuth 왕복, 운영 배포·운영 확인은 아직 진행 중이다.
+- 실제 Linux 원본 전체 시험 완료: 622 passed / 11 failed / 633 (1948.15초). 원본 테스트·임계값은 수정하지 않았다.
+  실패는 기존 에뮬레이션과 같은 11개: 좌표 해시 2, 기준선/문서 재생성 3, 얇은 판 Mac 경고 기대값 및 관련 문서 6.
+  stage5 문서 실패도 hollow_cylinder.step의 기준 좌표 해시 MISMATCH에서 발생함을 원문으로 확인했다.
+  이를 전체 통과라고 표시하지 않는다. Linux에서 실제 생성된 메쉬의 고정 기준 판정을 보고하고 Mac 결과와 동일하다고 주장하지 않는 무료 베타다.
+  별도 진행 로그용 중복 실행은 첫 전체 결과 확보 후 취소했다. 24회 비교와 클라우드 기능·세션 검증은 별도 결과다.
+
 
 # PROGRESS
+
+## 2026-11-16 — FEM 연동 통합 변경을 운영 반영 이후 코드 기준으로 재구성 (작업공간 브랜치 `fem-integration-v2`, 미배포)
+
+운영에 반영된 판매 차단·결제 호환 변경(`b2e0b90`, 0012) 위에 FEM 연동 변경(전용 계정·워커 연결·뷰어)을 다시 얹었다.
+운영 배포·운영 DB·시크릿 변경 없음. FEM 전용 Supabase 프로젝트와 클라우드 자원은 만들지 않았다. 무료 체험 횟수 없음.
+
+- 이미 운영에 있는 변경은 이 묶음에서 뺐다(판매 판정·등록 API·결제 화면·요금/구독 화면·`tests/billing`). 판매 차단 문구는 운영 문구 그대로다.
+- 통합 화면이 쓰지 않게 된 문구 키 2개(`FemAi.paymentPreparingDesc`, `FemAi.engineConnected`)는 뺐다(한·영 동일).
+- 판매 차단 시험은 `tests/billing/sales-block-e2e.test.mjs` 하나로 합쳤다(`tests/fem` 의 중복 시험·모의 PG 제거).
+- 마이그레이션: `supabase/migrations/` = 기본(Sniff·결제) 프로젝트 전용, `supabase-fem/migrations/` = FEM 전용 프로젝트 전용. 서로 번호가 독립이다.
+  기본 프로젝트의 `0012` 는 `0012_billing_plan_compat.sql` 하나뿐이다(이전 작업공간의 `0012_fem_job_engine_link.sql` 은 FEM 쪽 `0001_fem_core.sql` 로 옮겨져 없다).
+  운영 DB 는 `0011` 미적용 + `0012` 를 SQL 편집기로 적용한 상태이며 Supabase 마이그레이션 이력 표에는 기록이 없다 — `supabase db push` 류의 일괄 적용을 쓰면 `0011` 이 실행되므로 쓰지 않는다.
+- 아래 세 항목(전용 프로젝트 분리, 로그인 통합, 엔진 연동)은 이전 기준(`2e8362f`)에서 작성한 기록이다. 내용은 이 항목이 재구성한 상태로 유효하다.
+
+시험(격리된 로컬: 운영형 기본 DB(0001~0010+0012) + FEM DB + 로컬 워커(실제 엔진) + 모의 PG. 운영·실제 PG 미사용):
+`npm run test:fem` 23개, `tests/fem/session-e2e.test.mjs` 9개, `tests/billing/sales-block-e2e.test.mjs` 15개(1개는 원본 코드 전용이라 건너뜀) 통과.
+FEM 설정 없이 빌드한 경우: `/api/fem/*` 는 `503 FEM_AUTH_NOT_CONFIGURED`, FEM 로그인 화면은 "준비 중"(로그인 버튼 없음), Sniff 화면은 정상.
+`npx tsc --noEmit`, 변경 파일 eslint, `next build` 통과. **미실시**: Google·Apple OAuth 실제 왕복, 실제 PG, 클라우드 워커, 운영 환경.
 
 ## 2026-11-16 — FEM 신규 판매 차단 운영 배포 및 운영 DB 0012 적용 완료
 
@@ -73,6 +123,100 @@ node --test tests/billing/sales-block-e2e.test.mjs
 - 같은 이유로 0012 적용 뒤 코드를 원본으로 롤백하면 그 위험이 다시 열린다. 롤백보다 수정 배포를 우선한다.
 - 미납 상태의 기존 FEM 구독은 "새 카드로 결제"가 신규 결제 등록과 같은 API 라서 함께 막힌다(운영 구독 0건이라 현재 대상 없음).
 - FEM 작업 화면(`src/lib/fem/preflight.ts`)의 100 MiB 제한 등 요금 페이지 밖의 FEM 문구·검증은 이번 범위가 아니다.
+## 2026-11-16 — FEM 회원을 FEM 전용 Supabase 프로젝트로 분리 (작업공간 브랜치, 미배포)
+
+사용자 결정으로 아래 "FEM 로그인을 기존 Supabase Auth와 통합" 항목의 방식을 바꿨다: FEM 회원·세션·작업 이력을 Sniff·결제용 기본
+프로젝트와 다른 Supabase 프로젝트에 둔다. 로그인 방식은 Google·Apple 그대로. 규격: `docs/FEM-ENGINE-CONTRACT.md` "로그인과 계정".
+**FEM 프로젝트는 만들지 않았다**(유료 자원·시크릿·제공자 등록은 별도 승인). 운영 Supabase·회원 데이터·시크릿은 건드리지 않았다.
+무료 체험 횟수는 추가하지 않았다.
+
+### 변경
+- 신규: `src/utils/supabase/fem.ts`, `fem-config.ts`, `src/app/actions/fem-auth.ts`, `src/app/[locale]/fem-ai/auth/page.tsx`,
+  `src/app/[locale]/fem-ai/auth/callback/route.ts`, `src/lib/fem/membership.ts`, `supabase-fem/migrations/0001_fem_core.sql`
+  (`fem_subscriptions`, `fem_jobs`, `fem_reserve_job` — FEM 프로젝트 전용).
+- `src/lib/fem/server.ts`, `src/app/api/fem/jobs/route.ts`: FEM 프로젝트의 세션·구독·작업 저장만 사용.
+- `src/utils/supabase/middleware.ts`: FEM 세션 쿠키가 있는 요청에서 FEM 세션 갱신(없으면 기존 동작).
+- `src/components/fem/FemWorkspace.tsx`, `messages/{ko,en}.json`(`FemAuth` 11키 신설, `FemAi` 문구): FEM 계정 로그인·로그아웃, 계정 표시.
+- 되돌림: 아래 항목의 `src/lib/auth/return-path.ts`, `auth.ts`·`auth/page.tsx` 변경, `supabase/migrations/0012`(FEM 프로젝트 스키마로 이동).
+  기존 로그인 콜백은 `next` 쿼리를 받지 않도록만 고쳤다(외부 이동 차단). 아래 두 항목의 해당 서술은 이 항목이 대체한다.
+
+### 시험 (격리된 로컬 환경, 운영 미접속)
+- `npm run test:fem` 23개(단위 13 + 실제 워커 통합 10), `tests/fem/session-e2e.test.mjs` 9개(일회용 로컬 Supabase 2개), `tests/fem/sql/run.sh`.
+- 로그인 버튼 제출 시 FEM 화면은 FEM 프로젝트로, 기존 로그인 화면은 기본 프로젝트로 가는 것을 확인.
+- **미실시**: Google·Apple OAuth 실제 왕복과 로그인 성공 후 복귀, FEM 로그아웃 버튼의 브라우저 동작, 실제 Supabase 프로젝트 대상 시험.
+
+### 운영 적용 전 미해결
+- **FEM 구독 결제 연결 방식 미정.** 지금은 FEM 계정이 구독 상태가 될 경로가 없고, 기존 `/payment?plan=fem_pro`는 Sniff 계정에 구독을 만든다.
+  결제·웹훅 코드는 손대지 않았다. 이 상태로 배포 금지.
+- FEM 프로젝트 생성·스키마 적용·제공자 등록·리디렉션 URL·환경변수·시크릿 등록.
+
+## 2026-11-16 — FEM 로그인을 기존 Supabase Auth와 통합 (작업공간 브랜치, 미배포)
+
+별도 회원 체계 없이 기존 Google·Apple 로그인과 세션을 그대로 쓴다. 규격: `docs/FEM-ENGINE-CONTRACT.md` "로그인과 계정".
+운영 Supabase 설정·회원 데이터·인증 제공자·시크릿은 건드리지 않았다. **무료 체험 횟수는 추가하지 않았다.**
+
+### 변경
+- `src/lib/auth/return-path.ts`(신규): 로그인 복귀 경로 허용 목록(`/{ko|en}/fem-ai`, `#mesh-workspace`).
+- `src/app/actions/auth.ts`: `signInWithGoogle/Apple(locale, next?)` — 허용된 복귀 경로를 httpOnly 쿠키에 기록. `redirectTo`는 그대로.
+- `src/app/[locale]/auth/page.tsx`: `?next=`를 허용 목록으로 확인해 액션에 전달, 안내 한 줄.
+- `src/app/[locale]/auth/callback/route.ts`: 쿠키(또는 허용 목록을 통과한 `next`)로만 이동. 이전의 검사 없는 `next` 이동
+  (`${origin}${next}` — `@host`, `.host`로 외부 이동 가능)을 막았다. 값이 없으면 기존대로 `/auth/success`.
+- `FemWorkspace.tsx`: 로그인 필요 안내(파일 재선택 안내 포함)와 복귀 링크, 로그인·구독·이용량·엔진 상태를 따로 표시,
+  조회 중 401/403이면 조회를 멈추고 다시 로그인 안내.
+- 문구: `Auth.returnNotice`, `FemAi` 로그인 관련 키(한·영 일치). "본인인증" 표현 없음.
+
+### 검증
+- `npx tsc --noEmit`, 변경 파일 `eslint`, `npm run build` 통과.
+- 복귀 경로 단위 시험 4개(외부 URL·`//`·`@`·역슬래시·제어문자·목록 밖 경로 거절).
+- 실제 세션 시험 8개(`tests/fem/session-e2e.test.mjs`): 일회용 로컬 Supabase(마이그레이션 0001~0012 적용) + 이 빌드 + 로컬 워커 + 실제 엔진.
+  비로그인 401, 미구독·Sniff 구독만 있는 계정 403, 기존 계정으로 재가입 없이 실행, 본문·헤더의 가짜 사용자 ID 무시(행 소유자 = 세션 사용자),
+  다른 구독자의 작업 접근 404(미존재와 동일), 로그아웃 후 옛 쿠키 401, 변조 쿠키 401, 실제 DB에서 동시 45건 중 39건만 접수,
+  로그인 화면·콜백의 한·영 동작과 외부 이동 차단, `/sniff`·`/pricing`·`/fem-ai` 200.
+
+### 미실시
+- Google·Apple OAuth 실제 왕복과 로그인 성공 뒤 FEM 화면 복귀(쿠키 기록 → 콜백 성공 경로). 시험 계정은 로컬 인증 서버의 관리자 API로 만들었다.
+- 토큰의 자연 만료(시간 경과). 로그아웃과 변조 쿠키로 대신 확인했다.
+- 운영 Supabase 대상 시험, Sniff 네이티브 앱(변경 없음).
+
+## 2026-11-16 — FEM 엔진 실제 연동 (작업공간 브랜치 `fem-engine-integration`, 미배포)
+
+별도 작업공간(`/Volumes/Imationz991_1tb/FEM-Web-ws`, push 차단한 로컬 복제본)에서 작업했다.
+**main push·운영 배포·운영 DB 마이그레이션·시크릿 등록은 하지 않았다.** 규격: `docs/FEM-ENGINE-CONTRACT.md`.
+
+### 변경
+- 지원 범위를 실제 엔진에 맞춤: Hex 우선(`hex_priority`)·Tet Only(`tet_only`), 1차 요소, mm, 50 MiB
+  (엔진 바이트 비교값 52,428,800). mixed·2차·cm·m은 선택 불가 + 서버 거절. Jacobian·Aspect 목표 입력 제거
+  (엔진 고정 기준 안내로 대체).
+- 제출 흐름: 작업 생성(JSON) → 파일 업로드(클라우드: 객체 저장소 서명 URL, 로컬 워커: 웹 경유) → 시작 → 조회.
+  요청 키(`requestKey`)로 재시도가 작업·실행을 중복 생성하지 않는다.
+- 워커 호출에 인증키 필수, 조회·다운로드·미리보기에 세션 사용자 ID 전달, 워커 응답 구조 검증.
+- "엔진 연결됨" 표시 제거 → 설정됨 / 워커 응답 / 실제 메싱 완료 기록을 구분해 표시.
+- 통신 실패·제출 거절·메싱 실패·결과 만료 구분. 상태 조회 실패는 `sync: unavailable`로 표시.
+  폴링은 백오프(1.5초 → 최대 10초), 연속 5회 실패 또는 10분 경과 시 중단 + 수동 재조회.
+- 결과: 경고는 경고로, 없는 지표는 —, 모서리 길이비와 Aspect Ratio 구분, 미달 요소와 퇴화·무효 요소 구분,
+  INP/MSH 해시 표시, 실제 `viewer.json` 기반 3D 뷰어(three.js 추가), 대형 미리보기 생략 표시.
+- 월 이용량: 조회 실패 시 실행 차단(40회로 간주하지 않음), DB 함수 `fem_reserve_job`로 한도 확인+행 생성 원자화,
+  `counts_toward_quota` 컬럼으로 차감 기준 명시(마이그레이션 `0012`, **미적용**).
+- 문구: 엔진이 설정된 환경에서는 실제 동작(서버 전송, 원본 삭제, 결과 24시간 제공)을 안내하고,
+  미설정 환경에서는 기존 프리뷰 문구를 유지한다(한·영 키 186개 일치).
+
+### 검증 (명령과 결과)
+- `npx tsc --noEmit` 통과, 변경 파일 `eslint` 통과(저장소 전체 lint의 기존 오류 25건은 이번 범위 밖, 미수정),
+  `npm run build` 통과(`MISSING_MESSAGE` 0건).
+- `npm run test:fem`: 단위 11/11, 실제 워커(로컬, 실제 엔진) 통합 10/10. 저장소는 시험용 메모리 구현.
+- `tests/fem/sql/run.sh`: 일회용 로컬 Postgres에서 마이그레이션 `0012` — 동시 60건 중 정확히 40건 생성,
+  같은 요청 키 20회 → 행 1개, 브라우저 역할은 함수 실행 불가.
+- 헤드리스 Chrome: `/ko/fem-ai`, `/en/fem-ai` 렌더링(원시 키 노출 0), 실제 엔진 `viewer.json`의 뷰어 렌더링.
+
+### 미실시 / 남은 것
+- 로그인 상태의 브라우저 전체 흐름(운영 Supabase 대상 시험은 금지, 로컬 Supabase 없음).
+- 클라우드 워커 대상 시험(자원 미생성), 서명 URL 직접 업로드의 브라우저 동작(CORS 포함).
+- Abaqus 실제 솔버 검증, Gmsh(GPL) 서비스 사용 조건 검토.
+- 사용자 확인 필요: 이용 횟수 반영 규칙, 학습 이용·백업 정책 문구, 작업 이력(파일명 등) 보관 기간.
+
+### 배포 순서(승인 후)
+마이그레이션 `0012` 적용 → 워커 자원·시크릿 준비 → `apphosting.yaml`에 `FEM_ENGINE_URL`(값)·`FEM_ENGINE_API_KEY`(secret)
+추가 → main push. 차단: 두 변수 중 하나를 빼면 실행이 막히고 화면이 프리뷰 문구로 돌아간다.
 
 ## 2026-11-13 — 사업자정보 대표자명 변경 운영 배포 완료
 

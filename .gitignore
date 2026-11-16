@@ -85,3 +85,6 @@ npm-debug.log*
 
 # 작업지시서 (일회성 문서)
 WORK_ORDER_*.md
+
+# FEM 연동 시험 빌드 산출물
+.fem-test-build/

@@ -1,175 +1,83 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
-import { getSubscriptionForUser, isSubscriptionActive } from "@/lib/subscription";
-import { FEM_PRO_MONTHLY_QUOTA, FEM_PRO_PLAN } from "@/lib/billing/constants";
-import { inspectSelection, validSettings, type MeshSettings } from "@/lib/fem/preflight";
-import { isFemEngineConfigured, submitEngineMeshJob } from "@/lib/fem/engine-client";
+import { createFemAdminClient, createFemClient } from "@/utils/supabase/fem";
+import { FEM_PRO_MONTHLY_QUOTA } from "@/lib/billing/constants";
+import { getFemSubscription, isFemSubscriptionActive, hasFemAccess, femAccessMode } from "@/lib/fem/membership";
+import { inspectSelection, parseEngineSettings } from "@/lib/fem/preflight";
+import { getEngineState } from "@/lib/fem/engine-client";
 import { getFemMonthlyUsage } from "@/lib/fem/quota";
+import { submitJob } from "@/lib/fem/job-service";
+import { isUuid } from "@/lib/fem/worker-contract";
+import { errorResponse, femContext, internalError, NO_STORE } from "@/lib/fem/server";
 
+/**
+ * 화면 상태: FEM 로그인 설정·로그인·구독·엔진 상태(설정/응답/검증)·이번 달 이용량.
+ * 로그인은 FEM 전용 프로젝트의 세션만 본다. `account`는 본인 화면에 어느 FEM 계정인지 보여 주는 용도다.
+ */
 export async function GET() {
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const supabase = await createFemClient();
+    const admin = createFemAdminClient();
+    const engine = await getEngineState();
+    const authConfigured = Boolean(supabase && admin);
+    const accessMode = femAccessMode();
+    const signedOut = { authConfigured, authenticated: false, account: null, subscribed: false, entitled: false, accessMode, engine, quota: null, limit: FEM_PRO_MONTHLY_QUOTA };
+    if (!supabase || !admin) return NextResponse.json(signedOut, { headers: NO_STORE });
 
-    const engineConfigured = isFemEngineConfigured();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json(signedOut, { headers: NO_STORE });
 
-    if (!user) {
-        return NextResponse.json({
-            authenticated: false,
-            subscribed: false,
-            engineConfigured,
-            quota: { used: 0, limit: FEM_PRO_MONTHLY_QUOTA, remaining: 0 },
-        });
-    }
-
-    const subscription = await getSubscriptionForUser(supabase, user.id, FEM_PRO_PLAN);
-    const subscribed = isSubscriptionActive(subscription);
-    const admin = createAdminClient();
-    const quota = subscribed
-        ? await getFemMonthlyUsage(admin, user.id)
-        : { used: 0, limit: FEM_PRO_MONTHLY_QUOTA, remaining: 0 };
+    const subscription = await getFemSubscription(admin, user.id);
+    const subscribed = isFemSubscriptionActive(subscription);
+    // 조회 실패는 null: 화면은 "확인 불가"로 표시하고 실행을 막는다(잔여 횟수를 추정하지 않는다).
+    const entitled = hasFemAccess(subscription, accessMode);
+    const quota = entitled ? await getFemMonthlyUsage(admin, user.id) : null;
 
     return NextResponse.json({
+        authConfigured,
         authenticated: true,
+        account: user.email ?? null,
         subscribed,
+        entitled,
+        accessMode,
         subscriptionStatus: subscription?.status ?? null,
-        engineConfigured,
+        engine,
         quota,
-    });
+        limit: FEM_PRO_MONTHLY_QUOTA,
+    }, { headers: NO_STORE });
 }
 
+/** 작업 생성: 한도 확인 + 작업 행 생성(원자적) → 워커에 작업 등록 → 업로드 대상 반환. 파일은 받지 않는다. */
 export async function POST(request: Request) {
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    const ctx = await femContext();
+    if (ctx instanceof NextResponse) return ctx;
 
-    if (!user) {
-        return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
-    }
-
-    const subscription = await getSubscriptionForUser(supabase, user.id, FEM_PRO_PLAN);
-    if (!isSubscriptionActive(subscription)) {
-        return NextResponse.json({ error: "SUBSCRIPTION_REQUIRED" }, { status: 403 });
-    }
-
-    if (!isFemEngineConfigured()) {
-        return NextResponse.json({ error: "ENGINE_NOT_CONFIGURED" }, { status: 503 });
-    }
-
-    const admin = createAdminClient();
-    const quota = await getFemMonthlyUsage(admin, user.id);
-    if (quota.remaining <= 0) {
-        return NextResponse.json(
-            { error: "QUOTA_EXCEEDED", quota },
-            { status: 429 }
-        );
-    }
-
-    let formData: FormData;
+    let body: Record<string, unknown>;
     try {
-        formData = await request.formData();
+        body = await request.json();
     } catch {
-        return NextResponse.json({ error: "INVALID_FORM_DATA" }, { status: 400 });
+        return NextResponse.json({ error: "INVALID_BODY" }, { status: 400 });
     }
+    if (!body || typeof body !== "object") return NextResponse.json({ error: "INVALID_BODY" }, { status: 400 });
 
-    const fileEntry = formData.get("file");
-    const rawSettings = formData.get("settings");
-    if (!(fileEntry instanceof File) || typeof rawSettings !== "string") {
-        return NextResponse.json({ error: "MISSING_FILE_OR_SETTINGS" }, { status: 400 });
+    if (!isUuid(body.requestKey)) return NextResponse.json({ error: "INVALID_REQUEST_KEY" }, { status: 400 });
+    if (typeof body.fileName !== "string" || typeof body.fileSize !== "number") {
+        return NextResponse.json({ error: "INVALID_FILE" }, { status: 400 });
     }
-
-    const selection = inspectSelection([{ name: fileEntry.name, size: fileEntry.size }]);
-    if (!selection.file || selection.error) {
-        return NextResponse.json({ error: selection.error ?? "INVALID_FILE" }, { status: 400 });
-    }
-
-    let parsedSettings: MeshSettings;
-    try {
-        parsedSettings = JSON.parse(rawSettings) as MeshSettings;
-    } catch {
-        return NextResponse.json({ error: "INVALID_SETTINGS" }, { status: 400 });
-    }
-    if (!validSettings(parsedSettings)) {
-        return NextResponse.json({ error: "INVALID_SETTINGS" }, { status: 400 });
-    }
-
-    const { data: jobRow, error: insertError } = await admin
-        .from("fem_jobs")
-        .insert({
-            user_id: user.id,
-            plan: FEM_PRO_PLAN,
-            status: "queued",
-            file_name: selection.file.name,
-            file_format: selection.file.format,
-            file_size_bytes: selection.file.size,
-            settings: parsedSettings,
-        })
-        .select("id")
-        .single();
-
-    if (insertError || !jobRow) {
-        console.error("[fem/jobs] failed to create job row", insertError?.message);
-        return NextResponse.json({ error: "JOB_CREATE_FAILED" }, { status: 500 });
-    }
-
-    const jobId = jobRow.id as string;
+    const selection = inspectSelection([{ name: body.fileName, size: body.fileSize }]);
+    if (!selection.file) return NextResponse.json({ error: "INVALID_FILE", reason: selection.error }, { status: 400 });
+    const settings = parseEngineSettings(body.settings);
+    if (!settings) return NextResponse.json({ error: "UNSUPPORTED_SETTINGS" }, { status: 400 });
 
     try {
-        const engineRes = await submitEngineMeshJob({
-            jobId,
-            userId: user.id,
-            file: fileEntry,
-            settings: {
-                size: Number(parsedSettings.size),
-                unit: parsedSettings.unit,
-                strategy: parsedSettings.strategy,
-                order: parsedSettings.order,
-                jacobian: Number(parsedSettings.jacobian),
-                aspect: Number(parsedSettings.aspect),
-            },
+        const out = await submitJob(ctx.deps, {
+            userId: ctx.userId, requestKey: body.requestKey,
+            fileName: selection.file.name.slice(0, 200), fileFormat: selection.file.format,
+            fileSize: selection.file.size, settings,
         });
-
-        await admin
-            .from("fem_jobs")
-            .update({
-                engine_job_id: engineRes.engineJobId,
-                status: engineRes.status,
-                metrics: engineRes.metrics ?? null,
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", jobId)
-            .eq("user_id", user.id);
-
+        if (!out.ok) return errorResponse(out);
         return NextResponse.json(
-            {
-                id: jobId,
-                status: engineRes.status,
-                metrics: engineRes.metrics ?? null,
-                quota: {
-                    used: quota.used + 1,
-                    limit: quota.limit,
-                    remaining: Math.max(0, quota.remaining - 1),
-                },
-            },
-            { status: 201 }
-        );
+            { id: out.id, status: out.status, upload: out.upload, quota: out.quota, duplicate: out.duplicate },
+            { status: out.duplicate ? 200 : 201, headers: NO_STORE });
     } catch (e) {
-        const message = e instanceof Error ? e.message : "ENGINE_ERROR";
-        await admin
-            .from("fem_jobs")
-            .update({
-                status: "failed",
-                error_message: message.slice(0, 500),
-                updated_at: new Date().toISOString(),
-            })
-            .eq("id", jobId)
-            .eq("user_id", user.id);
-
-        console.error("[fem/jobs] engine submit failed", jobId, message);
-        return NextResponse.json({ error: "ENGINE_SUBMIT_FAILED", id: jobId }, { status: 502 });
+        return internalError("submit", e);
     }
 }
-

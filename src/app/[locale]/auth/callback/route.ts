@@ -10,8 +10,10 @@ export async function GET(request: Request) {
   const localeIndex = urlParts.findIndex(part => part === 'auth') - 1
   const locale = localeIndex >= 0 ? urlParts[localeIndex] : 'ko'
   
-  // if "next" is in param, use it as the redirect URL
-  const next = searchParams.get('next') ?? `/${locale}/auth/success`
+  // 로그인 뒤에는 항상 사이트 안의 정해진 화면으로 간다.
+  // 이전에는 next 쿼리를 검사 없이 origin 뒤에 붙였다(`@host`, `.host` 로 외부 이동이 가능했다).
+  // 저장소 안에 next 를 넘기는 호출부가 없어 쿼리를 받지 않는 것으로 막는다.
+  const next = `/${locale}/auth/success`
 
   if (code) {
     const supabase = await createClient()

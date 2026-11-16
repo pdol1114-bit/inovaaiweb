@@ -1,70 +1,18 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
-import { getEngineJobStatus, isFemEngineConfigured } from "@/lib/fem/engine-client";
+import { getJobView } from "@/lib/fem/job-service";
+import { errorResponse, femContext, internalError, jobIdOr404, NO_STORE } from "@/lib/fem/server";
 
-export async function GET(
-    _request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    const { id } = await params;
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+/** 작업 상태. 워커 조회에 실패하면 `sync: "unavailable"`로 알린다(이전 상태로 숨기지 않는다). */
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const id = jobIdOr404((await params).id);
+    if (id instanceof NextResponse) return id;
+    const ctx = await femContext();
+    if (ctx instanceof NextResponse) return ctx;
+    try {
+        const out = await getJobView(ctx.deps, ctx.userId, id);
+        if (!out.ok) return errorResponse(out);
+        return NextResponse.json(out.job, { headers: NO_STORE });
+    } catch (e) {
+        return internalError("status", e);
     }
-
-    const admin = createAdminClient();
-    const { data: job, error } = await admin
-        .from("fem_jobs")
-        .select("id, user_id, status, engine_job_id, metrics, error_message, created_at, updated_at")
-        .eq("id", id)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-    if (error || !job) {
-        return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
-    }
-
-    if (
-        (job.status === "queued" || job.status === "running") &&
-        job.engine_job_id &&
-        isFemEngineConfigured()
-    ) {
-        try {
-            const latest = await getEngineJobStatus(job.engine_job_id as string);
-            await admin
-                .from("fem_jobs")
-                .update({
-                    status: latest.status,
-                    metrics: latest.metrics ?? job.metrics,
-                    error_message: latest.errorMessage ?? null,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq("id", id)
-                .eq("user_id", user.id);
-
-            return NextResponse.json({
-                id: job.id,
-                status: latest.status,
-                stage: latest.stage ?? null,
-                metrics: latest.metrics ?? job.metrics ?? null,
-                errorMessage: latest.errorMessage ?? null,
-            });
-        } catch (e) {
-            console.warn("[fem/jobs/id] failed to sync engine status", id, e);
-        }
-    }
-
-    return NextResponse.json({
-        id: job.id,
-        status: job.status,
-        stage: null,
-        metrics: job.metrics ?? null,
-        errorMessage: job.error_message ?? null,
-    });
 }
-

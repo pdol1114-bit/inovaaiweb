@@ -1,67 +1,35 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
-import { getSubscriptionForUser, isSubscriptionActive } from "@/lib/subscription";
-import { FEM_PRO_PLAN } from "@/lib/billing/constants";
-import { fetchEngineArtifact, isFemEngineConfigured } from "@/lib/fem/engine-client";
+import { getArtifact } from "@/lib/fem/job-service";
+import { errorResponse, femContext, internalError, jobIdOr404, NO_STORE } from "@/lib/fem/server";
 
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    const { id } = await params;
+/** 완료된 해당 작업의 실제 INP/MSH. 소유권은 DB 행(user_id)과 워커 양쪽에서 확인된다. */
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const id = jobIdOr404((await params).id);
+    if (id instanceof NextResponse) return id;
     const format = new URL(request.url).searchParams.get("format");
     if (format !== "inp" && format !== "msh") {
         return NextResponse.json({ error: "INVALID_FORMAT" }, { status: 400 });
     }
-
-    const supabase = await createClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+    const ctx = await femContext();
+    if (ctx instanceof NextResponse) return ctx;
+    try {
+        const out = await getArtifact(ctx.deps, ctx.userId, id, format);
+        if (!out.ok) return errorResponse(out);
+        if (out.kind === "redirect") {
+            // 짧게 유효한 서명 URL로 보낸다(파일은 웹 서버를 거치지 않는다).
+            return new NextResponse(null, { status: 303, headers: { Location: out.url, ...NO_STORE } });
+        }
+        return new NextResponse(out.response.body, {
+            status: 200,
+            headers: {
+                "Content-Type": "application/octet-stream",
+                "Content-Length": String(out.bytes),
+                "Content-Disposition": `attachment; filename="mesh.${format}"`,
+                "X-Content-SHA256": out.sha256,
+                ...NO_STORE,
+            },
+        });
+    } catch (e) {
+        return internalError("download", e);
     }
-
-    const subscription = await getSubscriptionForUser(supabase, user.id, FEM_PRO_PLAN);
-    if (!isSubscriptionActive(subscription)) {
-        return NextResponse.json({ error: "SUBSCRIPTION_REQUIRED" }, { status: 403 });
-    }
-
-    if (!isFemEngineConfigured()) {
-        return NextResponse.json({ error: "ENGINE_NOT_CONFIGURED" }, { status: 503 });
-    }
-
-    const admin = createAdminClient();
-    const { data: job, error } = await admin
-        .from("fem_jobs")
-        .select("id, status, engine_job_id, file_name")
-        .eq("id", id)
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-    if (error || !job || !job.engine_job_id) {
-        return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
-    }
-
-    if (job.status !== "completed") {
-        return NextResponse.json({ error: "JOB_NOT_COMPLETED" }, { status: 409 });
-    }
-
-    const upstream = await fetchEngineArtifact(job.engine_job_id as string, format);
-    if (!upstream.ok || !upstream.body) {
-        return NextResponse.json({ error: "ARTIFACT_UNAVAILABLE" }, { status: 502 });
-    }
-
-    const baseName = String(job.file_name).replace(/\.[^.]+$/, "") || "mesh";
-    return new NextResponse(upstream.body, {
-        status: 200,
-        headers: {
-            "Content-Type": "application/octet-stream",
-            "Content-Disposition": `attachment; filename="${baseName}.${format}"`,
-            "Cache-Control": "private, no-store",
-        },
-    });
 }
-

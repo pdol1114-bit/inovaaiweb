@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": [
+      "es2023",
+      "dom"
+    ],
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": [
+      "node"
+    ],
+    "outDir": ".fem-test-build",
+    "rootDir": "."
+  },
+  "include": [
+    "tests/fem/**/*.ts",
+    "src/lib/fem/preflight.ts",
+    "src/lib/fem/worker-contract.ts",
+    "src/lib/fem/worker-client.ts",
+    "src/lib/fem/job-service.ts",
+    "src/lib/fem/membership.ts",
+    "src/utils/supabase/fem-config.ts"
+  ]
+}

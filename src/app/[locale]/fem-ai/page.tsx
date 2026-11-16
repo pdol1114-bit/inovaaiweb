@@ -1,3 +1,4 @@
+import { femAccessMode } from '@/lib/fem/membership';
 import type { Metadata } from 'next';
 import { ArrowDown, ArrowRight, Cloud, Layers3, LockKeyhole, MoveUpRight } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -25,22 +26,22 @@ export default async function FemAiPage({ params }: Props) {
           <div>
             <p className={styles.eyebrow}><span />{t('badge')}</p>
             <h1>{t('heroTitle')}<br/><span>{t('heroAccent')}</span></h1>
-            <p className={styles.heroDesc}>{t('heroDesc')}</p>
+            <p className={styles.heroDesc}>{t(femAccessMode() === 'free_beta' ? 'betaHeroDesc' : 'heroDesc')}</p>
             <div className={styles.actions}>
-              <a href="#mesh-workspace" className={styles.primary}>{t('openWorkspace')}<ArrowDown size={16}/></a>
+              <a href="#mesh-workspace" className={styles.primary}>{t(femAccessMode() === 'free_beta' ? 'betaStart' : 'openWorkspace')}<ArrowDown size={16}/></a>
               {/* FEM 계정용 결제 연결 전까지 신규 구매 동선을 두지 않는다. */}
-              <span className={`${styles.secondary} ${styles.disabledCta}`} aria-disabled="true">{t('paymentPreparing')}</span>
+              {femAccessMode() !== 'free_beta' && <span className={`${styles.secondary} ${styles.disabledCta}`} aria-disabled="true">{t('paymentPreparing')}</span>}
               <a href="#enterprise-contact" className={styles.secondary}>{t('contact')}<MoveUpRight size={15}/></a>
             </div>
             <div className={styles.formats}><span>STEP / BREP</span><ArrowRight size={14}/><span>Hex · Wedge · Tet</span><ArrowRight size={14}/><span>INP / MSH</span></div>
           </div>
           <div className={styles.concept}>
-            <div className={styles.conceptTop}><span>INOVA.AI / FEM</span><span>{t('previewTag')}</span></div>
+            <div className={styles.conceptTop}><span>INOVA.AI / FEM</span><span>{t(femAccessMode() === 'free_beta' ? 'betaAccess' : 'previewTag')}</span></div>
             <MeshConcept/>
             <p>{t('concept')}</p>
           </div>
         </div>
-        <div className={styles.notice}><span className={styles.statusDot}/><strong>{t('noEngine')}</strong><p>{t('notice')}</p></div>
+        <div className={styles.notice}><span className={styles.statusDot}/><strong>{t(femAccessMode() === 'free_beta' ? 'betaAccess' : 'noEngine')}</strong><p>{femAccessMode() === 'free_beta' ? t('betaNotice', { limit: 40 }) : t('notice')}</p></div>
       </div>
     </section>
     <section className={`${styles.container} ${styles.flow}`}>

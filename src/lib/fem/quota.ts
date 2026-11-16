@@ -17,33 +17,31 @@ export function currentKstMonthStartIso(): string {
     return new Date(utcMs).toISOString();
 }
 
+/**
+ * 이번 달 이용 횟수. 조회에 실패하면 **null** 을 돌려준다 — 잔여 횟수를 추정하지 않는다.
+ * 호출부는 null이면 "확인 불가"로 표시하고 실행을 막아야 한다.
+ * 세는 기준은 `counts_toward_quota`(마이그레이션 0012)이며 규칙은 job-service.ts에 있다.
+ */
 export async function getFemMonthlyUsage(
     admin: SupabaseClient,
     userId: string
-): Promise<FemQuotaSummary> {
+): Promise<FemQuotaSummary | null> {
     const monthStart = currentKstMonthStartIso();
     const { count, error } = await admin
         .from("fem_jobs")
         .select("id", { count: "exact", head: true })
         .eq("user_id", userId)
-        .neq("status", "canceled")
+        .eq("counts_toward_quota", true)
         .gte("created_at", monthStart);
 
-    if (error) {
-        // 마이그레이션 적용 전이거나 일시 오류 시 안전하게 0건 처리 (요청 제출 시엔 다시 검증)
-        console.warn("[fem/quota] failed to count fem_jobs:", error.message);
-        return {
-            used: 0,
-            limit: FEM_PRO_MONTHLY_QUOTA,
-            remaining: FEM_PRO_MONTHLY_QUOTA,
-        };
+    if (error || count === null) {
+        console.warn("[fem/quota] failed to count fem_jobs:", error?.code ?? "no count");
+        return null;
     }
 
-    const used = count ?? 0;
     return {
-        used,
+        used: count,
         limit: FEM_PRO_MONTHLY_QUOTA,
-        remaining: Math.max(0, FEM_PRO_MONTHLY_QUOTA - used),
+        remaining: Math.max(0, FEM_PRO_MONTHLY_QUOTA - count),
     };
 }
-

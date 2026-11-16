@@ -129,3 +129,36 @@ env:
 #    availability:
 #      - BUILD
 #      - RUNTIME
+
+# FEM free beta: separate auth project, server quota 40/month, private Cloud Run worker.
+  - variable: NEXT_PUBLIC_FEM_SUPABASE_URL
+    value: https://dkvshlxfvzpdmbfkmirz.supabase.co
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FEM_SUPABASE_ANON_KEY
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrdnNobHhmdnpwZG1iZmttaXJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ4NDAxMTQsImV4cCI6MjExMDQxNjExNH0.eBYQxdNElJ7H6_5g42nuxJj0tg4heLJXaWQnMRlmM7U
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: FEM_ACCESS_MODE
+    value: free_beta
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: FEM_ENGINE_URL
+    value: "https://fem-beta-api-488173379572.asia-northeast3.run.app"
+    availability:
+      - RUNTIME
+  - variable: FEM_ENGINE_IAM
+    value: "true"
+    availability:
+      - RUNTIME
+  - variable: FEM_SUPABASE_SERVICE_ROLE_KEY
+    secret: fem-beta-supabase-service-key
+    availability:
+      - RUNTIME
+  - variable: FEM_ENGINE_API_KEY
+    secret: fem-beta-worker-api-key
+    availability:
+      - RUNTIME
