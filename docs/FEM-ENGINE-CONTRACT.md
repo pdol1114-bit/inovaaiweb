@@ -1,5 +1,11 @@
 # FEM 엔진 연동 계약 (inovaaiweb ↔ FEM 워커)
 
+> 2026-11-17 현재 운영: FEM 전용 Supabase + Google 로그인 + 월40회 무료 베타다. FEM_ACCESS_MODE=free_beta가
+> 유료 구독 없이 entitled=true를 부여하며 subscribed는 실제 유료 상태다. 아래 유료 구독 필수 설명은 후속 subscription 모드 기준이다.
+> Apple은 미설정으로 숨김/차단한다. 무료 베타에서도 DB 원자적 한도·인증·작업 소유권·실패 시 차단은 유지한다.
+> 클라우드 워커는 비공개 Cloud Run + IAM ID토큰 + 별도 API 키다. 상태/빌드/검증 기록은 PROGRESS.md 최신 항목을 따른다.
+
+
 2026-11-16 개정. 이전 판(multipart 단일 제출, mixed/quadratic/cm/m, Aspect Ratio 지표)은 실제 엔진과
 맞지 않아 폐기했다. 워커 쪽 원문: `FEM-Worker/README.md`, `FEM-Worker/docs/DESIGN.md`.
 
