@@ -1,5 +1,9 @@
 # PROGRESS
 
+## 2026-11-17 — 비공개 워커 IAM 대상 주소 고정
+
+Cloud Run status.url의 기본 주소(fem-beta-api-qesg3chuga-du.a.run.app)를 FEM_ENGINE_URL로 사용한다. 운영 웹의 IAM ID 토큰 audience와 Cloud Run 기본 주소를 일치시킨다. 공개 숫자형 별칭과 동일한 서비스·이미지이며 권한·엔진 변경은 없다.
+
 ## 2026-11-17 — 운영 빌드 의존성 호환 수정
 
 첫 베타 롤아웃(build-2026-11-16-002)은 npm 10의 lock 검증에서 next-intl의 선택적 peer @swc/helpers >=0.5.17 누락으로 실패했다. 기존 운영 버전은 유지됐다.

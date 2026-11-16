@@ -147,7 +147,7 @@ env:
       - BUILD
       - RUNTIME
   - variable: FEM_ENGINE_URL
-    value: "https://fem-beta-api-488173379572.asia-northeast3.run.app"
+    value: "https://fem-beta-api-qesg3chuga-du.a.run.app"
     availability:
       - RUNTIME
   - variable: FEM_ENGINE_IAM
