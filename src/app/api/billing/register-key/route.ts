@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getPortOneClient } from "@/lib/portone/server";
-import { isValidPlan, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
+import { decideNewSale } from "@/lib/billing/sales";
 import { chargeInitialSubscription, PreChargeError } from "@/lib/billing/initial-charge";
 
 /**
@@ -11,10 +11,11 @@ import { chargeInitialSubscription, PreChargeError } from "@/lib/billing/initial
  * 응답
  *  200 { status: "paid", next_billing_date }
  *  202 { status: "processing" }         결과 확인 중 (출금 여부 불명 — 빌링키 유지)
- *  400 INVALID_JSON | INVALID_BILLING_KEY | BILLING_KEY_NOT_ISSUED
+ *  400 INVALID_JSON | INVALID_PLAN | INVALID_BILLING_KEY | BILLING_KEY_NOT_ISSUED
  *  401 UNAUTHORIZED
  *  402 PAYMENT_FAILED                    결제 실패 (새 빌링키는 삭제됨)
  *  403 BILLING_KEY_OWNER_MISMATCH
+ *  403 PLAN_NOT_ON_SALE                  신규 판매를 멈춘 플랜(FEM AI Pro). 포트원 호출·DB 쓰기 전에 거절한다
  *  409 ALREADY_SUBSCRIBED | CANCEL_SCHEDULED | IN_PROGRESS
  *  500 NOT_CONFIGURED | PRECHARGE_FAILED   결제 호출 전 실패 (출금 없음, 새 빌링키 정리됨)
  *  500 SERVER_ERROR                       결제 단계 이후 예기치 못한 오류
@@ -38,10 +39,16 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "INVALID_JSON" }, { status: 400 });
     }
 
-    const plan = rawPlan === undefined || rawPlan === null ? SNIFF_PREMIUM_PLAN : rawPlan;
-    if (!isValidPlan(plan)) {
+    // 신규 판매 판정. 포트원 호출·빌링키 조회·DB 쓰기보다 먼저 한다.
+    // 판매 중지 플랜이나 알 수 없는 값을 Sniff 플랜으로 바꿔 진행하지 않는다.
+    const sale = decideNewSale(rawPlan);
+    if (sale.kind === "not_on_sale") {
+        return NextResponse.json({ error: "PLAN_NOT_ON_SALE" }, { status: 403 });
+    }
+    if (sale.kind !== "on_sale") {
         return NextResponse.json({ error: "INVALID_PLAN" }, { status: 400 });
     }
+    const plan = sale.plan;
 
     if (typeof billingKey !== "string" || billingKey.length === 0 || billingKey.length > 200) {
         return NextResponse.json({ error: "INVALID_BILLING_KEY" }, { status: 400 });

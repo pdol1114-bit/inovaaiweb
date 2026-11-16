@@ -466,13 +466,8 @@ export function FemWorkspace() {
                       <CreditCard size={28} />
                       <span className={styles.offline}>{t('subscriptionRequiredBadge')}</span>
                       <p>{t('subscriptionRequiredDesc')}</p>
-                      <Link
-                        href={access.authenticated ? '/payment?plan=fem_pro' : '/auth'}
-                        className={styles.primary}
-                      >
-                        {access.authenticated ? t('subscribeCta') : t('loginToSubscribe')}
-                        <ArrowRight size={14} />
-                      </Link>
+                      {/* FEM AI Pro 신규 판매를 멈춘 동안에는 결제(로그인 후 결제 포함) 동선을 두지 않는다. */}
+                      <p>{t('paymentPreparingDesc')}</p>
                     </div>
                   ) : !access.engineConfigured ? (
                     <div className={styles.blocked}>

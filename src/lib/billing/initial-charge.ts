@@ -9,6 +9,7 @@ import {
     type SettleContext,
 } from "@/lib/billing/settlement";
 import { requestBillingKeyCharge, verifyIssuedBillingKey } from "@/lib/portone/server";
+import { decideNewSale } from "@/lib/billing/sales";
 
 /**
  * 카드 등록 직후 첫 결제(즉시 청구).
@@ -62,6 +63,10 @@ export async function chargeInitialSubscription(params: {
     plan?: PlanId;
 }): Promise<InitialChargeResult> {
     const { user, billingKey } = params;
+    // 첫 결제는 신규 구매다. 판매 중인 플랜이 아니면 포트원을 부르기 전에 멈춘다(라우트의 검사와 이중).
+    if (decideNewSale(params.plan ?? SNIFF_PREMIUM_PLAN).kind !== "on_sale") {
+        throw new PreChargeError(new Error("plan is not on sale"));
+    }
     const planConfig = getPlanConfig(params.plan ?? SNIFF_PREMIUM_PLAN);
 
     // 1) 빌링키 검증: 발급 완료 + 고객 ID = 세션 사용자

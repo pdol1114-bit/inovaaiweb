@@ -177,6 +177,9 @@
     },
     "Payment": {
         "title": "Premium Subscription",
+        "unknownPlanTitle": "Plan not found",
+        "unknownPlanDesc": "The requested plan could not be found, so no payment was started. Please choose a plan again from the pricing page.",
+        "backToPricing": "Go to pricing",
         "description": "Start your smart pet health management with INOVA.AI Premium service.",
         "planTitle": "Selected Plan",
         "planName": "Sniff Premium",
@@ -202,7 +205,8 @@
             "cancelScheduled": "Your subscription is scheduled to be cancelled. You can resume it under Manage subscription.",
             "inProgress": "A payment is already in progress. Please check its status under Manage subscription in a moment.",
             "invalidCard": "We could not verify your card registration. Please try again.",
-            "notCharged": "No payment was made and you have not been charged. Please try again in a moment."
+            "notCharged": "No payment was made and you have not been charged. Please try again in a moment.",
+            "notOnSale": "This plan cannot be purchased right now. No payment was made."
         },
         "status": {
             "charging": "Charging your first month. Please keep this window open.",
@@ -224,6 +228,9 @@
             "description": "Run cloud-first one-touch automatic meshing and quality verification up to 40 times per month.",
             "planTitle": "Selected Plan",
             "planName": "FEM AI Pro",
+            "preparingTitle": "FEM AI Pro payment coming soon",
+            "preparingDesc": "FEM AI Pro payment is being prepared. Until it is ready we do not accept new subscription payments, and no payment is started on this page.",
+            "backToFem": "Back to FEM AI",
             "price": "KRW 50,000 / mo",
             "vatNote": "VAT excluded (KRW 55,000 / month billed incl. VAT)",
             "features": {
@@ -676,6 +683,8 @@
         "metaTitle": "Enterprise FEM Mesh Preprocessing | INOVA.AI",
         "metaDesc": "Cloud-first STEP/BREP mesh preprocessing for enterprise teams. Preview meshing settings, quality reports, 3D preview and INP/MSH export UI. Engine not connected.",
         "subscribeCta": "Subscribe FEM Pro (KRW 50,000/mo)",
+        "paymentPreparing": "FEM Pro payment coming soon",
+        "paymentPreparingDesc": "FEM AI Pro payment is being prepared, so new subscriptions are not available yet.",
         "engineConnected": "Engine connected",
         "quotaStatus": "{used} / {limit} runs used this month",
         "subscriptionRequiredBadge": "FEM AI Pro subscription required",
@@ -702,9 +711,11 @@
         "femPrice": "KRW 50,000/month",
         "femPriceNote": "VAT excluded (KRW 55,000/mo billed incl. VAT)",
         "femFeature1": "Up to 40 cloud auto-meshing runs / month",
-        "femFeature2": "STEP / STP / BREP input (up to 100 MiB)",
-        "femFeature3": "Hex-dominant, mixed, Tet & linear/quadratic",
+        "femFeature2": "STEP / STP / BREP input (up to 50 MiB, mm units)",
+        "femFeature3": "Hex-priority · Tet Only (linear elements)",
         "femFeature4": "Abaqus INP · Gmsh MSH export",
+        "femPaymentPreparing": "Payment coming soon",
+        "femPaymentPreparingNote": "FEM AI Pro payment is being prepared, so new subscriptions are not available yet.",
         "subscribeButton": "Start Subscription",
         "disclaimer": "Premium subscriptions are billed automatically every month. You can cancel at any time, and no further charges will be made from the next billing date after cancellation.",
         "refundPolicyLink": "View Refund Policy"
@@ -730,6 +741,8 @@
         "femPlanName": "FEM AI Pro",
         "femPlanPrice": "KRW 50,000/month (+VAT · KRW 55,000 billed)",
         "goToFemPayment": "Subscribe to FEM Pro",
+        "femPaymentPreparing": "FEM AI Pro payment is being prepared, so new subscriptions are not available yet.",
+        "femRepayUnavailable": "FEM AI Pro payment is being prepared, so payment with a new card is not available. You can cancel the subscription below.",
         "plan": "Plan",
         "nextBillingDate": "Next billing date",
         "serviceEndDate": "Access ends on",

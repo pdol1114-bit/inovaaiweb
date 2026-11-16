@@ -61,21 +61,19 @@ export function SubscriptionManager({
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center space-y-6">
                 <p className="text-gray-600">{isEnded ? t("ended") : t("noSubscription")}</p>
                 <div className="flex flex-wrap justify-center gap-3">
-                    <Link
-                        href={isFem ? "/payment?plan=fem_pro" : "/payment"}
-                        className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors"
-                    >
-                        {isEnded ? t("resubscribe") : t("goToPayment")}
-                    </Link>
-                    {!isEnded && (
+                    {/* FEM AI Pro 는 신규 판매(재구독 포함)를 멈춘 상태다. 결제 링크 대신 안내만 한다. */}
+                    {isFem ? (
+                        <p className="text-sm text-gray-500">{t("femPaymentPreparing")}</p>
+                    ) : (
                         <Link
-                            href="/payment?plan=fem_pro"
-                            className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold transition-colors"
+                            href="/payment"
+                            className="inline-flex items-center justify-center h-12 px-8 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors"
                         >
-                            {t("goToFemPayment")}
+                            {isEnded ? t("resubscribe") : t("goToPayment")}
                         </Link>
                     )}
                 </div>
+                {!isEnded && <p className="text-sm text-gray-500">{t("femPaymentPreparing")}</p>}
             </div>
         );
     }
@@ -83,7 +81,6 @@ export function SubscriptionManager({
     const isFemPlan = subscription.plan === "fem_pro";
     const planLabel = isFemPlan ? t("femPlanName") : t("planName");
     const planPriceLabel = isFemPlan ? t("femPlanPrice") : t("planPrice");
-    const paymentHref = isFemPlan ? "/payment?plan=fem_pro" : "/payment";
 
     const isCancelScheduled = subscription.status === "cancel_scheduled";
     const isPastDue = subscription.status === "past_due";
@@ -159,12 +156,17 @@ export function SubscriptionManager({
                                 : t("pastDueNoticeNoRetry", { due: endDate, grace: graceDate })}
                         </p>
                         <p className="text-sm font-medium text-red-900">{t("pastDueRepay")}</p>
-                        <Link
-                            href={paymentHref}
-                            className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-colors"
-                        >
-                            {t("payWithNewCard")}
-                        </Link>
+                        {/* 새 카드 결제는 신규 결제 등록과 같은 경로다. FEM AI Pro 는 그 경로를 멈췄으므로 안내만 한다(해지는 아래에서 가능). */}
+                        {isFemPlan ? (
+                            <p className="text-sm font-medium text-red-900">{t("femRepayUnavailable")}</p>
+                        ) : (
+                            <Link
+                                href="/payment"
+                                className="inline-flex items-center justify-center h-10 px-5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold transition-colors"
+                            >
+                                {t("payWithNewCard")}
+                            </Link>
+                        )}
                     </div>
                 )}
 

@@ -1,27 +1,40 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/routing";
+import { Link, redirect } from "@/i18n/routing";
 import { CheckCircle2, CreditCard, ShieldCheck, Zap, Star } from "lucide-react";
 import Image from "next/image";
 import { SubscribeButton } from "@/components/payment/SubscribeButton";
 import { BusinessInfo } from "@/components/layout/BusinessInfo";
 import { createClient } from "@/utils/supabase/server";
 import { getSubscriptionForUser } from "@/lib/subscription";
-import { FEM_PRO_PLAN, SNIFF_PREMIUM_PLAN } from "@/lib/billing/constants";
+import { FEM_PRO_PLAN } from "@/lib/billing/constants";
+import { decideNewSale } from "@/lib/billing/sales";
 
 export default async function PaymentPage({
     params,
     searchParams,
 }: {
     params: Promise<{ locale: string }>;
-    searchParams: Promise<{ plan?: string }>;
+    searchParams: Promise<{ plan?: string | string[] }>;
 }) {
     const { locale } = await params;
     const { plan: rawPlan } = await searchParams;
-    const plan = rawPlan === FEM_PRO_PLAN ? FEM_PRO_PLAN : SNIFF_PREMIUM_PLAN;
-    const isFem = plan === FEM_PRO_PLAN;
-
     setRequestLocale(locale);
     const t = await getTranslations("Payment");
+
+    // 신규 판매 판정. 판매 중인 플랜이 아니면 이 페이지(결제 SDK 를 싣는 SubscribeButton 포함)를 그리지 않고
+    // SDK 가 없는 안내 화면으로 보낸다. FEM AI Pro 나 알 수 없는 plan 값을 Sniff 결제 화면으로 바꿔 보여 주지 않는다.
+    // 주소에 붙어 온 다른 값(모바일 카드 등록 복귀 쿼리 등)은 넘기지 않는다.
+    const sale = decideNewSale(rawPlan);
+    if (sale.kind !== "on_sale") {
+        redirect({
+            href: { pathname: "/payment/unavailable", query: { plan: sale.kind === "not_on_sale" ? sale.plan : "unknown" } },
+            locale,
+        });
+        return null;
+    }
+    const plan = sale.plan;
+    // 아래는 Sniff Premium 결제 화면이다. FEM 분기는 판매 재개 때 쓸 수 있게 남겨 두었지만 지금은 도달하지 않는다.
+    const isFem = (plan as string) === FEM_PRO_PLAN;
 
     // 이미 구독 중이면 결제 대신 구독 관리로 안내한다 (해지 경로 접근성).
     const supabase = await createClient();

@@ -20,6 +20,7 @@ import {
     type BillingKeyRedirect,
     type RegisterOutcome,
 } from "@/components/payment/registerBillingKey";
+import { decideNewSale } from "@/lib/billing/sales";
 
 type ErrorKey =
     | "notConfigured"
@@ -30,7 +31,8 @@ type ErrorKey =
     | "cancelScheduled"
     | "inProgress"
     | "invalidCard"
-    | "notCharged";
+    | "notCharged"
+    | "notOnSale";
 
 type Phase =
     | { kind: "idle" }
@@ -47,6 +49,7 @@ const ERROR_BY_OUTCOME: Partial<Record<RegisterOutcome["kind"], ErrorKey>> = {
     inProgress: "inProgress",
     invalidCard: "invalidCard",
     notCharged: "notCharged",
+    notOnSale: "notOnSale",
     error: "unexpected",
 };
 
@@ -74,6 +77,8 @@ export function SubscribeButton({
     const router = useRouter();
     const [phase, setPhase] = useState<Phase>({ kind: "idle" });
     const redirectHandled = useRef(false);
+    // 판매 중인 플랜이 아니면 결제 SDK 도, 등록 API 도 부르지 않는다(결제 페이지가 이 버튼을 그리지 않는 것과 이중).
+    const onSale = decideNewSale(plan).kind === "on_sale";
 
     // 데스크톱 응답과 모바일 복귀가 공유하는 결과 처리
     const applyOutcome = (outcome: RegisterOutcome) => {
@@ -117,6 +122,7 @@ export function SubscribeButton({
     useEffect(() => {
         if (redirectHandled.current) return;
         redirectHandled.current = true;
+        if (!onSale) return;
 
         const redirect = readBillingKeyRedirect(window.location.search);
         if (!redirect) return;
@@ -129,6 +135,10 @@ export function SubscribeButton({
     }, []);
 
     const handleSubscribe = async () => {
+        if (!onSale) {
+            setPhase({ kind: "error", key: "notOnSale" });
+            return;
+        }
         if (!isPortOneConfigured()) {
             setPhase({ kind: "error", key: "notConfigured" });
             return;
@@ -240,7 +250,7 @@ export function SubscribeButton({
         <div className="space-y-3">
             <Button
                 onClick={handleSubscribe}
-                disabled={isBusy}
+                disabled={isBusy || !onSale}
                 className="w-full h-18 py-8 text-2xl font-black rounded-[32px] shadow-xl shadow-blue-600/20 bg-blue-600 hover:bg-blue-700 text-white border-0 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 group"
             >
                 {isBusy ? (

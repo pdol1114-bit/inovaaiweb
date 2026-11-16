@@ -43,7 +43,9 @@ export default async function PricingPage({ params }: { params: Promise<{ locale
             <li>{t("femFeature3")}</li>
             <li>{t("femFeature4")}</li>
           </ul>
-          <Link href={`/${locale}/payment?plan=fem_pro`} className="block w-full text-center py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-medium">{t("subscribeButton")}</Link>
+          {/* FEM 계정용 결제 연결 전까지 신규 구매 동선을 두지 않는다. */}
+          <button disabled className="w-full py-2 bg-gray-300 text-gray-700 rounded cursor-not-allowed">{t("femPaymentPreparing")}</button>
+          <p className="mt-2 text-xs text-gray-500">{t("femPaymentPreparingNote")}</p>
         </div>
       </div>
       <p className="mt-8 text-sm text-gray-500 text-center max-w-2xl">

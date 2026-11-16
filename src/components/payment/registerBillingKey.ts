@@ -15,6 +15,7 @@ export type RegisterOutcome =
     | { kind: "invalidCard" }
     | { kind: "unauthorized" }
     | { kind: "notCharged" } // 결제 호출 전 실패 (출금 없음)
+    | { kind: "notOnSale" } // 신규 판매를 멈춘 플랜 (결제 호출 없음)
     | { kind: "error" };
 
 export async function registerBillingKey(
@@ -48,6 +49,8 @@ export async function registerBillingKey(
         if (body.error === "CANCEL_SCHEDULED") return { kind: "cancelScheduled" };
         return { kind: "inProgress" };
     }
+    if (res.status === 403 && body.error === "PLAN_NOT_ON_SALE") return { kind: "notOnSale" };
+    if (res.status === 400 && body.error === "INVALID_PLAN") return { kind: "notOnSale" };
     if (res.status === 400 || res.status === 403) return { kind: "invalidCard" };
     // 결제 호출 전 단계 실패는 서버가 따로 표시한다 (출금 없음).
     if (body.error === "PRECHARGE_FAILED" || body.error === "NOT_CONFIGURED") return { kind: "notCharged" };

@@ -161,3 +161,4 @@
   .heroDesc { font-size:var(--text-xl, 1.25rem); line-height:1.75rem; }
   .sectionHeading h2,.workspaceHeading h2 { font-size:var(--text-4xl, 2.25rem); line-height:2.5rem; }
 }
+.disabledCta { opacity:.6; cursor:not-allowed; pointer-events:none; }
