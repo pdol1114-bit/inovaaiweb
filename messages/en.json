@@ -332,7 +332,52 @@
             "Important changes will be noticed in advance through in-app or website announcements.",
             "The modified policy takes effect from the date of implementation posted on the website."
         ],
-        "finalNote": "This Privacy Policy was enacted on November 1, 2025, and amended on July 13, 2026. Any subsequent changes will be announced through the InovaAI website."
+        "finalNote": "This Privacy Policy was enacted on November 1, 2025, and amended on July 13, 2026. Any subsequent changes will be announced through the InovaAI website.",
+        "fieldweather": {
+            "navNote": "The privacy policy for the FieldWeather app is in the “FieldWeather” section at the bottom of this page.",
+            "title": "FieldWeather Privacy Policy",
+            "companyName": "FieldWeather · InovaAI",
+            "effectiveDate": "Effective date: November 18, 2026",
+            "intro": "This section applies to the FieldWeather application (“FieldWeather”). Sections 1 through 11 above concern the Sniff by Hatch application; the following applies to FieldWeather.",
+            "s1Title": "1. Personal information collected by the Company",
+            "s1Intro": "FieldWeather has no sign-up or login. The Company does not collect or store on its servers any information that identifies a user, such as name, email address, phone number, or precise location.",
+            "s1List": [
+                "Your list of favorite golf courses and cached forecasts are stored only on your device and are not sent to the Company's servers. They are deleted when you delete the app.",
+                "When the app retrieves forecasts, connection information such as your IP address may be temporarily logged by the server, as with ordinary internet traffic. The Company does not use this information to identify users."
+            ],
+            "s2Title": "2. Information collected by third parties for advertising",
+            "s2Intro": "FieldWeather is free and uses Google's advertising service (Google AdMob) to display ads. In the course of displaying ads, Google may automatically collect and process the following information.",
+            "s2List": [
+                "Device identifiers: advertising ID (Android advertising ID, iOS identifier for advertisers), app set ID",
+                "Approximate location: general area estimated from the IP address",
+                "App usage information: interactions with the app such as app launches and ad impressions and clicks",
+                "Diagnostic information: crash logs and diagnostic data such as performance"
+            ],
+            "s2Notes": [
+                "Purposes: displaying ads and measuring ad performance, analytics, and fraud prevention",
+                "Processor: Google LLC and its affiliates (data may be processed on servers outside Korea)",
+                "How Google uses information: https://policies.google.com/technologies/partner-sites"
+            ],
+            "s3Title": "3. Your choices regarding advertising",
+            "s3Intro": "You can limit the information used for personalized ads in the following ways. Even if you do, all features of the app remain available and ads are shown in a non-personalized form.",
+            "s3List": [
+                "Android: Settings → Google → Ads, then delete or reset your advertising ID",
+                "iOS: choose “Ask App Not to Track” in the tracking prompt shown when you first open the app, or change it in Settings → Privacy & Security → Tracking",
+                "In regions where consent is required, such as the European Economic Area, the app shows a consent screen on first launch, and you can change your consent at any time."
+            ],
+            "s4Title": "4. Retention, deletion, and provision to third parties",
+            "s4List": [
+                "The Company does not hold personal information of FieldWeather users. Information stored on your device is deleted when you delete the app.",
+                "The Company does not provide users' personal information to third parties. However, as described in item 2, the Google advertising service included in the app collects information directly from the device to display ads, and its retention period follows Google's policies."
+            ],
+            "s5Title": "5. Children's personal information",
+            "s5Text": "FieldWeather is intended for users aged 18 and over and does not knowingly collect personal information from children.",
+            "s6Title": "6. About weather information",
+            "s6Text": "Forecasts in FieldWeather are an arrangement of the Korea Meteorological Administration's short-term forecast and may differ from actual weather.",
+            "s7Title": "7. Contact",
+            "s7Text": "For inquiries about privacy in FieldWeather, please contact the privacy officer listed in Section 10 above.",
+            "finalNote": "This FieldWeather section was established on November 18, 2026. Any future changes will be announced on the InovaAI website."
+        }
     },
     "Terms": {
         "backToMain": "Back to Main",

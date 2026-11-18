@@ -19,6 +19,9 @@ export default async function PrivacyPage({
                     <div className="space-y-2">
                         <p className="text-lg font-bold text-slate-700">{t("companyName")}</p>
                         <p className="text-sm text-slate-400 font-medium">{t("effectiveDate")}</p>
+                        <p className="text-sm text-slate-500 font-medium pt-2">
+                            <a href="#fieldweather" className="underline underline-offset-4">{t("fieldweather.navNote")}</a>
+                        </p>
                     </div>
                 </header>
 
@@ -165,6 +168,82 @@ export default async function PrivacyPage({
                                 <li key={i}>{item}</li>
                             ))}
                         </ul>
+                    </section>
+
+                    {/* FieldWeather (별도 앱: 위 조항과 독립적으로 적용) */}
+                    <section id="fieldweather" className="space-y-10 pt-16 border-t border-slate-100 scroll-mt-24">
+                        <header className="space-y-2">
+                            <h2 className="text-3xl font-black text-slate-900 tracking-tight">{t("fieldweather.title")}</h2>
+                            <p className="text-lg font-bold text-slate-700">{t("fieldweather.companyName")}</p>
+                            <p className="text-sm text-slate-400 font-medium">{t("fieldweather.effectiveDate")}</p>
+                        </header>
+                        <p className="text-lg text-slate-600">{t("fieldweather.intro")}</p>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s1Title")}</h3>
+                            <p className="text-slate-600">{t("fieldweather.s1Intro")}</p>
+                            <ul className="list-disc list-inside pl-4 space-y-2 text-slate-600">
+                                {(t.raw("fieldweather.s1List") as string[]).map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s2Title")}</h3>
+                            <p className="text-slate-600">{t("fieldweather.s2Intro")}</p>
+                            <ul className="list-disc list-inside pl-4 space-y-2 text-slate-600">
+                                {(t.raw("fieldweather.s2List") as string[]).map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                ))}
+                            </ul>
+                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+                                {(t.raw("fieldweather.s2Notes") as string[]).map((item, i) => (
+                                    <p key={i} className="text-slate-700 font-medium break-words">{item}</p>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s3Title")}</h3>
+                            <p className="text-slate-600">{t("fieldweather.s3Intro")}</p>
+                            <ul className="list-disc list-inside pl-4 space-y-2 text-slate-600">
+                                {(t.raw("fieldweather.s3List") as string[]).map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s4Title")}</h3>
+                            <ul className="list-disc list-inside pl-4 space-y-2 text-slate-600">
+                                {(t.raw("fieldweather.s4List") as string[]).map((item, i) => (
+                                    <li key={i}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s5Title")}</h3>
+                            <p className="text-slate-600">{t("fieldweather.s5Text")}</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s6Title")}</h3>
+                            <p className="text-slate-600">{t("fieldweather.s6Text")}</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-black text-slate-900">{t("fieldweather.s7Title")}</h3>
+                            <p className="text-slate-600">{t("fieldweather.s7Text")}</p>
+                            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-2">
+                                {(t.raw("section10List") as string[]).map((item, i) => (
+                                    <p key={i} className="text-slate-700 font-medium">{item}</p>
+                                ))}
+                            </div>
+                        </div>
+
+                        <p className="italic text-slate-400 text-sm">{t("fieldweather.finalNote")}</p>
                     </section>
 
                     <footer className="pt-16 pb-8 border-t border-slate-100 italic text-slate-400 text-sm">
