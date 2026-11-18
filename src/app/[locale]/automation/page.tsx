@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Settings, Cpu, LineChart, Smartphone, ShieldCheck } from "lucide-react";
+import { ArrowRight, Settings, Cpu, LineChart, Smartphone, ShieldCheck, CloudRain } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
@@ -117,6 +117,25 @@ export default async function WorkflowAutomationPage({
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("csoTag1")}</span>
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("csoTag2")}</span>
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("csoTag3")}</span>
+                            </div>
+                        </div>
+
+                        <div className="relative p-8 rounded-3xl bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all">
+                            <span className="absolute top-6 right-6 inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-700">
+                                <span className="flex h-2 w-2 rounded-full bg-amber-400 mr-1.5 animate-pulse"></span>
+                                {t("fieldWeatherBadge")}
+                            </span>
+                            <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-6">
+                                <CloudRain className="h-6 w-6" />
+                            </div>
+                            <h3 className="text-xl font-bold mb-3 text-gray-900">{t("fieldWeatherTitle")}</h3>
+                            <p className="text-gray-600 mb-5">
+                                {t("fieldWeatherDesc")}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("fieldWeatherTag1")}</span>
+                                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("fieldWeatherTag2")}</span>
+                                <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("fieldWeatherTag3")}</span>
                             </div>
                         </div>
                     </div>

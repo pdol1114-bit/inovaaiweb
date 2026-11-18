@@ -49,7 +49,13 @@
         "csoDesc": "CSO(최고안전책임자) 업무를 자동화하는 관리 프로그램. 안전 점검, 보고서 작성, 규정 준수 모니터링을 AI로 자동 처리합니다.",
         "csoTag1": "안전관리",
         "csoTag2": "자동화",
-        "csoTag3": "규정준수"
+        "csoTag3": "규정준수",
+        "fieldWeatherTitle": "필드웨더",
+        "fieldWeatherBadge": "출시 준비 중",
+        "fieldWeatherDesc": "골프장별 라운딩 날씨 앱. 기상청 단기예보로 티오프 시간대의 비 소식과 기온을 한눈에 보여 줍니다.",
+        "fieldWeatherTag1": "React Native",
+        "fieldWeatherTag2": "Supabase",
+        "fieldWeatherTag3": "기상청 단기예보"
     },
     "Footer": {
         "description": "수의사부터 시뮬레이션 전문가까지, 전혀 다른 필드의 괴짜들이 모여 AI의 새로운 가능성을 집요하게 파고듭니다. 경계 없는 협업으로 복잡한 산업의 문제를 명쾌하게 해결하는 스타트업입니다.",
