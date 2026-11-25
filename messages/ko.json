@@ -51,7 +51,7 @@
         "csoTag2": "자동화",
         "csoTag3": "규정준수",
         "fieldWeatherTitle": "필드웨더",
-        "fieldWeatherBadge": "iOS · Android 출시",
+        "fieldWeatherBadge": "출시 완료",
         "fieldWeatherDesc": "골프장별 라운딩 날씨 앱. 기상청 단기예보로 티오프 시간대의 비 소식과 기온을 한눈에 보여 줍니다.",
         "fieldWeatherTag1": "React Native",
         "fieldWeatherTag2": "Supabase",

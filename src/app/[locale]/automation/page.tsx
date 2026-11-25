@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Settings, Cpu, LineChart, Smartphone, ShieldCheck, CloudRain } from "lucide-react";
+import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 
@@ -156,6 +157,28 @@ export default async function WorkflowAutomationPage({
                                     {t("fieldWeatherGooglePlay")}
                                     <ArrowRight className="ml-1.5 h-4 w-4" />
                                 </a>
+                            </div>
+                            <div className="flex gap-6 mt-6">
+                                <div className="flex flex-col items-center gap-2">
+                                    <Image
+                                        src="/images/fieldweather/qr-app-store.png"
+                                        alt={`${t("fieldWeatherAppStore")} QR`}
+                                        width={112}
+                                        height={112}
+                                        className="rounded-xl border border-gray-200 bg-white p-1.5"
+                                    />
+                                    <span className="text-xs font-medium text-gray-500">{t("fieldWeatherAppStore")}</span>
+                                </div>
+                                <div className="flex flex-col items-center gap-2">
+                                    <Image
+                                        src="/images/fieldweather/qr-google-play.png"
+                                        alt={`${t("fieldWeatherGooglePlay")} QR`}
+                                        width={112}
+                                        height={112}
+                                        className="rounded-xl border border-gray-200 bg-white p-1.5"
+                                    />
+                                    <span className="text-xs font-medium text-gray-500">{t("fieldWeatherGooglePlay")}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
