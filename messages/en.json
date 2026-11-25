@@ -123,10 +123,10 @@
         "privacyTitle": "Data Privacy",
         "privacyDesc": "We adhere to strict data privacy standards. Images are processed anonymously where possible, and personal data is encrypted at rest and in transit.",
         "patentSectionTitle": "Intellectual Property",
-        "patentSectionDesc": "INOVA.AI has filed patent applications in the Republic of Korea and the United States for our core technology, protecting our unique approach to combining biosignals with questionnaire data.",
+        "patentSectionDesc": "INOVA.AI has completed patent filings in the Republic of Korea and the United States for our core technology, with registration now in progress, protecting our unique approach to combining biosignals with questionnaire data.",
         "patentCountryKr": "Republic of Korea",
         "patentCountryUs": "United States (USPTO)",
-        "patentPending": "Patent Pending",
+        "patentPending": "Patent Filed · Registration in Progress",
         "patentAppNo": "App. No",
         "patentDate": "Date",
         "patentInventors": "Inventors",
@@ -146,8 +146,8 @@
         "copyrightTypeValue": "Computer Program (Application)"
     },
     "Sniff": {
-        "patentKr": "Korean Patent Pending",
-        "patentUs": "U.S. Patent Pending",
+        "patentKr": "Korean Patent Filed · Registration in Progress",
+        "patentUs": "U.S. Patent Filed · Registration in Progress",
         "heroTitle1": "AI-Powered Health Analysis",
         "heroTitle2": "for Your Beloved Pets",
         "heroDesc": "Sniff by Hatch uses advanced visual recognition AI to monitor your pet's health. Simply take a photo and get instant insights into their well-being.",
