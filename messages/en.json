@@ -51,11 +51,13 @@
         "csoTag2": "Automation",
         "csoTag3": "Compliance",
         "fieldWeatherTitle": "FieldWeather",
-        "fieldWeatherBadge": "Launching Soon",
+        "fieldWeatherBadge": "Live on iOS & Android",
         "fieldWeatherDesc": "A round-day weather app for golf courses. It shows rain and temperature for your tee-time window at a glance, based on the Korea Meteorological Administration's short-term forecast.",
         "fieldWeatherTag1": "React Native",
         "fieldWeatherTag2": "Supabase",
-        "fieldWeatherTag3": "KMA Forecast"
+        "fieldWeatherTag3": "KMA Forecast",
+        "fieldWeatherAppStore": "App Store",
+        "fieldWeatherGooglePlay": "Google Play"
     },
     "Footer": {
         "description": "From veterinarians to simulation experts, specialists from entirely different fields collaborate without boundaries—a boundary-breaking startup obsessively exploring the new possibilities of AI to resolve complex industrial challenges.",

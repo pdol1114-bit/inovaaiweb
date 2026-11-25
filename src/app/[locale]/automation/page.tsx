@@ -121,8 +121,8 @@ export default async function WorkflowAutomationPage({
                         </div>
 
                         <div className="relative p-8 rounded-3xl bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all">
-                            <span className="absolute top-6 right-6 inline-flex items-center rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-700">
-                                <span className="flex h-2 w-2 rounded-full bg-amber-400 mr-1.5 animate-pulse"></span>
+                            <span className="absolute top-6 right-6 inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700">
+                                <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-1.5"></span>
                                 {t("fieldWeatherBadge")}
                             </span>
                             <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-6">
@@ -136,6 +136,26 @@ export default async function WorkflowAutomationPage({
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("fieldWeatherTag1")}</span>
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("fieldWeatherTag2")}</span>
                                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">{t("fieldWeatherTag3")}</span>
+                            </div>
+                            <div className="flex flex-wrap gap-3 mt-6">
+                                <a
+                                    href="https://apps.apple.com/kr/app/id6836007912"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center rounded-full bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 transition-colors"
+                                >
+                                    {t("fieldWeatherAppStore")}
+                                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                                </a>
+                                <a
+                                    href="https://play.google.com/store/apps/details?id=com.inovaai.fieldweather"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
+                                >
+                                    {t("fieldWeatherGooglePlay")}
+                                    <ArrowRight className="ml-1.5 h-4 w-4" />
+                                </a>
                             </div>
                         </div>
                     </div>
