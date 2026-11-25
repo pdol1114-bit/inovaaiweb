@@ -92,23 +92,34 @@ export default async function TechnologyPage({
                                 {t("patentSectionDesc")}
                             </p>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                                <div>
-                                    <h4 className="font-semibold text-cyan-400 mb-2">{t("patentPending")}</h4>
+                            <div className="pt-4 space-y-6">
+                                <h4 className="font-semibold text-cyan-400">{t("patentPending")}</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="text-sm space-y-1 text-muted-foreground">
-                                        <p><span className="font-medium text-white">{t("patentAppNo")}:</span> EPA-2025-0137</p>
+                                        <p className="font-semibold text-white">{t("patentCountryKr")}</p>
+                                        <p><span className="font-medium text-white">{t("patentAppNo")}:</span> 10-2025-0115850</p>
                                         <p><span className="font-medium text-white">{t("patentDate")}:</span> 2025-08-20</p>
-                                        <p><span className="font-medium text-white">{t("patentInventors")}:</span> Ji-Se Seong, Yu-Seok Kang</p>
+                                    </div>
+                                    <div className="text-sm space-y-1 text-muted-foreground">
+                                        <p className="font-semibold text-white">{t("patentCountryUs")}</p>
+                                        <p><span className="font-medium text-white">{t("patentAppNo")}:</span> 19/906,432</p>
+                                        <p><span className="font-medium text-white">{t("patentDate")}:</span> 2026-11-24</p>
                                     </div>
                                 </div>
-                                <div>
-                                    <h4 className="font-semibold text-cyan-400 mb-2">{t("patentTitleLabel")}</h4>
-                                    <p className="text-sm text-muted-foreground italic">
-                                        {t("patentTitleEn")}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground mt-2">
-                                        {t("patentTitleKo")}
-                                    </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <h4 className="font-semibold text-cyan-400 mb-2">{t("patentTitleLabel")}</h4>
+                                        <p className="text-sm text-muted-foreground italic">
+                                            {t("patentTitleEn")}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-2">
+                                            {t("patentTitleKo")}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-semibold text-cyan-400 mb-2">{t("patentInventors")}</h4>
+                                        <p className="text-sm text-muted-foreground">Ji Sae Seong, You Suk Kang</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

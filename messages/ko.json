@@ -123,7 +123,9 @@
         "privacyTitle": "데이터 프라이버시",
         "privacyDesc": "우리는 엄격한 데이터 개인정보 보호 표준을 준수합니다. 이미지는 가능한 한 익명으로 처리되며, 개인 데이터는 저장 및 전송 시 암호화됩니다.",
         "patentSectionTitle": "지적 재산권",
-        "patentSectionDesc": "INOVA.AI는 생체 신호와 문진 데이터를 결합하는 당사만의 고유한 접근 방식을 보호하는 핵심 기술에 대한 특허를 확보했습니다.",
+        "patentSectionDesc": "INOVA.AI는 생체 신호와 문진 데이터를 결합하는 당사만의 고유한 접근 방식을 보호하기 위해 핵심 기술을 대한민국과 미국에 특허 출원했습니다.",
+        "patentCountryKr": "대한민국",
+        "patentCountryUs": "미국 (USPTO)",
         "patentPending": "특허 출원 중",
         "patentAppNo": "출원 번호",
         "patentDate": "출원일",
@@ -144,6 +146,8 @@
         "copyrightTypeValue": "컴퓨터프로그램저작물 (응용프로그램)"
     },
     "Sniff": {
+        "patentKr": "국내 특허 출원",
+        "patentUs": "미국 특허 출원",
         "heroTitle1": "사랑하는 당신의 반려동물을 위한",
         "heroTitle2": "AI 기반 건강 분석",
         "heroDesc": "Sniff by Hatch는 고급 시각 인식 AI를 사용하여 반려동물의 건강을 모니터링합니다. 간단히 사진을 찍어 즉각적인 건강 상태 정보를 확인하세요.",

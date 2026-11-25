@@ -123,7 +123,9 @@
         "privacyTitle": "Data Privacy",
         "privacyDesc": "We adhere to strict data privacy standards. Images are processed anonymously where possible, and personal data is encrypted at rest and in transit.",
         "patentSectionTitle": "Intellectual Property",
-        "patentSectionDesc": "INOVA.AI has secured patents for our core technology, protecting our unique approach to combining biosignals with questionnaire data.",
+        "patentSectionDesc": "INOVA.AI has filed patent applications in the Republic of Korea and the United States for our core technology, protecting our unique approach to combining biosignals with questionnaire data.",
+        "patentCountryKr": "Republic of Korea",
+        "patentCountryUs": "United States (USPTO)",
         "patentPending": "Patent Pending",
         "patentAppNo": "App. No",
         "patentDate": "Date",
@@ -139,11 +141,13 @@
         "copyrightDate": "Registration Date",
         "copyrightDateValue": "2026-03-17",
         "copyrightAuthor": "Copyright Owner",
-        "copyrightAuthorValue": "Yu-Seok Kang",
+        "copyrightAuthorValue": "You Suk Kang",
         "copyrightType": "Work Type",
         "copyrightTypeValue": "Computer Program (Application)"
     },
     "Sniff": {
+        "patentKr": "Korean Patent Pending",
+        "patentUs": "U.S. Patent Pending",
         "heroTitle1": "AI-Powered Health Analysis",
         "heroTitle2": "for Your Beloved Pets",
         "heroDesc": "Sniff by Hatch uses advanced visual recognition AI to monitor your pet's health. Simply take a photo and get instant insights into their well-being.",
@@ -332,7 +336,7 @@
         "section10Title": "10. Personal Information Protection Officer",
         "section10Intro": "The Company designates a Personal Information Protection Officer as below to handle inquiries related to personal information protection:",
         "section10List": [
-            "Name: Yu-Seok Kang",
+            "Name: You Suk Kang",
             "Department: InovaAI",
             "Email: support@inovaai.ai"
         ],
@@ -586,7 +590,7 @@
                 "intro": "The Company information is as follows:",
                 "list": [
                     "• Trade Name: InovaAI Co., Ltd.",
-                    "• Representative: Yousuk Kang, Jise Sung",
+                    "• Representative: You Suk Kang, Ji Sae Seong",
                     "• Business Registration Number: 479-81-03783",
                     "• Address: Room 204, 2nd Floor, 4, Daeha 1-gil, Maengdong-myeon, Eumseong-gun, Chungcheongbuk-do",
                     "• Customer Center Email: support@inovaai.ai",

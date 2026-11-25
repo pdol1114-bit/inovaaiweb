@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Brain, Stethoscope, Activity } from "lucide-react";
+import { Brain, Stethoscope, Activity, BadgeCheck } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { QRBadge } from "@/components/ui/qr-badge";
 import { setRequestLocale, getTranslations } from "next-intl/server";
@@ -30,9 +30,20 @@ export default async function SniffPage({
                         {t("heroTitle1")} <br className="hidden md:block" />
                         {t("heroTitle2")}
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
+                    <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-6 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
                         {t("heroDesc")}
                     </p>
+                    {/* 특허 출원 표기: 상세(출원번호·출원일)는 /technology 지적 재산권 섹션에 있다. */}
+                    <Link href="/technology" className="flex flex-wrap items-center justify-center gap-2 mb-10 animate-fade-in opacity-0" style={{ animationDelay: "0.3s", animationFillMode: "forwards" }}>
+                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                            <BadgeCheck className="h-4 w-4 mr-1.5" />
+                            {t("patentKr")}
+                        </span>
+                        <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+                            <BadgeCheck className="h-4 w-4 mr-1.5" />
+                            {t("patentUs")}
+                        </span>
+                    </Link>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in opacity-0 mb-12" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
                         <Button size="lg" className="rounded-full bg-primary text-white hover:bg-primary/90 px-8 h-12 text-base shadow-lg shadow-blue-200/50" asChild>
                             <Link href={getStartedHref}>{t("getStarted")}</Link>
