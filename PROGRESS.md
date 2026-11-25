@@ -1,5 +1,14 @@
 # PROGRESS
 
+## 2026-11-25 — 푸터 개인정보처리방침 및 이용약관 다국어 연동 및 시인성 개선
+
+- 사용자 요청(“개인정보처리방침이 왜 안보이지?”)에 따라 푸터 하단 링크를 개선.
+- 원인 및 조치:
+  1. 영문 하드코딩(`Privacy Policy`, `Terms of Service`) 제거 후 다국어(`messages/{ko,en}.json`) `Footer.privacyPolicy`와 `Footer.termsOfService` 키로 연동.
+  2. 개인정보보호법 권장 기준에 맞춰 **개인정보처리방침** 링크를 타 약관 대비 **굵은 글씨 + 짙은 색상 + 밑줄(`font-bold text-gray-800 hover:text-blue-600 underline underline-offset-4`)**로 시인성을 대폭 강화.
+- 검증: `npx tsc --noEmit`, `git diff --check`, `npm run build` 모두 통과 (exit 0).
+
+
 ## 2026-11-17 — FEM 월 40회 무료 베타 운영 오픈 완료 (Codex)
 
 - 사용자 승인 범위에서 운영 오픈 완료. 실제 청구·PortOne/KCP 결제·유료 판매는 실행하지 않았다.

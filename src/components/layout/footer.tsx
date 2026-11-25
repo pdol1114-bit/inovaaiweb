@@ -65,11 +65,19 @@ export function Footer() {
                     <p className="text-gray-400 text-xs text-center md:text-left">
                         © {new Date().getFullYear()} INOVA.AI. All rights reserved.
                     </p>
-                    <div className="flex space-x-6 text-xs text-gray-400">
-                        <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
-                        <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
-                        <Link href="/refund-policy" className="hover:text-gray-600">{t("refundPolicy")}</Link>
-                        <Link href="/account/subscription" className="hover:text-gray-600">{t("manageSubscription")}</Link>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-500">
+                        <Link href="/privacy" className="font-bold text-gray-800 hover:text-blue-600 underline underline-offset-4">
+                            {t("privacyPolicy")}
+                        </Link>
+                        <Link href="/terms" className="hover:text-gray-700">
+                            {t("termsOfService")}
+                        </Link>
+                        <Link href="/refund-policy" className="hover:text-gray-700">
+                            {t("refundPolicy")}
+                        </Link>
+                        <Link href="/account/subscription" className="hover:text-gray-700">
+                            {t("manageSubscription")}
+                        </Link>
                     </div>
                 </div>
             </div>
