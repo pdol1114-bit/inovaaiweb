@@ -65,7 +65,9 @@
         "company": "Company",
         "contact": "Contact Info",
         "refundPolicy": "Refund Policy",
-        "manageSubscription": "Manage subscription"
+        "manageSubscription": "Manage subscription",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service"
     },
     "BusinessInfo": {
         "companyName": "Trade Name:",

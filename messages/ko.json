@@ -65,7 +65,9 @@
         "company": "회사",
         "contact": "연락처 정보",
         "refundPolicy": "환불정책",
-        "manageSubscription": "구독 관리"
+        "manageSubscription": "구독 관리",
+        "privacyPolicy": "개인정보처리방침",
+        "termsOfService": "이용약관"
     },
     "BusinessInfo": {
         "companyName": "상호:",

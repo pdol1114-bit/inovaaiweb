@@ -70,18 +70,18 @@ export default async function SniffPage({
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-4">
                                     <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                        <img src="/images/IMG_1.PNG" alt="Sniff Splash" className="absolute inset-0 w-full h-full object-cover" />
+                                        <img src="/images/sniff-splash-main.png" alt="Sniff Splash" className="absolute inset-0 w-full h-full object-cover" />
                                     </div>
                                     <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                        <img src="/images/IMG_6.PNG" alt="Sniff Survey" className="absolute inset-0 w-full h-full object-cover" />
+                                        <img src="/images/sniff-guide.jpg" alt="Sniff Guide" className="absolute inset-0 w-full h-full object-cover" />
                                     </div>
                                 </div>
                                 <div className="space-y-4 mt-8">
                                     <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                        <img src="/images/IMG_2.PNG" alt="Sniff Guide" className="absolute inset-0 w-full h-full object-cover" />
+                                        <img src="/images/sniff-analyzing.png" alt="Sniff AI Analysis" className="absolute inset-0 w-full h-full object-cover" />
                                     </div>
                                     <div className="relative aspect-[9/19] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
-                                        <img src="/images/IMG_5.PNG" alt="Sniff Result" className="absolute inset-0 w-full h-full object-cover" />
+                                        <img src="/images/sniff-splash-inova.png" alt="inova.ai Splash" className="absolute inset-0 w-full h-full object-cover" />
                                     </div>
                                 </div>
                             </div>

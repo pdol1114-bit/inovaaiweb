@@ -1,5 +1,23 @@
 # PROGRESS
 
+## 2026-11-25 — Sniff 앱 최신 스크린샷 4종 업로드 반영 및 푸터 다국어 메시지 누락 보완
+
+- 사용자 요청(“sniff 사진 업로드 해줘. 앱이 업데이트 되었어”, “니가 보고 판단해서 바꿔 4장이니까 똑같이 바꾸면 되겠네”) 반영.
+- 작업 내용:
+  1. 사용자 업로드 4종 이미지 `public/images/`에 신규 등록:
+     - `sniff-splash-main.png`: Sniff by Hatch 노란색 대표 스플래시 화면
+     - `sniff-guide.jpg`: Sniff 사용 방법 및 문진 시작 안내 화면
+     - `sniff-analyzing.png`: AI 건강 분석 대기 및 진행 화면
+     - `sniff-splash-inova.png`: inova.ai 화이트 인트로 스플래시 화면
+  2. `src/app/[locale]/sniff/page.tsx`:
+     - 작동 방식(How it Works) 섹션의 2×2 목업 프레임 이미지 소스를 구버전(`IMG_1.PNG`, `IMG_6.PNG`, `IMG_2.PNG`, `IMG_5.PNG`)에서 최신 스크린샷 4종으로 교체 및 alt 속성 정비.
+  3. `messages/{ko,en}.json`:
+     - 직전 커밋에서 Footer에 추가되었던 `privacyPolicy`, `termsOfService` 다국어 키가 누락되어 있던 것을 보완 추가 (한글: '개인정보처리방침' / '이용약관', 영문: 'Privacy Policy' / 'Terms of Service').
+- 검증 결과:
+  - `npx tsc --noEmit` 통과 (오류 0개)
+  - `git diff --check` 통과
+  - `npm run build` 프로덕션 빌드 성공 (exit code 0, MISSING_MESSAGE 경고 0건, 모든 47개 정적 페이지 생성 완료)
+
 ## 2026-11-25 — 푸터 개인정보처리방침 시인성 개선 운영 배포 완료
 
 - 사용자 “배포해” 승인 확인.
